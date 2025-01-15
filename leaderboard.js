@@ -2,7 +2,7 @@
 const basePoints = 800;
 
 function loadCSV() {
-  // Display base points on the page in <span id="basePointsValue">
+  // Display the base points on the page
   document.getElementById("basePointsValue").textContent = basePoints;
 
   fetch("leaderboard.csv")
@@ -12,6 +12,9 @@ function loadCSV() {
       const tbody = document.querySelector("#leaderboard tbody");
       tbody.innerHTML = ""; // Clear any existing rows
       const rowData = [];
+
+      // Track the highest available points (AP)
+      let highestAP = 0;
 
       rows.forEach((row) => {
         const cols = row.split(",");
@@ -32,6 +35,9 @@ function loadCSV() {
         const vp = 2 * wins; // VP = 2 x Wins
         const ap = basePoints + wins * 150 + losses * 300; // AP = BasePoints + (Wins * 150) + (Losses * 300)
 
+        // Update the highest available points (AP) if necessary
+        if (ap > highestAP) highestAP = ap;
+
         // Create row object with calculated values
         const rowObj = {
           cols: trimmedCols,
@@ -40,9 +46,15 @@ function loadCSV() {
           vp: vp, // Add VP to row data
           ap: ap, // Add AP to row data
           position: 0, // Placeholder for position
+          underdogPoints: 0, // Placeholder for underdog points
         };
 
         rowData.push(rowObj);
+      });
+
+      // Calculate underdog points for each player based on the highest AP
+      rowData.forEach((row) => {
+        row.underdogPoints = Math.floor((highestAP - row.ap) / 50); // Calculate underdog points
       });
 
       // Sort by custom score (VP / (Wins + Losses)) and set positions
@@ -90,6 +102,11 @@ function loadCSV() {
         const tdAP = document.createElement("td");
         tdAP.textContent = row.ap; // Available Points
         tr.appendChild(tdAP);
+
+        // Add Underdog Points
+        const tdUnderdogPoints = document.createElement("td");
+        tdUnderdogPoints.textContent = row.underdogPoints; // Underdog Points
+        tr.appendChild(tdUnderdogPoints);
 
         tbody.appendChild(tr);
       });

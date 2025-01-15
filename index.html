@@ -50,6 +50,9 @@
             <li class="nav-item">
               <a class="nav-link" href="#campaign-rules">Campaign Rules</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#leaderboard-section">Leaderboard</a>
+            </li>
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -85,6 +88,29 @@
 
       <a name="campaign-rules"><h1>Campaign Rules</h1></a>
       <p>[Here are where the specific rules we'll be following will be.]</p>
+      <p>
+        <strong>Campaign length is Game-Limited</strong>. We will play 10 games.
+        Once each month starting in February an ending in November.
+      </p>
+      <p>
+        <strong>Army Sheet:</strong> Each army and unit must be given a
+        <em>unique name</em>, which you can edit on your Army List.
+      </p>
+      <p>
+        <strong>Army Point Limits:</strong> there is no upper bound of available
+        points, however no army may bring over 250pts more than the army with
+        the lowest point value.
+      </p>
+      <p>
+        <strong>Underdog Bonus:</strong>Any army that has a point value lower
+        than at least one other gets an underdog bonus. You get 1 underdog point
+        for every 50pts difference between your army and the one with the
+        highest value. Each underdog point can be spent to modify all dice in a
+        friendly or enemy roll by +1 or -1, but only one point can be spent per
+        roll.
+      </p>
+
+      <a name="leaderboard-section"><h1>Leaderboard</h1></a>
       <div id="basePointsDisplay">
         Base Points: <span id="basePointsValue"></span>
       </div>
@@ -102,6 +128,7 @@
               <th onclick="sortTable(4)">Wins</th>
               <th onclick="sortTable(5)">Losses</th>
               <th onclick="sortTable(6)">Available Points</th>
+              <th onclick="sortTable(7)">Underdog Points</th>
             </tr>
           </thead>
           <tbody>
