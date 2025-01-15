@@ -1,3 +1,6 @@
+// Set the base points (this can be updated easily)
+const basePoints = 800;
+
 function loadCSV() {
   fetch("leaderboard.csv")
     .then((response) => response.text())
@@ -9,49 +12,81 @@ function loadCSV() {
 
       rows.forEach((row) => {
         const cols = row.split(",");
-        if (cols.length > 1) {
-          // Ensure not an empty row
-          const rowObj = {
-            cols: cols.map((col) => col.trim()),
-            position: 0, // Placeholder for position
-          };
-          rowData.push(rowObj);
-        }
-      });
 
-      // Log the rowData to ensure it's populated correctly
-      console.log("Loaded Data:", rowData);
+        // Skip rows that don't have valid data
+        if (cols.length < 4) return; // Ensure at least Player Name, Army Name, Wins, Losses
+
+        // Ensure no undefined or empty values in cols
+        const trimmedCols = cols.map((col) => (col ? col.trim() : ""));
+
+        // Ensure we have valid Wins and Losses (numeric)
+        const wins = parseInt(trimmedCols[2], 10);
+        const losses = parseInt(trimmedCols[3], 10);
+
+        if (isNaN(wins) || isNaN(losses)) return; // Skip rows with invalid numbers for Wins or Losses
+
+        // Calculate Victory Points (VP) and Available Points (AP)
+        const vp = 2 * wins; // VP = 2 x Wins
+        const ap = basePoints + wins * 150 + losses * 300; // AP = BasePoints + (Wins * 150) + (Losses * 300)
+
+        // Create row object with calculated values
+        const rowObj = {
+          cols: trimmedCols,
+          wins: wins,
+          losses: losses,
+          vp: vp, // Add VP to row data
+          ap: ap, // Add AP to row data
+          position: 0, // Placeholder for position
+        };
+
+        rowData.push(rowObj);
+      });
 
       // Sort by custom score (VP / (Wins + Losses)) and set positions
       rowData.sort((a, b) => {
-        const aVP = parseFloat(a.cols[2]);
-        const aWins = parseFloat(a.cols[3]);
-        const aLosses = parseFloat(a.cols[4]);
-        const bVP = parseFloat(b.cols[2]);
-        const bWins = parseFloat(b.cols[3]);
-        const bLosses = parseFloat(b.cols[4]);
-
-        const aScore = aVP / (aWins + aLosses);
-        const bScore = bVP / (bWins + bLosses);
-
+        const aScore = (2 * a.wins) / (a.wins + a.losses);
+        const bScore = (2 * b.wins) / (b.wins + b.losses);
         return bScore - aScore; // Descending order
       });
-
-      // Log after sorting
-      console.log("Sorted Data:", rowData);
 
       rowData.forEach((row, index) => {
         row.position = index + 1; // Set position
         const tr = document.createElement("tr");
+
+        // Add Position column
         const tdPosition = document.createElement("td");
         tdPosition.textContent = row.position;
         tr.appendChild(tdPosition);
 
-        row.cols.forEach((col) => {
-          const td = document.createElement("td");
-          td.textContent = col;
-          tr.appendChild(td);
-        });
+        // Add Player Name
+        const tdPlayerName = document.createElement("td");
+        tdPlayerName.textContent = row.cols[0]; // Player Name
+        tr.appendChild(tdPlayerName);
+
+        // Add Army Name
+        const tdArmyName = document.createElement("td");
+        tdArmyName.textContent = row.cols[1]; // Army Name
+        tr.appendChild(tdArmyName);
+
+        // Add Victory Points (VP)
+        const tdVP = document.createElement("td");
+        tdVP.textContent = row.vp; // Victory Points
+        tr.appendChild(tdVP);
+
+        // Add Wins
+        const tdWins = document.createElement("td");
+        tdWins.textContent = row.wins;
+        tr.appendChild(tdWins);
+
+        // Add Losses
+        const tdLosses = document.createElement("td");
+        tdLosses.textContent = row.losses;
+        tr.appendChild(tdLosses);
+
+        // Add Available Points (AP)
+        const tdAP = document.createElement("td");
+        tdAP.textContent = row.ap; // Available Points
+        tr.appendChild(tdAP);
 
         tbody.appendChild(tr);
       });
@@ -61,9 +96,6 @@ function loadCSV() {
 function sortTable(columnIndex) {
   const table = document.getElementById("leaderboard");
   const tbody = table.tBodies[0];
-
-  // Log tbody state before sorting
-  console.log("Table state before sorting:", tbody);
 
   // Check if the tbody contains rows
   if (!tbody || tbody.rows.length === 0) {
@@ -105,9 +137,6 @@ function sortTable(columnIndex) {
     }
     return 0;
   });
-
-  // Log rows after sorting
-  console.log("Rows after sorting:", rows);
 
   rows.forEach((row) => tbody.appendChild(row)); // Reattach sorted rows
   table.setAttribute("data-sort-direction", direction);
