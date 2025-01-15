@@ -74,11 +74,21 @@ function sortTable(columnIndex) {
   const rows = Array.from(tbody.rows);
   let direction = table.getAttribute("data-sort-direction");
 
-  // Always sort by descending first
-  if (!direction || direction === "asc") {
-    direction = "desc";
+  // Set default sort direction based on the column index
+  // Player Name (0) and Army Name (1) should be sorted in ascending by default
+  if (columnIndex === 0 || columnIndex === 1) {
+    if (!direction || direction === "desc") {
+      direction = "asc";
+    } else {
+      direction = "desc";
+    }
   } else {
-    direction = "asc";
+    // For other columns, the default should be descending
+    if (!direction || direction === "asc") {
+      direction = "desc";
+    } else {
+      direction = "asc";
+    }
   }
 
   rows.sort((a, b) => {
