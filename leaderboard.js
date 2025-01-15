@@ -2,6 +2,9 @@
 const basePoints = 800;
 
 function loadCSV() {
+  // Display base points on the page in <span id="basePointsValue">
+  document.getElementById("basePointsValue").textContent = basePoints;
+
   fetch("leaderboard.csv")
     .then((response) => response.text())
     .then((data) => {
