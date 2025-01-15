@@ -7,3 +7,7 @@ th.sort-asc::after {
 th.sort-desc::after {
   content: " ↓";
 }
+.definition {
+  cursor: pointer; /* Indicate it's clickable */
+  text-decoration: underline;
+}
