@@ -1,5 +1,5 @@
 // Set the base points (this can be updated easily)
-const basePoints = 800;
+const basePoints = 1000;
 
 function loadCSV() {
   // Display the base points on the page
