@@ -29,3 +29,10 @@ th.sortable.sort-desc::after {
 .no-bullet {
   list-style-type: none;
 }
+
+.highlight {
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle light overlay */
+  border-left: 4px solid #007bff; /* Bootstrap primary color for accent */
+  padding-left: 10px; /* Adjust padding to offset the border */
+  transition: background-color 0.3s ease, border-left-color 0.3s ease; /* Smooth transition */
+}

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="definitions.js"></script>
+    <script src="random-events.js"></script>
+    <link href="style.css" rel="stylesheet" />
+    <link href="random-events.css" rel="stylesheet" />
+    <title>OPR Campaign - Random Events</title>
+  </head>
+  <body class="bg-dark text-light">
+    <nav
+      class="navbar navbar-expand-lg bg-dark border-bottom me-auto border-body sticky-top p-3"
+      data-bs-theme="dark"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand" href="index.html"
+          >The Awakening of the Mechanist Nexus</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <h1>Random Events</h1>
+    <button class="floating-btn" onclick="rollDiceAndHighlight()">🎲</button>
+    <h2>Rolling for Random Events</h2>
+    <p>
+      When rolling for random events, roll two separate dice one at a time,
+      where the first one represents the first number, whilst the second one
+      represents the second number, and resolve that event.
+    </p>
+    <p>
+      <em>
+        Example: A player rolls two dice, with the first result being a 2 and
+        the rescond result being a 1. This would mean that event 21 is chosen.
+      </em>
+    </p>
+    <h2>Rolling for Random Units</h2>
+    <p>
+      If a random event calls for randomly selecting a unit from any warband you
+      must first randomly select a warband for the event, and then randomly
+      select a unit to be the target.
+    </p>
+    <hr />
+    <h2>Event List</h2>
+    <div id="eventContainer">
+      <div class="random-event" id="event-11">
+        <h3>11 - P.O.W</h3>
+        <p>
+          <em
+            >A unit was captured by a local militia and is now being held as
+            prisoners of war.</em
+          >
+        </p>
+        <p>
+          Select one random unit, and remove it from play. At the end of the
+          mission it may be bought back for D3 * 50pts or else it's disbanded.
+        </p>
+      </div>
+      <div class="random-event" id="event-12">
+        <h3>12 - Bring me their Heads</h3>
+        <p>
+          <em
+            >A local warlord wants one of the armies dead, and is willing to pay
+            for it.</em
+          >
+        </p>
+        <p>
+          Select one random army. Enemy armies get 25pts at the end of the
+          mission for every unit from it that they destroyed.
+        </p>
+      </div>
+      <div class="random-event" id="event-13">
+        <h3>13 - Fragile Guns</h3>
+        <p>
+          <em
+            >After walking through a psychic field some weapons suddenly start
+            breaking.</em
+          >
+        </p>
+        <p>
+          Select D3 random units, which can't use one random ranged weapon or
+          upgrade until the end of the mission.
+        </p>
+      </div>
+
+      <div class="random-event" id="event-14">
+        <h3>14 - Monstrous Spawn</h3>
+        <p>
+          <em
+            >A unit accidentally walks into a beast's nest and is brutally
+            mauled.</em
+          >
+        </p>
+        <p>
+          Select one random unit, which takes D3+3 automatic hits with AP(1).
+        </p>
+      </div>
+      <div class="random-event" id="event-15">
+        <h3>15 - Low Supplies</h3>
+        <p>
+          <em>
+            The army's supply routes have been cut, leaving some units without
+            ammo.</em
+          >
+        </p>
+        <p>
+          Select D3 random units, which can't shoot until the end of the
+          mission.
+        </p>
+      </div>
+      <div class="random-event" id="event-16">
+        <h3>16 - Combat Fatigued</h3>
+        <p>
+          <em>
+            One of the armies has been fighting for too long and has become
+            exhausted.</em
+          >
+        </p>
+        <p>
+          All units from one random army get -1 to morale until the end of the
+          game.
+        </p>
+      </div>
+      <div class="random-event" id="event-21">
+        <h3>21 - Carnivorous Fauna</h3>
+        <p>
+          <em
+            >The local terrain is infested with vicious creatures, always ready
+            to attack.</em
+          >
+        </p>
+        <p>
+          Until the end of the mission whenever a unit enters terrain roll one
+          die, on a 1 it takes a dangerous terrain test.
+        </p>
+      </div>
+      <div class="random-event" id="event-22">
+        <h3>22 - Toxic Fumes</h3>
+        <p>
+          <em>
+            Strange fumes start building in the area, choking anyone caught in
+            them.
+          </em>
+        </p>
+        <p>
+          Select one random table quarter. All of the units within that table
+          quarter take D3+4 automatic hits.
+        </p>
+      </div>
+      <div class="random-event" id="event-23">
+        <h3>23 - Rigged to Blow</h3>
+        <p>
+          <em>
+            Sometimes you might just walk into a ridiculous amount of
+            explosives...</em
+          >
+        </p>
+        <p>
+          Select one random player, who may note down one piece of terrain in
+          secret. The first unit to enter that terrain takes D3+3 automatic hits
+          with AP(2).
+        </p>
+      </div>
+      <div class="random-event" id="event-24">
+        <h3>24 - Earthquake</h3>
+        <p>
+          <em
+            >A sudden earthquake makes everything crumble, burying units in the
+            rubble.</em
+          >
+        </p>
+        <p>All units within terrain must take a dangerous terrain test.</p>
+      </div>
+      <div class="random-event" id="event-25">
+        <h3>25 - Dark Clouds</h3>
+        <p>
+          <em>
+            Psychic clouds cover the area, reducing visibility to a minimum.
+          </em>
+        </p>
+        <p>
+          Select one random table quarter. All of the units within that table
+          quarter get -6" range when shooting.
+        </p>
+      </div>
+      <div class="random-event" id="event-26">
+        <h3>26 - Finish Them!</h3>
+        <p>
+          <em>
+            The armies are eager to finish the fight at all cost, even if it
+            means killing the enemy with their bare hands.</em
+          >
+        </p>
+        <p>
+          All units get +1 attack in melee and earn +D3 XP when destroying
+          enemies in melee until the end of the round.
+        </p>
+      </div>
+      <div class="random-event" id="event-31">
+        <h3>31 - Psychic Anomaly</h3>
+        <p>
+          <em>
+            A psychic anomaly has formed, casting electric bolts at anyone
+            nearby.</em
+          >
+        </p>
+        <p>
+          Place an anomaly marker in the center of one random table quarter. All
+          units that move within 3" of it take D3+3 hits.
+        </p>
+      </div>
+      <div class="random-event" id="event-32">
+        <h3>32 - The Walking Dead</h3>
+        <p>
+          <em>
+            The battlefield is covered in corpses ready to rise again from the
+            grave.</em
+          >
+        </p>
+        <p>
+          Place a unit of D6+4 Zombies (Qua 5+, Def 5+, Claws (A3), Slow) in the
+          center of one random table quarter. At the end of each round the
+          zombies must charge or rush the nearest unit.
+        </p>
+      </div>
+      <div class="random-event" id="event-33">
+        <h3>33 - Crazed Sniper</h3>
+        <p>
+          <em>
+            A local farmer is sick of the fighting and has taken justice in his
+            own hands.</em
+          >
+        </p>
+        <p>
+          Place a sniper on the highest piece of terrain with most line of sight
+          on the table. Select one random unit, and at the end of each round if
+          it is in line of sight of the sniper it takes D3 hits.
+        </p>
+      </div>
+      <div class="random-event" id="event-34">
+        <h3>34 - Old Friend</h3>
+        <p>
+          <em>
+            Out of pure chance an army runs into an old friend that is ready to
+            lend a hand.</em
+          >
+        </p>
+        <p>
+          Place a Mercenary (Qua 3+, Def 3+, Carbine (18", A3)) as part of a
+          random unit and that player may control it until the end of the
+          mission.
+        </p>
+      </div>
+      <div class="random-event" id="event-35">
+        <h3>35 - Escort Mission</h3>
+        <p>
+          <em
+            >A unit was hired by a local warlord to take them through enemy
+            lines.</em
+          >
+        </p>
+        <p>
+          Select one random unit. If it manages to exit the table through an
+          opponent's deployment zone it gets D3 * 25pts.
+        </p>
+      </div>
+      36 - Enemy Intel A data core filled with enemy intel has been found, which
+      could change the tide of this conflict. Place an intel marker at the
+      center of a random table quarter. Units can pick it up by moving into
+      contact with it, and they drop it if they are destroyed or shaken. If a
+      unit with it manages to exit the table through an opponent's table edge
+      its army gets 1 VP. 41 - Surprise Attack A local militia has ambushed one
+      of the units, trying to steal its gear. Select one random unit that is
+      inside a piece of terrain. That unit is shaken. 42 - Grave Miscalculation
+      A stray shot accidentally hits a cache of ammo, causing a massive
+      explosion. The first time during this round when a unit rolls a 1 to hit
+      for shooting it takes D3+3 automatic hits with AP(2). 43 - Berserker One
+      of the warriors is enraged and cuts the enemy's heads off clean. The first
+      time during this round when a unit rolls a 6 to hit in melee the target
+      takes D3 automatic wounds. 44 - No Mercy Some warriors are ready to cut
+      down their foes even when they surrender. The first time during this round
+      when a unit destroys an enemy unit that was shaken it receives +1 XP. 45 -
+      Weak Spot If you hit your enemy where it hurts most you can kill even
+      mighty giants with the smallest projectile. The first time during this
+      round when a unit with tough rolls a 1 to block from shooting or melee it
+      takes +D3 wounds. 46 - Countdown High command has promised a large bonus
+      if the battle can be ended quickly. If an army manages to win the mission
+      by the end of the round it gets a bonus of 5 XP, which must be split as
+      evenly as possible amongst units. 51 - Hearts & Minds The locals are
+      friendly to our cause, and are ready to take in our wounded. Select one
+      random army which may pay 50pts to re-roll results of 1 once per unit when
+      checking for casualties. 52 - Moral Victory An enemy unit has managed to
+      inflict enough casualties to become a priority target for everyone in the
+      army. Select one random player, who may note down one enemy unit in
+      secret. If that unit is destroyed then all units in the army get +1 XP. 53
+      - Flash Grenades Nothing confuses the enemy more than a blinding light
+      followed by a punch. Select one random army. Enemy units get -1 in melee
+      when attacking units from the selected army until the end of the round. 54
+      - Suppressing Fire Continuous fire is bound to take out even the most
+      resilient of enemies. Select one random unit, which doubles its shooting
+      attacks during this round. 55 - War Shout In desperate times a shout of
+      war can bring warriors back in fighting spirit. Select one random unit
+      that is shaken, which immediately stops being shaken. 56 - Covered in
+      Blood A unit is covered in blood from all the fighting, terrifying all
+      enemies around. Select one random unit. Enemy units within 6" of it get -1
+      to morale until the end of the mission. 61 - Ancient Relic In the midst of
+      fighting a unit found an ancient relic, which provides the unit with
+      unprecedented wisdom. Select one random unit, which immediately gets D3 *
+      1 XP. 62 - Abandoned Outpost Intel from our scouts has revealed an
+      abandoned outpost filled with gear, and one of the units decided to
+      inspect it. Select one random army, which may remove one unit that is not
+      shaken from play and get D3 * 50pts. 63 - Alien Cannon A unit dug up a
+      mysterious crate whilst setting up defensive positions, revealing a very
+      powerful weapon. Select one random unit, which gets the Alien Cannon (24",
+      A3, AP(D3)). 64 - Extortion One of the armies has been getting a lot of
+      gifts from the "happy" locals... Select one random army, which immediately
+      gets D3 * 25pts. 65 - Critical Transmission A unit randomly caught enemy
+      radio chatter that revealed mission critical information on enemy
+      positions. Select one random army, which immediately gets 1 VP. 66 - Time
+      Warp A unit that was fleeing the battlefield ran into a psychic anomaly
+      and warped to a different time and dimension. Select one random unit that
+      was destroyed and place it in a warp zone. The warp zone should have an
+      area of 2'x2' and 3-5 pieces of terrain, and the unit must be placed
+      within 3" of one of the zone's edges. Then place a Time Beast (Qua 3+, Def
+      3+, Claws (A6, AP(2)), Tough(6)) within 3" of the opposing edge of the
+      warp zone, which is controlled by an opponent. Roll to see who goes first
+      and then play out the fight like a regular battle, until one of the two
+      has been destroyed. If the Time Beast wins then the unit is dead and
+      removed from the army sheet. If the unit wins then it gets +3 XP and
+      scavenges 150pts. The unit may then join its army again at the end of the
+      mission.
+    </div>
+  </body>
+</html>
