@@ -20,20 +20,27 @@ function loadCSV() {
         const cols = row.split(",");
 
         // Skip rows that don't have valid data
-        if (cols.length < 4) return; // Ensure at least Player Name, Army Name, Wins, Losses
+        if (cols.length < 5) return; // Ensure at least Player Name, Army Name, Wins, Losses, Special Objectives
 
         // Ensure no undefined or empty values in cols
         const trimmedCols = cols.map((col) => (col ? col.trim() : ""));
 
-        // Ensure we have valid Wins and Losses (numeric)
+        // Ensure we have valid Wins, Losses, and Special Objectives (numeric)
         const wins = parseInt(trimmedCols[2], 10);
         const losses = parseInt(trimmedCols[3], 10);
+        const specialObjectives = parseInt(trimmedCols[4], 10);
 
-        if (isNaN(wins) || isNaN(losses)) return; // Skip rows with invalid numbers for Wins or Losses
+        if (isNaN(wins) || isNaN(losses) || isNaN(specialObjectives)) return; // Skip rows with invalid numbers
 
         // Calculate Victory Points (VP) and Available Points (AP)
         const vp = 2 * wins; // VP = 2 x Wins
-        const ap = basePoints + wins * 150 + losses * 300; // AP = BasePoints + (Wins * 150) + (Losses * 300)
+        const ap =
+          basePoints + wins * 150 + losses * 300 + specialObjectives * 75; // AP = BasePoints + (Wins * 150) + (Losses * 300) + (Special Objectives * 75)
+
+        // Debugging statements
+        console.log(
+          `Player: ${trimmedCols[0]}, Wins: ${wins}, Losses: ${losses}, Special Objectives: ${specialObjectives}, AP: ${ap}`
+        );
 
         // Update the highest available points (AP) if necessary
         if (ap > highestAP) highestAP = ap;
@@ -43,6 +50,7 @@ function loadCSV() {
           cols: trimmedCols,
           wins: wins,
           losses: losses,
+          specialObjectives: specialObjectives,
           vp: vp, // Add VP to row data
           ap: ap, // Add AP to row data
           position: 0, // Placeholder for position
@@ -58,58 +66,35 @@ function loadCSV() {
       });
 
       // Sort by custom score (VP / (Wins + Losses)) and set positions
-      rowData.sort((a, b) => {
-        const aScore = (2 * a.wins) / (a.wins + a.losses);
-        const bScore = (2 * b.wins) / (b.wins + b.losses);
-        return bScore - aScore; // Descending order
-      });
+      rowData
+        .sort((a, b) => {
+          const aScore = (2 * a.wins) / (a.wins + a.losses);
+          const bScore = (2 * b.wins) / (b.wins + b.losses);
+          return bScore - aScore; // Descending order
+        })
+        .forEach((row, index) => {
+          row.position = index + 1;
 
-      rowData.forEach((row, index) => {
-        row.position = index + 1; // Set position
-        const tr = document.createElement("tr");
+          // Debugging statement for table row creation
+          console.log(
+            `Creating table row for Player: ${row.cols[0]}, AP: ${row.ap}`
+          );
 
-        // Add Position column
-        const tdPosition = document.createElement("td");
-        tdPosition.textContent = row.position;
-        tr.appendChild(tdPosition);
-
-        // Add Player Name
-        const tdPlayerName = document.createElement("td");
-        tdPlayerName.textContent = row.cols[0]; // Player Name
-        tr.appendChild(tdPlayerName);
-
-        // Add Army Name
-        const tdArmyName = document.createElement("td");
-        tdArmyName.textContent = row.cols[1]; // Army Name
-        tr.appendChild(tdArmyName);
-
-        // Add Victory Points (VP)
-        const tdVP = document.createElement("td");
-        tdVP.textContent = row.vp; // Victory Points
-        tr.appendChild(tdVP);
-
-        // Add Wins
-        const tdWins = document.createElement("td");
-        tdWins.textContent = row.wins;
-        tr.appendChild(tdWins);
-
-        // Add Losses
-        const tdLosses = document.createElement("td");
-        tdLosses.textContent = row.losses;
-        tr.appendChild(tdLosses);
-
-        // Add Available Points (AP)
-        const tdAP = document.createElement("td");
-        tdAP.textContent = row.ap; // Available Points
-        tr.appendChild(tdAP);
-
-        // Add Underdog Points
-        const tdUnderdogPoints = document.createElement("td");
-        tdUnderdogPoints.textContent = row.underdogPoints; // Underdog Points
-        tr.appendChild(tdUnderdogPoints);
-
-        tbody.appendChild(tr);
-      });
+          // Create table row and append to tbody
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td>${row.position}</td>
+          <td>${row.cols[0]}</td>
+          <td>${row.cols[1]}</td>
+          <td>${row.wins}</td>
+          <td>${row.losses}</td>
+          <td>${row.specialObjectives}</td>
+          <td>${row.vp}</td>
+          <td>${row.ap}</td>
+          <td>${row.underdogPoints}</td>
+        `;
+          tbody.appendChild(tr);
+        });
     });
 }
 
@@ -169,5 +154,5 @@ function sortTable(columnIndex) {
   header.classList.add(direction === "asc" ? "sort-asc" : "sort-desc");
 }
 
-// Load CSV and populate the table on page load
-window.onload = loadCSV;
+// Run the function after the DOM content is loaded
+document.addEventListener("DOMContentLoaded", loadCSV);
