@@ -37,11 +37,6 @@ function loadCSV() {
         const ap =
           basePoints + wins * 150 + losses * 300 + specialObjectives * 75; // AP = BasePoints + (Wins * 150) + (Losses * 300) + (Special Objectives * 75)
 
-        // Debugging statements
-        console.log(
-          `Player: ${trimmedCols[0]}, Wins: ${wins}, Losses: ${losses}, Special Objectives: ${specialObjectives}, AP: ${ap}`
-        );
-
         // Update the highest available points (AP) if necessary
         if (ap > highestAP) highestAP = ap;
 
@@ -74,11 +69,6 @@ function loadCSV() {
         })
         .forEach((row, index) => {
           row.position = index + 1;
-
-          // Debugging statement for table row creation
-          console.log(
-            `Creating table row for Player: ${row.cols[0]}, AP: ${row.ap}`
-          );
 
           // Create table row and append to tbody
           const tr = document.createElement("tr");

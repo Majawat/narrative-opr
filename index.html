@@ -101,28 +101,100 @@
       </p>
       <hr />
       <a name="campaign-rules"><h1>Campaign Rules</h1></a>
-      <p>[Here are where the specific rules we'll be following will be.]</p>
       <p>
-        <strong>Campaign length is Game-Limited</strong>. We will play 10 games.
-        Once each month starting in February and ending in November.
+        [Here are where the specific rules we'll be following will be. Work in
+        progress]
       </p>
-      <p>
-        <strong>Army Sheet:</strong> Each army and unit must be given a
-        <em>unique name</em>, which you can edit on your Army List.
-      </p>
-      <p>
-        <strong>Army Point Limits:</strong> there is no upper bound of available
-        points, however no army may bring over 250pts more than the army with
-        the lowest point value.
-      </p>
-      <p>
-        <strong>Underdog Bonus:</strong> Any army that has a point value lower
-        than at least one other gets an underdog bonus. You get 1 underdog point
-        for every 50pts difference between your army and the one with the
-        highest value. Each underdog point can be spent to modify all dice in a
-        friendly or enemy roll by +1 or -1, but only one point can be spent per
-        roll.
-      </p>
+      <ul>
+        <li>
+          <strong>Campaign length is Game-Limited</strong>. We will play 10
+          games. Once each month starting in February and ending in November.
+        </li>
+        <li>
+          <strong>Army Sheet:</strong> Each army and unit must be given a
+          <em>unique name</em>, which you can edit on your Army List.
+        </li>
+        <li>
+          <strong>Army Point Limits:</strong> there is no upper bound of
+          available points, however no army may bring over 250pts more than the
+          army with the lowest point value.
+        </li>
+        <li>
+          <strong>Underdog Bonus:</strong> Any army that has a point value lower
+          than at least one other gets an underdog bonus. You get 1 underdog
+          point for every 50pts difference between your army and the one with
+          the highest value. Each underdog point can be spent to modify all dice
+          in a friendly or enemy roll by +1 or -1, but only one point can be
+          spent per roll.
+        </li>
+        <li>
+          <strong>Special Objectives:</strong> In addition to the mission
+          objectives, players may earn a bonus of 75pts by completing special
+          objectives. Roll one die each to see which objective you get:
+        </li>
+        <ul>
+          <li class="no-bullet">
+            <table
+              class="table table-striped table-hover table-dark table-bordered table-sm w-auto table-auto"
+            >
+              <thead>
+                <tr>
+                  <th>Result</th>
+                  <th>Objective</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>
+                    <strong>Mastery - </strong>One friendly unit in each table
+                    quarter at the end.
+                  </td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>
+                    <strong>Honor - </strong>No enemy units in own deployment
+                    zone at the end.
+                  </td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>
+                    <strong>Casting - </strong>At least one attempt to cast a
+                    spell per round.
+                  </td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>
+                    <strong>Recovery - </strong>First player to stop a unit from
+                    being shaken.
+                  </td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>
+                    <strong>Rage - </strong> First player to destroy an enemy
+                    unit.
+                  </td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>
+                    <strong>Destruction - </strong>Most expensive enemy unit
+                    destroyed.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </li>
+          <li>
+            If you roll an objective which can't be completed, then you must
+            re-roll.
+          </li>
+        </ul>
+      </ul>
       <hr />
       <a name="leaderboard-section"><h1>Leaderboard</h1></a>
       <div id="basePointsDisplay">
@@ -132,19 +204,28 @@
       <section id="leaderboard-section" class="container table-responsive">
         <table
           id="leaderboard"
-          class="table table-striped table-hover table-dark"
+          class="table table-striped table-hover table-dark table-bordered table-sm table-auto"
         >
           <thead>
             <tr>
-              <th onclick="sortTable(0)">Position</th>
-              <th onclick="sortTable(1)">Player Name</th>
-              <th onclick="sortTable(2)">Army Name</th>
-              <th onclick="sortTable(3)">Victory Points</th>
-              <th onclick="sortTable(4)">Wins</th>
-              <th onclick="sortTable(5)">Losses</th>
-              <th onclick="sortTable(8)">Special Objectives</th>
-              <th onclick="sortTable(6)">Available Points</th>
-              <th onclick="sortTable(7)">Underdog Points</th>
+              <th onclick="sortTable(0)" class="sortable">Position</th>
+              <th onclick="sortTable(1)" class="sortable">Player<br />Name</th>
+              <th onclick="sortTable(2)" class="sortable">Army<br />Name</th>
+              <th onclick="sortTable(3)" class="sortable">
+                Victory<br />Points
+              </th>
+              <th onclick="sortTable(4)" class="sortable">Wins</th>
+              <th onclick="sortTable(5)" class="sortable">Losses</th>
+              <th onclick="sortTable(8)" class="sortable">
+                Special<br />
+                Objectives
+              </th>
+              <th onclick="sortTable(6)" class="sortable">
+                Available<br />Points
+              </th>
+              <th onclick="sortTable(7)" class="sortable">
+                Underdog<br />Points
+              </th>
             </tr>
           </thead>
           <tbody>

@@ -1,10 +1,17 @@
 th {
+  text-align: center;
+  vertical-align: middle;
+}
+table td:first-child {
+  text-align: center;
+}
+th.sortable {
   cursor: pointer;
 }
-th.sort-asc::after {
+th.sortable.sort-asc::after {
   content: " ↑";
 }
-th.sort-desc::after {
+th.sortable.sort-desc::after {
   content: " ↓";
 }
 .definition {
@@ -17,4 +24,8 @@ th.sort-desc::after {
 }
 .accordion-button.collapsed::after {
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e5e5e5'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");
+}
+
+.no-bullet {
+  list-style-type: none;
 }
