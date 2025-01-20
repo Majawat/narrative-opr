@@ -125,7 +125,7 @@ function sortTable(columnIndex) {
   table.setAttribute("data-sort-column", columnIndex);
 
   // Update sort indicators
-  document.querySelectorAll("th").forEach((th, index) => {
+  document.querySelectorAll("th.sortable").forEach((th, index) => {
     th.classList.remove("sort-asc", "sort-desc");
     if (index === columnIndex) {
       th.classList.add(direction === "asc" ? "sort-asc" : "sort-desc");
