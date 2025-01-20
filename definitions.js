@@ -6,7 +6,7 @@ function autoWrapDefinitions() {
     Headstrong: "Gets +1 to rolls when taking morale tests.",
     Fatigue:
       "After charging or striking back, units only hit on unmodified results of 6 in melee until the end of that round.",
-    Shaken:
+    shaken:
       "Must stay idle, counts as fatigued, always fails morale tests, and can't contest or seize objectives. Shaken units must spend one full activation idle to stop being Shaken.",
     "cover terrain":
       "Units with most models fully inside cover terrain or behind sight blockers, or that are mostly inside cover terrain or behind sight blockers (for single-model units), get +1 to Defense rolls when blocking hits from shooting.",
@@ -16,6 +16,8 @@ function autoWrapDefinitions() {
       "Models moving across dangerous terrain, or that activate in it, must roll one die (or as many as their tough value), and for each roll of 1 the unit takes a wound.",
     disbanded:
       "Any unit may be freely disbanded, losing all of its XP and upgrades. Players may also choose to disband their full army, losing all units, VP, points, etc. and start a new army from scratch.",
+    destroyed:
+      "Units that have taken wounds equal to their Tough value are destroyed and removed from the game.",
   };
 
   // Loop over the terms and replace them in the page content
