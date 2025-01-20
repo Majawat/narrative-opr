@@ -91,33 +91,17 @@ function loadCSV() {
 function sortTable(columnIndex) {
   const table = document.getElementById("leaderboard");
   const tbody = table.tBodies[0];
-
-  // Check if the tbody contains rows
-  if (!tbody || tbody.rows.length === 0) {
-    console.error("No rows to sort.");
-    return; // No rows to sort
-  }
-
   const rows = Array.from(tbody.rows);
   let direction = table.getAttribute("data-sort-direction");
 
-  // Set default sort direction based on the column index
-  // Player Name (0) and Army Name (1) should be sorted in ascending by default
-  if (columnIndex === 0 || columnIndex === 1) {
-    if (!direction || direction === "desc") {
-      direction = "asc";
-    } else {
-      direction = "desc";
-    }
+  // Determine the sort direction
+  if (table.getAttribute("data-sort-column") == columnIndex) {
+    direction = direction === "asc" ? "desc" : "asc";
   } else {
-    // For other columns, the default should be descending
-    if (!direction || direction === "asc") {
-      direction = "desc";
-    } else {
-      direction = "asc";
-    }
+    direction = "desc";
   }
 
+  // Sort the rows
   rows.sort((a, b) => {
     const aText = a.cells[columnIndex].innerText.trim();
     const bText = b.cells[columnIndex].innerText.trim();
@@ -133,15 +117,20 @@ function sortTable(columnIndex) {
     return 0;
   });
 
-  rows.forEach((row) => tbody.appendChild(row)); // Reattach sorted rows
+  // Reattach sorted rows
+  rows.forEach((row) => tbody.appendChild(row));
+
+  // Update sort direction and column
   table.setAttribute("data-sort-direction", direction);
+  table.setAttribute("data-sort-column", columnIndex);
 
   // Update sort indicators
-  document
-    .querySelectorAll("th")
-    .forEach((th) => th.classList.remove("sort-asc", "sort-desc"));
-  const header = document.querySelectorAll("th")[columnIndex];
-  header.classList.add(direction === "asc" ? "sort-asc" : "sort-desc");
+  document.querySelectorAll("th").forEach((th, index) => {
+    th.classList.remove("sort-asc", "sort-desc");
+    if (index === columnIndex) {
+      th.classList.add(direction === "asc" ? "sort-asc" : "sort-desc");
+    }
+  });
 }
 
 // Run the function after the DOM content is loaded
