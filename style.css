@@ -63,7 +63,7 @@ th.sortable.sort-desc::after {
   font-size: clamp(
     1rem,
     2vw,
-    2rem
+    1.75rem
   ); /* Adjust the min, preferred, and max font size */
   white-space: nowrap; /* Prevent text from wrapping */
   overflow: hidden; /* Hide overflow text */
