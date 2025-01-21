@@ -9,7 +9,7 @@ function loadCSV() {
     .then((response) => response.text())
     .then((data) => {
       const rows = data.split("\n").slice(1); // Skip the header
-      const tbody = document.querySelector("#leaderboard tbody");
+      const tbody = document.querySelector("#leaderboard-table tbody");
       tbody.innerHTML = ""; // Clear any existing rows
       const rowData = [];
 
@@ -89,7 +89,7 @@ function loadCSV() {
 }
 
 function sortTable(columnIndex) {
-  const table = document.getElementById("leaderboard");
+  const table = document.getElementById("leaderboard-table");
   const tbody = table.tBodies[0];
   const rows = Array.from(tbody.rows);
   let direction = table.getAttribute("data-sort-direction");
