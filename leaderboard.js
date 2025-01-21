@@ -20,22 +20,23 @@ function loadCSV() {
         const cols = row.split(",");
 
         // Skip rows that don't have valid data
-        if (cols.length < 5) return; // Ensure at least Player Name, Army Name, Wins, Losses, Special Objectives
+        if (cols.length < 7) return; // Ensure at least Player Name, Army Name, Wins, Losses, Special Objectives, EarnedVP, EarnedPoints
 
         // Ensure no undefined or empty values in cols
         const trimmedCols = cols.map((col) => (col ? col.trim() : ""));
 
-        // Ensure we have valid Wins, Losses, and Special Objectives (numeric)
+        // Ensure we have valid Wins, Losses, Special Objectives, EarnedVP, and EarnedPoints (numeric)
         const wins = parseInt(trimmedCols[2], 10);
         const losses = parseInt(trimmedCols[3], 10);
         const specialObjectives = parseInt(trimmedCols[4], 10);
+        const earnedVP = parseInt(trimmedCols[5], 10);
+        const earnedPoints = parseInt(trimmedCols[6], 10);
 
-        if (isNaN(wins) || isNaN(losses) || isNaN(specialObjectives)) return; // Skip rows with invalid numbers
+        if (isNaN(wins) || isNaN(losses) || isNaN(specialObjectives) || isNaN(earnedVP) || isNaN(earnedPoints)) return; // Skip rows with invalid numbers
 
         // Calculate Victory Points (VP) and Available Points (AP)
-        const vp = 2 * wins; // VP = 2 x Wins
-        const ap =
-          basePoints + wins * 150 + losses * 300 + specialObjectives * 75; // AP = BasePoints + (Wins * 150) + (Losses * 300) + (Special Objectives * 75)
+        const vp = 2 * wins + earnedVP; // VP = 2 x Wins + EarnedVP
+        const ap = basePoints + wins * 150 + losses * 300 + specialObjectives * 75 + earnedPoints; // AP = BasePoints + (Wins * 150) + (Losses * 300) + (Special Objectives * 75) + EarnedPoints
 
         // Update the highest available points (AP) if necessary
         if (ap > highestAP) highestAP = ap;
