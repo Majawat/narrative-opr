@@ -89,12 +89,12 @@ function loadCSV() {
           <td>${row.position}</td>
           <td>${row.cols[0]}</td>
           <td>${row.cols[1]}</td>
-          <td>${row.vp}</td>
-          <td>${row.wins}</td>
-          <td>${row.losses}</td>
-          <td>${row.specialObjectives}</td>
-          <td>${row.ap}</td>
-          <td>${row.underdogPoints}</td>
+          <td style="text-align: center">${row.vp}</td>
+          <td style="text-align: center">${row.wins}</td>
+          <td style="text-align: center">${row.losses}</td>
+          <td style="text-align: center">${row.specialObjectives}</td>
+          <td style="text-align: center">${row.ap}</td>
+          <td style="text-align: center">${row.underdogPoints}</td>
         `;
           tbody.appendChild(tr);
         });
