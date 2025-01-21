@@ -36,3 +36,7 @@ th.sortable.sort-desc::after {
   padding-left: 10px; /* Adjust padding to offset the border */
   transition: background-color 0.3s ease, border-left-color 0.3s ease; /* Smooth transition */
 }
+
+#campaign-rules{
+  scroll-margin-top: 80px;
+}
