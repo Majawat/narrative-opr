@@ -86,7 +86,7 @@ function loadCSV() {
           // Create table row and append to tbody
           const tr = document.createElement("tr");
           tr.innerHTML = `
-          <td>${row.position}</td>
+          <td style="text-align: center">${row.position}</td>
           <td>${row.cols[0]}</td>
           <td>${row.cols[1]}</td>
           <td style="text-align: center">${row.vp}</td>
