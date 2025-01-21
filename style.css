@@ -40,3 +40,9 @@ th.sortable.sort-desc::after {
 .nav-scroll-top {
   scroll-margin-top: 85px;
 }
+
+.dice-notation {
+  font-size: 0.875rem; /* Adjust font size to match text */
+  line-height: 1.15; /* Adjust line height to match text */
+  padding: 0.15rem 0.25rem; /* Adjust padding to make the button shorter */
+}

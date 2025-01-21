@@ -17,6 +17,7 @@
     <script src="leaderboard.js"></script>
     <script src="definitions.js"></script>
     <script src="index.js"></script>
+    <script src="dice.js"></script>
     <link href="style.css" rel="stylesheet" />
     <title>The Awakening of the Mechanist Nexus</title>
   </head>
@@ -309,14 +310,25 @@
                     hidden in the center of the battlefield within a piece of
                     dense terrain (such as a crumbling ruin or ancient control
                     room). When any unit enters this terrain, they must roll a
-                    D6:
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary dice-notation"
+                    >
+                      D6</button
+                    >:
                   </li>
                   <ul>
                     <li>
                       On a 4+, the player finds the Artifact and can pick it up.
                     </li>
                     <li>
-                      On a 1-3, a random malfunction occurs (players roll a D6
+                      On a 1-3, a random malfunction occurs (players roll a
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary dice-notation"
+                      >
+                        D6
+                      </button>
                       for a random event):
                     </li>
                     <ol>
@@ -327,7 +339,14 @@
                       <li>
                         <strong>Tech Surge:</strong> A nearby machine becomes
                         active and shoots at the unit that touched the artifact,
-                        dealing a D6 damage to one model in that unit.
+                        dealing a
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary dice-notation"
+                        >
+                          D6
+                        </button>
+                        damage to one model in that unit.
                       </li>
                       <li>
                         <strong>Cloak of Darkness:</strong> The unit is
