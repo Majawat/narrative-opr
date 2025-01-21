@@ -46,3 +46,22 @@ th.sortable.sort-desc::after {
   line-height: 1.15; /* Adjust line height to match text */
   padding: 0.15rem 0.25rem; /* Adjust padding to make the button shorter */
 }
+
+.navbar-brand {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 80px); /* Adjust based on the width of the button */
+}
+
+.navbar-toggler {
+  margin-left: auto;
+}
+
+.navbar.shrink {
+  margin: 0;
+}
+
+#navbar-brand-subtitle {
+  transition: opacity 0.3s ease;
+}

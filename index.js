@@ -17,3 +17,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  var navbar = document.querySelector(".navbar");
+  var subtitle = document.getElementById("navbar-brand-subtitle");
+
+  function handleScroll() {
+    if (window.scrollY > 0) {
+      subtitle.style.opacity = "0";
+      navbar.classList.add("shrink");
+    } else {
+      subtitle.style.opacity = "1";
+      navbar.classList.remove("shrink");
+    }
+  }
+
+  window.addEventListener("scroll", handleScroll);
+
+  // Initial check
+  handleScroll();
+});
