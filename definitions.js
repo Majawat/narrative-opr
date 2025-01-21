@@ -44,8 +44,9 @@ function autoWrapDefinitions() {
     Furious:
       "When charging, unmodified rolls of 6 to hit in melee deal one extra hit (only the original hit counts as a 6 for special rules).",
     Hero: "Heroes with up to Tough(6) may deploy as part of one multi-model unit without another Hero. The hero may take morale tests on behalf of the unit, but must use the unit's Defense until all other models have been killed.",
-    Immobile:
-      "May only use Hold actions. Impact(X): Roll X dice when attacking after charging, unless fatigued. For each 2+ the target takes one hit.",
+    Immobile: "May only use Hold actions.",
+    "Impact(X)":
+      "Roll X dice when attacking after charging, unless fatigued. For each 2+ the target takes one hit.",
     Indirect:
       "Gets -1 to hit rolls when shooting after moving. May target enemies that are not in line of sight as if in line of sight, and ignores cover from sight obstructions.",
     Lance: "When charging, gets +1 to hit rolls and AP(+1) in melee.",
