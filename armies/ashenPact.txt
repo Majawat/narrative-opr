@@ -1,0 +1,19 @@
+++ The Ashen Pact - Jackals (v3.4.1), Blessed Sisters (v3.4.1) [GF 1000pts] ++
+
+Dustborn Marauders [10] Q5+ D5+ | 200pts | Carnivore, Strider, 1x Satellite Backpack(Beacon)
+2x CCW (A1), 2x Fumigator (12", A1, Blast(3), Poison, Reliable), 8x Scrap Pistol (12", A1), 8x CCW (A2)
+
+Zarek Thal [1] Q4+ D4+ | 95pts | Carnivore, Hero, Relentless, Strider, Tough(3), 1x Pathfinder(Hidden Route), 1x Satellite Backpack(Beacon)
+Explosive Spear (A3, AP(2))
+| Joined to:
+Ironclaw Vanguard [5] Q4+ D4+ | 150pts | Carnivore, Relentless, Strider, 1x Satellite Backpack(Beacon)
+5x CCW (A1), 4x Shotgun (12", A2, AP(1)), Shred Rifle (18", A2, Rending)
+
+Stormfang Riders [3] Q5+ D4+ | 165pts | Bounding, Carnivore, Impact(2), Strider, Tough(3)
+3x Explosive Spear (A2, AP(2))
+
+Radiant Guard [3] Q4+ D4+ | 180pts | Celestial Veteran, Devout, Medical Training
+2x CCW (A1), Plasma Pistol (12", A1, AP(4)), Energy Fist (A2, AP(4)), 2x Heavy Flamer (12", A1, AP(1), Blast(3), Reliable)
+
+Dawnbringers [3] Q4+ D4+ | 210pts | Ambush, Devout, Tough(3), 2x Combat Shield(Shield Wall)
+2x Energy Fist (A3, AP(4)), Dual Energy Claws (A4, Rending)

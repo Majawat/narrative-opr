@@ -73,6 +73,18 @@ function autoWrapDefinitions() {
       "This model must take X wounds before being killed. If a model with tough joins a unit without it, then it is removed last when the unit takes wounds. Note that you must continue to put wounds on the tough model with most wounds in the unit until it is killed, before starting to put them on the next tough model (heroes must be assigned wounds last).",
     "Transport(X)":
       "May transport up to X models or Heroes with up to Tough(6), and non-Heroes with up to Tough(3) which occupy 3 spaces each. Transports may deploy with units inside, and units may enter/exit by using any move action, but must stay fully within 6 inches of it when exiting. When a transport is destroyed, units inside must take a dangerous terrain test, are Shaken, and must be placed fully within 6 inches of the transport before removing it.",
+    Beacon:
+      "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed within 6 inches of this model.",
+    Bounding:
+      "When this unit is activated, you may place all models with this rule in it anywhere within D3+1 inches of their position.",
+    Carnivore: "Gets +1 to hit in melee.",
+    "Celestial Veteran": "Gets +1 to hit in melee and shooting.",
+    Devout:
+      "When shooting at enemies within 12 inches, unmodified rolls of 6 to hit deal one extra hit (only the original hit counts as a 6 for special rules).",
+    "Hidden Route": "This model and its unit get Ambush.",
+    "Medical Training": "This model and its unit get Regeneration.",
+    "Shield Wall":
+      "This model gets +1 to defense rolls against hits that are not from spells.",
   };
 
   // Loop over the terms and replace them in the page content

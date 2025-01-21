@@ -14,9 +14,10 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script src="definitions.js"></script>
     <script src="dice.js"></script>
     <script src="index.js"></script>
+    <script src="definitions.js"></script>
+    <script src="armies.js"></script>
     <link src="special-rules.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
     <title>Grimdark Future Rules</title>
@@ -103,83 +104,8 @@
       </div>
     </nav>
     <div class="container-fluid px-4 my-4">
-      <h1>Grimdark Future Rules <small>3.4.1</small></h1>
-      <hr />
-      <section name="general-rules">
-        <h2>Activation</h2>
-        <p>
-          The player picks one unit that hasn't activated yet, and it must take
-          one action:
-        </p>
-        <table
-          class="table table-striped table-hover table-bordered table-responsive w-25"
-        >
-          <thead>
-            <tr>
-              <th scope="col">Action</th>
-              <th scope="col" style="text-align: center">Move</th>
-              <th scope="col">Notes</th>
-            </tr>
-          </thead>
-          <tbody class="table-group-divider">
-            <tr scope="row">
-              <td>Hold</td>
-              <td style="text-align: center">0"</td>
-              <td>Can shoot</td>
-            </tr>
-            <tr scope="row">
-              <td>Advance</td>
-              <td style="text-align: center">6"</td>
-              <td>Can shoot after move</td>
-            </tr>
-            <tr scope="row">
-              <td>Rush</td>
-              <td style="text-align: center">12"</td>
-              <td>Can't shoot</td>
-            </tr>
-            <tr scope="row">
-              <td>Charge</td>
-              <td style="text-align: center">12"</td>
-              <td>Moves into melee</td>
-            </tr>
-          </tbody>
-        </table>
-        <h2>Shooting</h2>
-        <p>
-          Models in range and line of sight may fire all ranged weapons, and may
-          fire at up to two different targets with different weapon types.
-          Shooting models take one quality test per attack, and each success is
-          a hit. For each hit defending units roll one die trying to score their
-          Defense value or higher to block, and each fail causes one wound. For
-          each wound, the defender must remove one model.
-        </p>
-        <h2>Melee</h2>
-        <p>
-          Charging models must move into base contact with targets, or as close
-          as possible, and then defenders must do the same by moving up to 3".
-          Models within 2" horizontally and 4" vertically of enemies must strike
-          with all melee weapons, which works like shooting. Then defenders may
-          choose to strike back, but don't have to. Once both units are done,
-          the losing unit must take a morale test (see morale section). If one
-          of the units is destroyed, the other may move by up to 3", else
-          chargers must move back and separate by 1" (if possible).
-        </p>
-        <h2>Morale</h2>
-        <p>
-          <strong>Morale Tests:</strong> At the end of an activation where
-          wounds leave a unit with half or less of its total size or tough value
-          (for single-model units), or it loses a melee, the unit must take a
-          morale test. To take a morale test, take a quality test, and if failed
-          the unit is Shaken.
-        </p>
-      </section>
-      <hr />
-      <section name="special-rules-ref">
-        <div id="special-rules-container">
-          <h2>Glossary and Special Rules Reference</h2>
-          <div id="glossary-list"></div>
-        </div>
-      </section>
+      <h1>Army Information</h1>
+      <div id="army-info"></div>
     </div>
   </body>
 </html>
