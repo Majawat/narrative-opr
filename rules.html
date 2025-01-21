@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,10 +20,9 @@
     <link href="style.css" rel="stylesheet" />
     <title>Grimdark Future Rules</title>
   </head>
-  <body class="bg-dark text-light">
+  <body>
     <nav
-      class="navbar navbar-expand-lg bg-dark border-bottom me-auto border-body sticky-top p-3"
-      data-bs-theme="dark"
+      class="navbar navbar-expand-lg border-bottom me-auto border-body sticky-top p-3"
     >
       <div class="container-fluid">
         <a name="home" class="navbar-brand flex-shrink-1" href="#">
@@ -67,7 +66,7 @@
               >
                 External Links
               </a>
-              <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+              <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <a
                     class="dropdown-item"
@@ -102,7 +101,36 @@
         </div>
       </div>
     </nav>
-    <div class="container">
+    <div class="container-fluid px-4 my-4">
+      <div class="container-fluid">
+        <div class="row">
+          <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="#general-rules">General Rules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#activation">Activation</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#shooting">Shooting</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#melee">Melee</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#morale">Morale</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#special-rules-ref">Glossary and Special Rules</a>
+                </li>
+                <!-- Add more links as needed -->
+              </ul>
+            </div>
+          </nav>
+          <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="container">
       <h1>Grimdark Future Rules <small>3.4.1</small></h1>
       <hr />
       <section name="general-rules">
@@ -112,7 +140,7 @@
           one action:
         </p>
         <table
-          class="table table-striped table-hover table-dark table-bordered table-sm table-responsive table-small w-75"
+          class="table table-striped table-hover table-bordered table-sm table-responsive table-small w-75"
         >
           <thead>
             <tr>
@@ -123,7 +151,7 @@
           </thead>
           <tbody class="table-group-divider">
             <tr scope="row">
-              <td >Hold</td>
+              <td>Hold</td>
               <td style="text-align: center">0"</td>
               <td>Can shoot</td>
             </tr>
