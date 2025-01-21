@@ -37,3 +37,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initial check
   handleScroll();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const links = document.querySelectorAll('a[href^="http"]');
+  links.forEach((link) => {
+    link.setAttribute("target", "_blank");
+  });
+});
