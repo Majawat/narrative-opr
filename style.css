@@ -11,6 +11,7 @@ th.sortable.sort-asc::after {
 th.sortable.sort-desc::after {
   content: " ↓";
 }
+
 .definition {
   cursor: pointer;
   text-decoration: underline;
