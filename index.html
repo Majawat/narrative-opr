@@ -76,17 +76,19 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-dark">
                 <li>
-                  <a class="dropdown-item" href="#mission1"
+                  <a class="dropdown-item" href="#mission1-item"
                     >Mission 1: The Unearthed Tomb</a
                   >
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#mission2"
+                  <a class="dropdown-item" href="#mission2-item"
                     >Mission 2: Awakening Threats</a
                   >
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#mission3">Mission 3: TBA</a>
+                  <a class="dropdown-item" href="#mission3-item"
+                    >Mission 3: TBA</a
+                  >
                 </li>
               </ul>
             </li>
@@ -218,15 +220,15 @@
         </ul>
         <hr />
       </section>
-      <h1>Leaderboard</h1>
-      <div id="basePointsDisplay">
-        <p>
-          Current Base Points: <span id="basePointsValue"></span>. We'll go up
-          by 200pts every month, except for November, which we'll go up by
-          400pts.
-        </p>
-      </div>
       <section id="leaderboard-section" class="nav-scroll-top">
+        <h1>Leaderboard</h1>
+        <div id="basePointsDisplay">
+          <p>
+            Current Base Points: <span id="basePointsValue"></span>. We'll go up
+            by 200pts every month, except for November, which we'll go up by
+            400pts.
+          </p>
+        </div>
         <div class="table-responsive">
           <table
             id="leaderboard-table"
@@ -261,11 +263,10 @@
       </section>
       <hr />
       <section id="missions-section" class="nav-scroll-top">
-        <h1 class="bd-title">Missions</h1>
-
+        <h1>Missions</h1>
         <div
-          class="accordion bg-dark text-light"
-          id="accordionPanelsStayOpenExample"
+          class="accordion bg-dark text-light nav-scroll-top"
+          id="mission1-item"
         >
           <div class="accordion-item bg-dark text-light">
             <h2 class="accordion-header" id="panelsStayOpen-headingOne">
@@ -277,7 +278,7 @@
                 aria-expanded="true"
                 aria-controls="panelsStayOpen-collapseOne"
               >
-                <a name="mission1"
+                <a
                   ><h2>Mission 1: The Unearthed Tomb</h2>
                   Februrary 22<sup>nd</sup></a
                 >
@@ -427,7 +428,10 @@
               </div>
             </div>
           </div>
-          <div class="accordion-item bg-dark text-light">
+          <div
+            id="mission2-item"
+            class="accordion-item bg-dark text-light nav-scroll-top"
+          >
             <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
               <button
                 class="accordion-button collapsed bg-dark text-light"
@@ -437,7 +441,7 @@
                 aria-expanded="false"
                 aria-controls="panelsStayOpen-collapseTwo"
               >
-                <a name="mission2"
+                <a
                   ><h2>Mission 2: Awakening Threats</h2>
                   Date TBD</a
                 >
