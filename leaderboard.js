@@ -32,11 +32,23 @@ function loadCSV() {
         const earnedVP = parseInt(trimmedCols[5], 10);
         const earnedPoints = parseInt(trimmedCols[6], 10);
 
-        if (isNaN(wins) || isNaN(losses) || isNaN(specialObjectives) || isNaN(earnedVP) || isNaN(earnedPoints)) return; // Skip rows with invalid numbers
+        if (
+          isNaN(wins) ||
+          isNaN(losses) ||
+          isNaN(specialObjectives) ||
+          isNaN(earnedVP) ||
+          isNaN(earnedPoints)
+        )
+          return; // Skip rows with invalid numbers
 
         // Calculate Victory Points (VP) and Available Points (AP)
         const vp = 2 * wins + earnedVP; // VP = 2 x Wins + EarnedVP
-        const ap = basePoints + wins * 150 + losses * 300 + specialObjectives * 75 + earnedPoints; // AP = BasePoints + (Wins * 150) + (Losses * 300) + (Special Objectives * 75) + EarnedPoints
+        const ap =
+          basePoints +
+          wins * 150 +
+          losses * 300 +
+          specialObjectives * 75 +
+          earnedPoints; // AP = BasePoints + (Wins * 150) + (Losses * 300) + (Special Objectives * 75) + EarnedPoints
 
         // Update the highest available points (AP) if necessary
         if (ap > highestAP) highestAP = ap;
@@ -77,10 +89,10 @@ function loadCSV() {
           <td>${row.position}</td>
           <td>${row.cols[0]}</td>
           <td>${row.cols[1]}</td>
+          <td>${row.vp}</td>
           <td>${row.wins}</td>
           <td>${row.losses}</td>
           <td>${row.specialObjectives}</td>
-          <td>${row.vp}</td>
           <td>${row.ap}</td>
           <td>${row.underdogPoints}</td>
         `;
