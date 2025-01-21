@@ -58,10 +58,17 @@ th.sortable.sort-desc::after {
   margin-left: auto;
 }
 
-.navbar.shrink {
-  margin: 0;
-}
-
 #navbar-brand-subtitle {
   transition: opacity 0.3s ease;
+}
+
+.brand-text {
+  font-size: clamp(
+    1rem,
+    2vw,
+    2rem
+  ); /* Adjust the min, preferred, and max font size */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Add ellipsis for overflow text */
 }
