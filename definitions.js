@@ -19,13 +19,59 @@ function autoWrapDefinitions() {
     Destroyed:
       "Units that have taken wounds equal to their Tough value are destroyed and removed from the game.",
     Aircraft:
-      "May only use Advance actions, moving in a straight line, and adding 30” to its total move (even if Shaken). Aircraft ignore all units and terrain when moving and stopping, can't seize objectives, can't be charged, and units targeting them get -12 inches range and -1 to hit.",
+      "May only use Advance actions, moving in a straight line, and adding 30 inches to its total move (even if Shaken). Aircraft ignore all units and terrain when moving and stopping, can't seize objectives, can't be charged, and units targeting them get -12 inches range and -1 to hit.",
     Ambush:
-      "May be set aside before deployment. At the start of any round after the first, may be deployed anywhere over 9” away from enemy units. Players alternate in placing Ambush units, starting with the player that activates next. Units that deploy via Ambush can't seize or contest objectives on the round they deploy. ",
+      "May be set aside before deployment. At the start of any round after the first, may be deployed anywhere over 9 inches away from enemy units. Players alternate in placing Ambush units, starting with the player that activates next. Units that deploy via Ambush can't seize or contest objectives on the round they deploy.",
     "AP(X)":
-      "Targets get -X to Defense rolls when blocking hits from this weapon. ",
+      "Targets get -X to Defense rolls when blocking hits from this weapon.",
     "Blast(X)":
-      "Ignores cover, and after resolving other special rules, each hit is multiplied by X, where X is up to as many hits as models in the target unit. ",
+      "Ignores cover, and after resolving other special rules, each hit is multiplied by X, where X is up to as many hits as models in the target unit.",
+    "Caster(X)":
+      "Gets X spell tokens at the start of each round, but can't hold more than 6 tokens at once. At any point before attacking, spend as many tokens as the spell's value to try casting one or more spells (only one try per spell). Roll one die, on 4+ resolve the effect on a target in line of sight. Models within 18 inches in line of sight of the caster's unit may spend any number of spell tokens at the same time before rolling, to give the caster +1/-1 to the roll per token.",
+    Counter:
+      "Strikes first with this weapon when charged, and the charging unit gets -1 total Impact rolls per model with Counter.",
+    "Deadly(X)":
+      "Assign each wound to one model, and multiply it by X. Hits from Deadly must be resolved first, and these wounds don't carry over to other models if the original target is killed.",
+    Entrenched:
+      "Enemies get -2 to hit when shooting at this model from over 9 inches away, as long as it hasn't moved since the beginning of its last activation.",
+    Fast: "Moves +2 inches when using Advance, and +4 inches when using Rush/Charge.",
+    "Fear(X)":
+      "This model counts as having dealt +X wounds when checking who won melee.",
+    Fearless:
+      "Whenever a unit where most models have this rule fails a morale test, roll one die. On a 4+ it counts as passed instead.",
+    Flying:
+      "May move through units and terrain, and ignores terrain effects whilst moving.",
+    Furious:
+      "When charging, unmodified rolls of 6 to hit in melee deal one extra hit (only the original hit counts as a 6 for special rules).",
+    Hero: "Heroes with up to Tough(6) may deploy as part of one multi-model unit without another Hero. The hero may take morale tests on behalf of the unit, but must use the unit's Defense until all other models have been killed.",
+    Immobile:
+      "May only use Hold actions. Impact(X): Roll X dice when attacking after charging, unless fatigued. For each 2+ the target takes one hit.",
+    Indirect:
+      "Gets -1 to hit rolls when shooting after moving. May target enemies that are not in line of sight as if in line of sight, and ignores cover from sight obstructions.",
+    Lance: "When charging, gets +1 to hit rolls and AP(+1) in melee.",
+    "Lock-On":
+      "Ignores cover and all negative modifiers to hit rolls and range.",
+    Limited: "May only be used once per game.",
+    Poison:
+      "Ignores Regeneration, and the target must re-roll unmodified Defense rolls of 6 when blocking hits.",
+    Regeneration: "When taking a wound, roll one die. On a 5+ it is ignored.",
+    Relentless:
+      "When using Hold actions and shooting, unmodified rolls of 6 to hit deal one extra hit (only the original hit counts as a 6 for special rules).",
+    Reliable: "Attacks at Quality 2+.",
+    Rending:
+      "Ignores Regeneration, and unmodified rolls of 6 to hit get AP(4).",
+    Scout:
+      "May be set aside before deployment. After all other units are deployed, must be deployed and may then be placed anywhere within 12 inches of their position. Players alternate in placing Scout units, starting with the player that activates next.",
+    Slow: "Moves -2 inches when using Advance, and -4 inches when using Rush/Charge.",
+    Sniper:
+      "Shoots at Quality 2+, and each model with Sniper may pick any model in the target unit as its individual target, which is resolved as if it was a unit of 1. Sniper shooting must be resolved before other weapons.",
+    Stealth:
+      "Enemies get -1 to hit rolls when shooting at units where all models have this rule from over 9 inches away.",
+    Strider: "May ignore the effects of difficult terrain when moving.",
+    "Tough(X)":
+      "This model must take X wounds before being killed. If a model with tough joins a unit without it, then it is removed last when the unit takes wounds. Note that you must continue to put wounds on the tough model with most wounds in the unit until it is killed, before starting to put them on the next tough model (heroes must be assigned wounds last).",
+    "Transport(X)":
+      "May transport up to X models or Heroes with up to Tough(6), and non-Heroes with up to Tough(3) which occupy 3 spaces each. Transports may deploy with units inside, and units may enter/exit by using any move action, but must stay fully within 6 inches of it when exiting. When a transport is destroyed, units inside must take a dangerous terrain test, are Shaken, and must be placed fully within 6 inches of the transport before removing it.",
   };
 
   // Loop over the terms and replace them in the page content
