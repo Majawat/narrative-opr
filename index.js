@@ -44,3 +44,27 @@ document.addEventListener("DOMContentLoaded", function () {
     link.setAttribute("target", "_blank");
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const themeToggleBtn = document.getElementById("theme-toggleBtn");
+  const htmlElement = document.documentElement;
+  const themeToast = new bootstrap.Toast(document.getElementById("themeToast"));
+
+  themeToggleBtn.addEventListener("click", function () {
+    if (htmlElement.getAttribute("data-bs-theme") === "light") {
+      htmlElement.setAttribute("data-bs-theme", "dark");
+      themeToggleBtn.innerHTML = '<i class="bi bi-sun"></i>';
+    } else {
+      htmlElement.setAttribute("data-bs-theme", "light");
+      themeToggleBtn.innerHTML = '<i class="bi bi-moon"></i>';
+      themeToast.show();
+    }
+  });
+
+  // Set initial icon based on the current theme
+  if (htmlElement.getAttribute("data-bs-theme") === "dark") {
+    themeToggleBtn.innerHTML = '<i class="bi bi-sun"></i>';
+  } else {
+    themeToggleBtn.innerHTML = '<i class="bi bi-moon"></i>';
+  }
+});
