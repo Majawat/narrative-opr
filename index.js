@@ -48,23 +48,41 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   const themeToggleBtn = document.getElementById("theme-toggleBtn");
   const htmlElement = document.documentElement;
-  const themeToast = new bootstrap.Toast(document.getElementById("themeToast"));
+  const themeToast = document.getElementById("themeToast");
+  const themeToastBody = themeToast.querySelector(".toast-body");
+  const bsToast = new bootstrap.Toast(themeToast);
 
   themeToggleBtn.addEventListener("click", function () {
     if (htmlElement.getAttribute("data-bs-theme") === "light") {
+      // Switch to dark mode
       htmlElement.setAttribute("data-bs-theme", "dark");
       themeToggleBtn.innerHTML = '<i class="bi bi-sun"></i>';
+      themeToastBody.textContent =
+        "Welcome to the dark mode, servant of the Emperor!";
+      themeToast.classList.remove("text-bg-danger");
+      themeToast.classList.add("text-bg-success");
     } else {
+      // Switch to light mode
       htmlElement.setAttribute("data-bs-theme", "light");
       themeToggleBtn.innerHTML = '<i class="bi bi-moon"></i>';
-      themeToast.show();
+      themeToastBody.textContent =
+        "Heretic! Your allegiance to the light mode shall not go unpunished!";
+      themeToast.classList.remove("text-bg-success");
+      themeToast.classList.add("text-bg-danger");
     }
+    bsToast.show();
   });
 
-  // Set initial icon based on the current theme
+  // Set initial icon, message, and toast color based on the current theme
   if (htmlElement.getAttribute("data-bs-theme") === "dark") {
     themeToggleBtn.innerHTML = '<i class="bi bi-sun"></i>';
+    themeToastBody.textContent =
+      "Welcome to the dark mode, servant of the Emperor!";
+    themeToast.classList.add("text-bg-success");
   } else {
     themeToggleBtn.innerHTML = '<i class="bi bi-moon"></i>';
+    themeToastBody.textContent =
+      "Heretic! Your allegiance to the light mode shall not go unpunished!";
+    themeToast.classList.add("text-bg-danger");
   }
 });
