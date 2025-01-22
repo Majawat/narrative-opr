@@ -21,7 +21,7 @@
     <script src="definitions.js"></script>
     <script src="dice.js"></script>
     <script src="index.js"></script>
-    <link src="special-rules.css" rel="stylesheet" />
+    <link href="special-rules.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
     <title>Grimdark Future Rules</title>
   </head>
@@ -115,7 +115,7 @@
       <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div
           id="themeToast"
-          class="toast align-items-center text-bg-danger p- 3 border-0"
+          class="toast align-items-center text-bg-danger border-0"
           role="alert"
           aria-live="assertive"
           aria-atomic="true"
@@ -144,39 +144,43 @@
           one action:
         </p>
         <div class="container">
-          <table
-            class="table table-striped table-hover table-bordered table-responsive mx-auto w-25"
-          >
-            <thead>
-              <tr>
-                <th scope="col">Action</th>
-                <th scope="col" style="text-align: center">Move</th>
-                <th scope="col">Notes</th>
-              </tr>
-            </thead>
-            <tbody class="table-group-divider">
-              <tr scope="row">
-                <td>Hold</td>
-                <td style="text-align: center">0"</td>
-                <td>Can shoot</td>
-              </tr>
-              <tr scope="row">
-                <td>Advance</td>
-                <td style="text-align: center">6"</td>
-                <td>Can shoot after move</td>
-              </tr>
-              <tr scope="row">
-                <td>Rush</td>
-                <td style="text-align: center">12"</td>
-                <td>Can't shoot</td>
-              </tr>
-              <tr scope="row">
-                <td>Charge</td>
-                <td style="text-align: center">12"</td>
-                <td>Moves into melee</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+              <table
+                class="table table-striped table-hover table-bordered table-responsive"
+              >
+                <thead>
+                  <tr>
+                    <th scope="col">Action</th>
+                    <th scope="col" style="text-align: center">Move</th>
+                    <th scope="col">Notes</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                  <tr scope="row">
+                    <td>Hold</td>
+                    <td style="text-align: center">0"</td>
+                    <td>Can shoot</td>
+                  </tr>
+                  <tr scope="row">
+                    <td>Advance</td>
+                    <td style="text-align: center">6"</td>
+                    <td>Can shoot after move</td>
+                  </tr>
+                  <tr scope="row">
+                    <td>Rush</td>
+                    <td style="text-align: center">12"</td>
+                    <td>Can't shoot</td>
+                  </tr>
+                  <tr scope="row">
+                    <td>Charge</td>
+                    <td style="text-align: center">12"</td>
+                    <td>Moves into melee</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
         <h2>Shooting</h2>
         <p>
