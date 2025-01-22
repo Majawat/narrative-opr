@@ -102,15 +102,35 @@
                 </li>
               </ul>
             </li>
-            <li class="nav-item">
-              <button
-                id="theme-toggle"
-                class="btn btn-outline-secondary ms-3 d-none d-lg-inline-block"
-              >
-                <i class="bi bi-moon"></i>
-              </button>
-            </li>
           </ul>
+        </div>
+      </div>
+      <button
+        type="button"
+        id="theme-toggleBtn"
+        class="btn btn-outline-secondary ms-3 d-lg-inline-block"
+      >
+        <i class="bi bi-moon"></i>
+      </button>
+      <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div
+          id="themeToast"
+          class="toast align-items-center text-bg-danger border-0"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div class="d-flex">
+            <div class="toast-body">
+              You dare embrace the light mode? Heresy will not be tolerated!
+            </div>
+            <button
+              type="button"
+              class="btn-close btn-close-white me-2 m-auto"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            ></button>
+          </div>
         </div>
       </div>
     </nav>
@@ -123,39 +143,41 @@
           The player picks one unit that hasn't activated yet, and it must take
           one action:
         </p>
-        <table
-          class="table table-striped table-hover table-bordered table-responsive w-25"
-        >
-          <thead>
-            <tr>
-              <th scope="col">Action</th>
-              <th scope="col" style="text-align: center">Move</th>
-              <th scope="col">Notes</th>
-            </tr>
-          </thead>
-          <tbody class="table-group-divider">
-            <tr scope="row">
-              <td>Hold</td>
-              <td style="text-align: center">0"</td>
-              <td>Can shoot</td>
-            </tr>
-            <tr scope="row">
-              <td>Advance</td>
-              <td style="text-align: center">6"</td>
-              <td>Can shoot after move</td>
-            </tr>
-            <tr scope="row">
-              <td>Rush</td>
-              <td style="text-align: center">12"</td>
-              <td>Can't shoot</td>
-            </tr>
-            <tr scope="row">
-              <td>Charge</td>
-              <td style="text-align: center">12"</td>
-              <td>Moves into melee</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="container">
+          <table
+            class="table table-striped table-hover table-bordered table-responsive mx-auto w-25"
+          >
+            <thead>
+              <tr>
+                <th scope="col">Action</th>
+                <th scope="col" style="text-align: center">Move</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              <tr scope="row">
+                <td>Hold</td>
+                <td style="text-align: center">0"</td>
+                <td>Can shoot</td>
+              </tr>
+              <tr scope="row">
+                <td>Advance</td>
+                <td style="text-align: center">6"</td>
+                <td>Can shoot after move</td>
+              </tr>
+              <tr scope="row">
+                <td>Rush</td>
+                <td style="text-align: center">12"</td>
+                <td>Can't shoot</td>
+              </tr>
+              <tr scope="row">
+                <td>Charge</td>
+                <td style="text-align: center">12"</td>
+                <td>Moves into melee</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <h2>Shooting</h2>
         <p>
           Models in range and line of sight may fire all ranged weapons, and may

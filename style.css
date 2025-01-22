@@ -70,3 +70,23 @@ th.sortable.sort-desc::after {
   overflow: hidden; /* Hide overflow text */
   text-overflow: ellipsis; /* Add ellipsis for overflow text */
 }
+
+@media (max-width: 480px) {
+  #theme-toggleBtn {
+    margin-left: 0; /* Reduce or remove left margin */
+  }
+  .navbar .container-fluid {
+    flex-wrap: nowrap; /* Prevent wrapping */
+  }
+
+  .navbar-brand {
+    max-width: calc(100% - 50px); /* Adjust based on the button width */
+    font-size: 0.9rem; /* Smaller font size */
+    padding-right: 0.5rem; /* Adjust padding */
+  }
+
+  #theme-toggleBtn {
+    padding: 0.25rem 0.5rem; /* Smaller padding for the button */
+  }
+
+}
