@@ -18,14 +18,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
     />
-    <li class="nav-item">
-      <button
-        id="theme-toggle"
-        class="btn btn-outline-secondary ms-3 d-none d-lg-inline-block"
-      >
-        <i class="bi bi-moon"></i>
-      </button>
-    </li>
     <script src="definitions.js"></script>
     <script src="random-events.js"></script>
     <script src="dice.js"></script>
@@ -112,6 +104,34 @@
               </ul>
             </li>
           </ul>
+        </div>
+        <button
+          type="button"
+          id="theme-toggleBtn"
+          class="btn btn-outline-secondary ms-3 d-lg-inline-block"
+        >
+          <i class="bi bi-moon"></i>
+        </button>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+          <div
+            id="themeToast"
+            class="toast align-items-center text-bg-danger border-0"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+          >
+            <div class="d-flex">
+              <div class="toast-body">
+                You dare embrace the light mode? Heresy will not be tolerated!
+              </div>
+              <button
+                type="button"
+                class="btn-close btn-close-white me-2 m-auto"
+                data-bs-dismiss="toast"
+                aria-label="Close"
+              ></button>
+            </div>
+          </div>
         </div>
       </div>
     </nav>
