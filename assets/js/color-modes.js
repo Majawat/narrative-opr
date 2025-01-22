@@ -49,19 +49,16 @@
     );
 
     themeSwitcherIcon.classList.remove("bi-moon", "bi-sun", "bi-circle-half");
-    switch (theme) {
-      case "light":
-        themeSwitcherIcon.classList.add("bi-sun");
-        break;
-      case "dark":
-        themeSwitcherIcon.classList.add("bi-moon");
-        break;
-      case "auto":
-        themeSwitcherIcon.classList.add("bi-circle-half");
-        break;
-      default:
-        // Handle any unexpected values
-        console.error("Unknown theme:", theme);
+    const themeClasses = {
+      light: "bi-sun",
+      dark: "bi-moon",
+      auto: "bi-circle-half",
+    };
+
+    if (themeClasses[theme]) {
+      themeSwitcherIcon.classList.add(themeClasses[theme]);
+    } else {
+      console.error("Unknown theme:", theme);
     }
 
     document.querySelectorAll("[data-bs-theme-value]").forEach((element) => {
