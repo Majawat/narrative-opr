@@ -5,7 +5,7 @@ function loadCSV() {
   // Display the base points on the page
   document.getElementById("basePointsValue").textContent = basePoints;
 
-  fetch("leaderboard.csv")
+  fetch("assets/leaderboard.csv")
     .then((response) => response.text())
     .then((data) => {
       const rows = data.split("\n").slice(1); // Skip the header
