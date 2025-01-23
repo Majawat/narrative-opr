@@ -86,15 +86,15 @@ function loadCSV() {
           // Create table row and append to tbody
           const tr = document.createElement("tr");
           tr.innerHTML = `
-          <td style="text-align: center">${row.position}</td>
+          <td class="text-align-center">${row.position}</td>
           <td>${row.cols[0]}</td>
           <td>${row.cols[1]}</td>
-          <td style="text-align: center">${row.vp}</td>
-          <td style="text-align: center">${row.wins}</td>
-          <td style="text-align: center">${row.losses}</td>
-          <td style="text-align: center">${row.specialObjectives}</td>
-          <td style="text-align: center">${row.ap}</td>
-          <td style="text-align: center">${row.underdogPoints}</td>
+          <td class="text-align-center">${row.vp}</td>
+          <td class="text-align-center">${row.wins}</td>
+          <td class="text-align-center">${row.losses}</td>
+          <td class="text-align-center">${row.specialObjectives}</td>
+          <td class="text-align-center">${row.ap}</td>
+          <td class="text-align-center">${row.underdogPoints}</td>
         `;
           tbody.appendChild(tr);
         });
@@ -107,12 +107,27 @@ function sortTable(columnIndex) {
   const rows = Array.from(tbody.rows);
   let direction = table.getAttribute("data-sort-direction");
 
+  // filepath: /c:/Users/codym/OneDrive/Personal Code Development/narrative-opr/narrative-opr/assets/js/leaderboard.js
+  const defaultSortDirections = {
+    0: "asc", // Position
+    1: "asc", // Player
+    2: "asc", // Army
+    3: "desc", // Victory Points
+    4: "desc", // Wins
+    5: "asc", // Losses
+    6: "desc", // Special Objectives Completed
+    7: "desc", // Available Points
+    8: "desc", // Underdog Points
+  };
+
   // Determine the sort direction
   if (table.getAttribute("data-sort-column") == columnIndex) {
     direction = direction === "asc" ? "desc" : "asc";
   } else {
-    direction = "desc";
+    direction = defaultSortDirections[columnIndex] || "desc";
   }
+
+  console.log("Sorting by column", columnIndex, "in", direction, "order");
 
   // Sort the rows
   rows.sort((a, b) => {

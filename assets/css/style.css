@@ -1,0 +1,32 @@
+th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+th.sortable {
+  cursor: pointer;
+}
+th.sortable.sort-asc::after {
+  content: " ↓";
+}
+th.sortable.sort-desc::after {
+  content: " ↑";
+}
+
+.definition {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.nav-scroll-top {
+  scroll-margin-top: 85px;
+}
+.text-align-center {
+  text-align: center;
+}
+
+.dice-notation {
+  font-size: 0.875rem; /* Adjust font size to match text */
+  line-height: 1.15; /* Adjust line height to match text */
+  padding: 0.15rem 0.25rem; /* Adjust padding to make the button shorter */
+}
