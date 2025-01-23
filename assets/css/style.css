@@ -30,3 +30,10 @@ th.sortable.sort-desc::after {
   line-height: 1.15; /* Adjust line height to match text */
   padding: 0.15rem 0.25rem; /* Adjust padding to make the button shorter */
 }
+
+.highlight {
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle light overlay */
+  border-left: 4px solid var(--bs-link-color); /* Bootstrap primary color for accent */
+  padding-left: 10px; /* Adjust padding to offset the border */
+  transition: background-color 0.3s ease, border-left-color 0.3s ease; /* Smooth transition */
+}
