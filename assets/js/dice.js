@@ -41,18 +41,38 @@ function showToast(message) {
 // Function to handle dice notation clicks
 function handleDiceNotationClick(event) {
   var notation = event.target.textContent;
-  var match = notation.match(/D(\d+)([+-]\d+)?/i);
+  var dicePattern = /(\d*)d(\d+)([+-]\d+)?/i;
+  var match = notation.match(dicePattern);
   console.log(match);
+
   if (match) {
-    var sides = parseInt(match[1], 10);
-    var modifier = match[2] ? parseInt(match[2], 10) : 0;
-    var dieResult = rollDie(sides);
-    var result = dieResult + modifier;
-    if (modifier > 0) {
-      showToast(`${dieResult}+${modifier} | ${result}`);
-    } else {
-      showToast(`${dieResult}`);
+    var numDice = parseInt(match[1]) || 1; // Default to 1 if no number is specified
+    var sides = parseInt(match[2], 10);
+    var modifier = match[3] ? parseInt(match[3], 10) : 0;
+
+    var total = 0;
+    var rolls = [];
+    for (var i = 0; i < numDice; i++) {
+      var roll = rollDie(sides);
+      rolls.push(roll);
+      total += roll;
     }
+    total += modifier;
+
+    //var resultMessage = rolls.join(" + ");
+    var resultMessage = rolls
+      .map((roll) => `<span class="btn btn-outline-light">${roll}</span>`)
+      .join(" + ");
+    if (modifier !== 0) {
+      if (modifier > 0) {
+        resultMessage += ` + ${modifier}`;
+      } else if (modifier < 0) {
+        resultMessage += ` - ${modifier}`;
+      }
+      resultMessage += ` = ${total}`;
+    }
+
+    showToast(resultMessage);
   }
 }
 window.addEventListener("DOMContentLoaded", () => {
