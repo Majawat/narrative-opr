@@ -281,207 +281,245 @@
       </div>
     </header>
     <main class="container-fluid px-4 my-4">
-      <h1>Grimdark Future Rules <small>3.4.1</small></h1>
-      <hr />
-      <section id="general-rules" class="nav-scroll-top">
-        <h2>Activation</h2>
-        <p>
-          The player picks one unit that hasn't activated yet, and it must take
-          one action:
-        </p>
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-6">
-              <table
-                class="table table-striped table-hover table-bordered table-responsive"
-              >
-                <thead>
-                  <tr>
-                    <th scope="col">Action</th>
-                    <th scope="col" style="text-align: center">Move</th>
-                    <th scope="col">Notes</th>
-                  </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                  <tr scope="row">
-                    <td>Hold</td>
-                    <td style="text-align: center">0"</td>
-                    <td>Can shoot</td>
-                  </tr>
-                  <tr scope="row">
-                    <td>Advance</td>
-                    <td style="text-align: center">6"</td>
-                    <td>Can shoot after move</td>
-                  </tr>
-                  <tr scope="row">
-                    <td>Rush</td>
-                    <td style="text-align: center">12"</td>
-                    <td>Can't shoot</td>
-                  </tr>
-                  <tr scope="row">
-                    <td>Charge</td>
-                    <td style="text-align: center">12"</td>
-                    <td>Moves into melee</td>
-                  </tr>
-                </tbody>
-              </table>
+      <div class="row">
+        <div class="col-xl-4 col-lg-6 mb-3 mb-sm-0">
+          <div class="container my-4">
+            <div class="accordion accordion-flush" id="doctrineAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingUniversal">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseUniversal"
+                    aria-expanded="true"
+                    aria-controls="collapseUniversal"
+                  >
+                    Universal Doctrine
+                  </button>
+                </h2>
+                <div
+                  id="collapseUniversal"
+                  class="accordion-collapse collapse show"
+                  aria-labelledby="headingUniversal"
+                  data-bs-parent="#doctrineAccordion"
+                >
+                  <div class="accordion-body">
+                    <h5>
+                      High Command
+                      <span class="badge bg-secondary rounded-pill">1 CP</span>
+                    </h5>
+                    <p>Add +1 to the result of any single die.</p>
+                    <p>
+                      <em
+                        >Example: A Dynasty Warrior (Quality 4+) is shooting,
+                        and rolls three results of 3. The player spends 1 CP to
+                        activate High Command and adds +1 to the result of a
+                        single die, scoring a total of 1 hit.</em
+                      >
+                    </p>
+                    <hr />
+                    <h5 class="card-title">
+                      Supreme Command
+                      <span class="badge bg-secondary rounded-pill">2 CP</span>
+                    </h5>
+                    <p class="card-text">
+                      Add +1 to the result of all dice in a single roll.
+                    </p>
+                    <p class="card-text">
+                      <em
+                        >Example: A Dynasty Warrior (Quality 4+) is shooting,
+                        and rolls three results of 3. The player spends 2 CPs to
+                        activate Supreme Command and adds +1 to the result of
+                        all dice, scoring a total of 3 hits.</em
+                      >
+                    </p>
+                    <hr />
+                    <h5 class="card-title">
+                      Seize Initiative
+                      <span class="badge bg-secondary rounded-pill">2 CP</span>
+                    </h5>
+                    <p class="card-text">
+                      When it's the enemy turn to activate a unit, you may
+                      activate one of your units instead. The opposing player
+                      may spend 2 CP in order to stop this ability from having
+                      any effect.
+                    </p>
+                    <hr />
+                    <h5 class="card-title">
+                      Waive Initiative
+                      <span class="badge bg-secondary rounded-pill">2 CP</span>
+                    </h5>
+                    <p class="card-text">
+                      When it's your turn to activate a unit, you force the
+                      opponent to activate one of their units instead. The
+                      opposing player may spend 2 CP in order to stop this
+                      ability from having any effect.
+                    </p>
+                    <hr />
+                    <h5 class="card-title">
+                      Delayed Deployment
+                      <span class="badge bg-secondary rounded-pill">2 CP</span>
+                    </h5>
+                    <p class="card-text">
+                      During the deployment phase, when it's your turn to place
+                      a unit, you may pass the turn to your opponent. The
+                      opposing player may spend 2 CP in order to stop this
+                      ability from having any effect.
+                    </p>
+                    <hr />
+                    <h5 class="card-title">
+                      Hidden Deployment
+                      <span class="badge bg-secondary rounded-pill">3 CP</span>
+                    </h5>
+                    <p class="card-text">
+                      After all units have deployed, you may remove up to 3
+                      friendly units and place them again in any order. The
+                      opposing player may spend 3 CP to do the same, in which
+                      case players alternate in placing those units again.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Repeat similar structure for other doctrines -->
             </div>
           </div>
         </div>
-        <h2>Shooting</h2>
-        <p>
-          Models in range and line of sight may fire all ranged weapons, and may
-          fire at up to two different targets with different weapon types.
-          Shooting models take one quality test per attack, and each success is
-          a hit. For each hit defending units roll one die trying to score their
-          Defense value or higher to block, and each fail causes one wound. For
-          each wound, the defender must remove one model.
-        </p>
-        <h2>Melee</h2>
-        <p>
-          Charging models must move into base contact with targets, or as close
-          as possible, and then defenders must do the same by moving up to 3".
-          Models within 2" horizontally and 4" vertically of enemies must strike
-          with all melee weapons, which works like shooting. Then defenders may
-          choose to strike back, but don't have to. Once both units are done,
-          the losing unit must take a morale test (see morale section). If one
-          of the units is destroyed, the other may move by up to 3", else
-          chargers must move back and separate by 1" (if possible).
-        </p>
-        <h2>Morale</h2>
-        <p>
-          <strong>Morale Tests:</strong> At the end of an activation where
-          wounds leave a unit with half or less of its total size or tough value
-          (for single-model units), or it loses a melee, the unit must take a
-          morale test. To take a morale test, take a quality test, and if failed
-          the unit is Shaken.
-        </p>
-      </section>
-      <hr />
-      <section id="command-points" class="nav-scroll-top">
-        <h2>Command Points</h2>
-        <h3>Playing with Command Points</h3>
-        <p>
-          Command Points (CP) are an extra resource that can be added to the
-          game, giving players access to critical tactical abilities that boost
-          their units in battle.
-        </p>
-        <p>
-          Before the game begins, pick one of the following playstyles, or roll
-          a <button type="button" class="btn dice-notation">D6</button> to
-          randomly get one:
-        </p>
-        <ol>
-          <li>
-            <strong>Fixed</strong> - At the start of the game, players get X CP,
-            where X is 4 for every 1000pts in their army.
-          </li>
-          <li>
-            <strong>Growing</strong> - At the start of each round, players get X
-            CP, where X is 1 for every 1000pts in their army.
-          </li>
-          <li>
-            <strong>Temporary</strong> - At the start of each round, players get
-            X CP, where X is 1 for every 1000pts in their army, and unspent CP
-            are discarded at the end of the round.
-          </li>
-          <li>
-            <strong>Fixed Random</strong> - At the start of the game, players
-            get <button type="button" class="btn dice-notation">D3</button>×X
-            CP, where X is 2 for every 1000pts in their army.
-          </li>
-          <li>
-            <strong>Growing Random</strong> - At the start of each round,
-            players get
-            <button type="button" class="btn dice-notation">D3</button>×X CP,
-            where X is 0.5 (rounding up the total) for every 1000pts in their
-            army.
-          </li>
-          <li>
-            <strong>Temporary Random</strong> - At the start of each round,
-            players get
-            <button type="button" class="btn dice-notation">D3</button>×X CP,
-            where X is 0.5 (rounding up the total) for every 1000pts in their
-            army, and unspent CP are discarded at the end of the round.
-          </li>
-        </ol>
-        <h3>Strategems</h3>
-        <p>
-          At any point during the game, players may then spend their CP in order
-          to activate stratagems, with each only being usable once per unit
-          activation (friendly or enemy).
-        </p>
-        <p>
-          Players always have access to all stratagems from the universal
-          doctrine, as well as those from one other doctrine.
-        </p>
-        <p>
-          Before the game begins, players must pick one of the following
-          doctrines, or roll a
-          <button type="button" class="btn dice-notation">D6</button> to
-          randomly get one:
-        </p>
-        <ol>
-          <li>Strategic Doctrine</li>
-          <li>Defensive Doctrine</li>
-          <li>Shock Doctrine</li>
-          <li>Hunting Doctrine</li>
-          <li>Valorous Doctrine</li>
-          <li>Valorous Doctrine</li>
-        </ol>
-        <h3>Universal Doctrine</h3>
-        <p><strong>High Command - 1 CP</strong></p>
-        <p>Add +1 to the result of any single die.</p>
-        <p>
-          <em
-            >Example: A Dynasty Warrior (Quality 4+) is shooting, and rolls
-            three results of 3. The player spends 1 CP to activate High Command
-            and adds +1 to the result of a single die, scoring a total of 1 hit.
-          </em>
-        </p>
-        <p><strong>Supreme Command - 2 CP</strong></p>
-        <p>Add +1 to the result of all dice in a single roll.</p>
-        <p>
-          <em
-            >Example: A Dynasty Warrior (Quality 4+) is shooting, and rolls
-            three results of 3. The player spends 2 CPs to activate Supreme
-            Command and adds +1 to the result of all dice, scoring a total of 3
-            hits.
-          </em>
-        </p>
-        <p><strong>Seize Initiative - 2 CP</strong></p>
-        <p>
-          When it's the enemy turn to activate a unit, you may activate one of
-          your units instead. The opposing player may spend 2 CP in order to
-          stop this ability from having any effect.
-        </p>
-        <p><strong>Waive Initiative - 2 CP</strong></p>
-        <p>
-          When it's your turn to activate a unit, you force the opponent to
-          activate one of their units instead. The opposing player may spend 2
-          CP in order to stop this ability from having any effect.
-        </p>
-        <p><strong>Delayed Deployment - 2 CP</strong></p>
-        <p>
-          During the deployment phase, when it's your turn to place a unit, you
-          may pass the turn to your opponent. The opposing player may spend 2 CP
-          in order to stop this ability from having any effect.
-        </p>
-        <p><strong>Hidden Deployment - 3 CP</strong></p>
-        <p>
-          After all units have deployed, you may remove up to 3 friendly units
-          and place them again in any order. The opposing player may spend 3 CP
-          to do the same, in which case players alternate in placing those units
-          again. 44
-        </p>
-      </section>
-      <hr />
-      <section id="glossary-section" class="nav-scroll-top">
-        <div id="special-rules-container">
-          <h2>Glossary and Special Rules Reference</h2>
-          <div id="glossary-list"></div>
+        <div class="col-xl-4 col-lg-6 mb-3 mb-sm-0">
+          <div class="container my-4">
+            <div class="accordion accordion-flush" id="strategicAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingStrategic">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseStrategic"
+                    aria-expanded="true"
+                    aria-controls="collapseStrategic"
+                  >
+                    Strategic Doctrine
+                  </button>
+                </h2>
+                <div
+                  id="collapseStrategic"
+                  class="accordion-collapse collapse show"
+                  aria-labelledby="headingStrategic"
+                  data-bs-parent="#strategicAccordion"
+                >
+                  <div class="accordion-body">
+                    <h5>
+                      Push Forward
+                      <span class="badge bg-secondary rounded-pill">1 CP</span>
+                    </h5>
+                    <p>
+                      Pick one friendly unit that is using an Advance or Rush
+                      action, and it may add +2" to its movement.
+                    </p>
+                    <hr />
+                    <h5>
+                      Hindered Advance
+                      <span class="badge bg-secondary rounded-pill">1 CP</span>
+                    </h5>
+                    <p>
+                      Pick one enemy unit that is moving through terrain, which
+                      counts as Dangerous terrain for that movement.
+                    </p>
+
+                    <hr />
+                    <h5>
+                      Coordinated Move
+                      <span class="badge bg-secondary rounded-pill">2 CP</span>
+                    </h5>
+                    <p>
+                      Pick two friendly units that are within 12" of each other,
+                      which may each move by up to 3" in any direction.
+                    </p>
+                    <hr />
+                    <h5>
+                      Strategic Relocation
+                      <span class="badge bg-secondary rounded-pill">3 CP</span>
+                    </h5>
+                    <p>
+                      Pick one friendly unit that has just been activated, but
+                      that hasn't done anything yet, which may be placed
+                      anywhere within 6" of its position.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Repeat similar structure for other doctrines -->
+          </div>
         </div>
-      </section>
+        <div class="col-xl-4 col-lg-6 mb-3 mb-sm-0">
+          <div class="container my-4">
+            <div class="accordion accordion-flush" id="defensiveAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingDefensive">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseDefensive"
+                    aria-expanded="true"
+                    aria-controls="collapseDefensive"
+                  >
+                    Defensive Doctrine
+                  </button>
+                </h2>
+                <div
+                  id="collapseDefensive"
+                  class="accordion-collapse collapse show"
+                  aria-labelledby="headingDefensive"
+                  data-bs-parent="#defensiveAccordion"
+                >
+                  <div class="accordion-body">
+                    <h5>
+                      <span class="badge bg-secondary rounded-pill">1 CP</span>
+                      Eternal Vigilance
+                    </h5>
+                    <p>
+                      Pick one friendly model that just suffered a wound which
+                      would kill it and roll one die, on a 4+ that wound is
+                      ignored.
+                    </p>
+                    <hr />
+                    <h5>
+                      <span class="badge bg-secondary rounded-pill">1 CP</span>
+                      Lightning Reflexes
+                    </h5>
+                    <p>
+                      Pick one friendly unit that is being shot at, which counts
+                      as being in Cover terrain for that shooting.
+                    </p>
+                    <hr />
+                    <h5>
+                      <span class="badge bg-secondary rounded-pill">2 CP</span>
+                      Armour Breaker
+                    </h5>
+                    <p>
+                      Pick one enemy unit that has just taken hits, which gets
+                      -1 to its Defense rolls against those hits.
+                    </p>
+                    <hr />
+                    <h5>
+                      <span class="badge bg-secondary rounded-pill">3 CP</span>
+                      Tactical Retreat
+                    </h5>
+                    <p>
+                      Pick one friendly unit that is within 12” of an enemy, and
+                      it may move up to D6+2" directly away from the closest
+                      enemy.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Repeat similar structure for other doctrines -->
+          </div>
+        </div>
+      </div>
     </main>
   </body>
 </html>
