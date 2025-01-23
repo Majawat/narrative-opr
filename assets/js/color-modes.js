@@ -1,4 +1,4 @@
-(() => {
+(function () {
   "use strict";
 
   // Retrieve the stored theme from localStorage
@@ -44,39 +44,18 @@
 
     const themeSwitcherText = document.querySelector("#bd-theme-text");
     const themeSwitcherIcon = themeSwitcher.querySelector("i");
-    const themeToast = document.getElementById("themeToast");
-    const themeToastBody = themeToast.querySelector(".toast-body");
-    const bsToast = new bootstrap.Toast(themeToast);
     const btnToActive = document.querySelector(
       `[data-bs-theme-value="${theme}"]`
     );
 
+    const iconClasses = {
+      light: "bi-sun",
+      dark: "bi-moon",
+      auto: "bi-circle-half",
+    };
+
     themeSwitcherIcon.classList.remove("bi-moon", "bi-sun", "bi-circle-half");
-    themeToast.classList.remove(
-      "text-bg-danger",
-      "text-bg-success",
-      "text-bg-primary"
-    );
-    switch (theme) {
-      case "light":
-        themeSwitcherIcon.classList.add("bi-sun");
-        themeToastBody.textContent =
-          "Heretic! Your allegiance to the light mode shall not go unpunished!";
-        themeToast.classList.add("text-bg-danger");
-
-        break;
-      case "dark":
-        themeSwitcherIcon.classList.add("bi-moon");
-        themeToastBody.textContent =
-          "Welcome to the dark mode, servant of the Emperor!";
-        themeToast.classList.add("text-bg-success");
-
-        break;
-      case "auto":
-        themeSwitcherIcon.classList.add("bi-circle-half");
-        themeToastBody.textContent = "";
-        break;
-    }
+    themeSwitcherIcon.classList.add(iconClasses[theme]);
 
     document.querySelectorAll("[data-bs-theme-value]").forEach((element) => {
       element.classList.remove("active");
@@ -84,16 +63,11 @@
       element.classList.remove("theme-icon-active");
     });
 
-    console.log(btnToActive);
-    if (btnToActive) {
-      btnToActive.classList.add("active");
-      btnToActive.setAttribute("aria-pressed", "true");
-      btnToActive.classList.add("theme-icon-active");
-      const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`;
-      themeSwitcher.setAttribute("aria-label", themeSwitcherLabel);
-
-      bsToast.show();
-    }
+    btnToActive.classList.add("active");
+    btnToActive.setAttribute("aria-pressed", "true");
+    btnToActive.classList.add("theme-icon-active");
+    const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`;
+    themeSwitcher.setAttribute("aria-label", themeSwitcherLabel);
 
     if (focus) {
       themeSwitcher.focus();
@@ -105,10 +79,49 @@
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", () => {
       const storedTheme = getStoredTheme();
+      console.log(storedTheme);
       if (storedTheme !== "light" && storedTheme !== "dark") {
         setTheme(getPreferredTheme());
+        showThemeToast(getPreferredTheme());
       }
     });
+
+  // Show theme toast
+  const showThemeToast = (theme) => {
+    const themeToast = document.getElementById("themeToast");
+    const themeToastBody = themeToast.querySelector(".toast-body");
+    const bsToast = new bootstrap.Toast(themeToast);
+
+    const themeMessages = {
+      light: {
+        message:
+          "Heretic! Your allegiance to the light mode shall not go unpunished!",
+        class: "text-bg-danger",
+      },
+      dark: {
+        message: "Welcome to the dark mode, servant of the Emperor!",
+        class: "text-bg-success",
+      },
+      auto: {
+        message: "Auto theme activated.",
+        class: "text-bg-primary",
+      },
+    };
+
+    themeToast.classList.remove(
+      "text-bg-danger",
+      "text-bg-success",
+      "text-bg-primary"
+    );
+
+    if (themeMessages[theme] && theme !== "auto") {
+      themeToastBody.textContent = themeMessages[theme].message;
+      themeToast.classList.add(themeMessages[theme].class);
+      bsToast.show();
+    } else {
+      bsToast.hide();
+    }
+  };
 
   // Once the DOM is fully loaded, set up the theme switcher
   window.addEventListener("DOMContentLoaded", () => {
@@ -120,6 +133,7 @@
         setStoredTheme(theme);
         setTheme(theme);
         showActiveTheme(theme, true);
+        showThemeToast(theme);
       });
     });
   });
