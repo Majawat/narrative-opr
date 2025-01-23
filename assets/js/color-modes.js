@@ -44,21 +44,38 @@
 
     const themeSwitcherText = document.querySelector("#bd-theme-text");
     const themeSwitcherIcon = themeSwitcher.querySelector("i");
+    const themeToast = document.getElementById("themeToast");
+    const themeToastBody = themeToast.querySelector(".toast-body");
+    const bsToast = new bootstrap.Toast(themeToast);
     const btnToActive = document.querySelector(
       `[data-bs-theme-value="${theme}"]`
     );
 
     themeSwitcherIcon.classList.remove("bi-moon", "bi-sun", "bi-circle-half");
-    const themeClasses = {
-      light: "bi-sun",
-      dark: "bi-moon",
-      auto: "bi-circle-half",
-    };
+    themeToast.classList.remove(
+      "text-bg-danger",
+      "text-bg-success",
+      "text-bg-primary"
+    );
+    switch (theme) {
+      case "light":
+        themeSwitcherIcon.classList.add("bi-sun");
+        themeToastBody.textContent =
+          "Heretic! Your allegiance to the light mode shall not go unpunished!";
+        themeToast.classList.add("text-bg-danger");
 
-    if (themeClasses[theme]) {
-      themeSwitcherIcon.classList.add(themeClasses[theme]);
-    } else {
-      console.error("Unknown theme:", theme);
+        break;
+      case "dark":
+        themeSwitcherIcon.classList.add("bi-moon");
+        themeToastBody.textContent =
+          "Welcome to the dark mode, servant of the Emperor!";
+        themeToast.classList.add("text-bg-success");
+
+        break;
+      case "auto":
+        themeSwitcherIcon.classList.add("bi-circle-half");
+        themeToastBody.textContent = "";
+        break;
     }
 
     document.querySelectorAll("[data-bs-theme-value]").forEach((element) => {
@@ -67,11 +84,16 @@
       element.classList.remove("theme-icon-active");
     });
 
-    btnToActive.classList.add("active");
-    btnToActive.setAttribute("aria-pressed", "true");
-    btnToActive.classList.add("theme-icon-active");
-    const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`;
-    themeSwitcher.setAttribute("aria-label", themeSwitcherLabel);
+    console.log(btnToActive);
+    if (btnToActive) {
+      btnToActive.classList.add("active");
+      btnToActive.setAttribute("aria-pressed", "true");
+      btnToActive.classList.add("theme-icon-active");
+      const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`;
+      themeSwitcher.setAttribute("aria-label", themeSwitcherLabel);
+
+      bsToast.show();
+    }
 
     if (focus) {
       themeSwitcher.focus();
