@@ -55,7 +55,10 @@
         aria-label="Main navigation"
       >
         <div class="d-lg-none" style="width: 4.25rem"></div>
-        <a class="navbar-brand p-0 me-0 me-lg-2" href="/" aria-label="Navbar"
+        <a
+          class="navbar-brand p-0 me-0 me-lg-2"
+          href="index.html"
+          aria-label="Navbar"
           ><img
             src="assets/img/logo.png"
             width="40"
@@ -98,14 +101,19 @@
             <hr class="d-lg-none" />
             <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
               <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="/">Home</a>
+                <a class="nav-link py-2 px-0 px-lg-2" href="index.html">Home</a>
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="#glossary-section"
+                  >Glossary</a
+                >
               </li>
             </ul>
             <hr class="d-lg-none" />
 
             <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
               <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="rules.html"
+                <a class="nav-link py-2 px-0 px-lg-2" href="#"
                   >Grimdark Future Rules</a
                 >
               </li>
@@ -263,7 +271,7 @@
         </div>
       </div>
     </header>
-    <div class="container-fluid px-4 my-4">
+    <main class="container-fluid px-4 my-4">
       <h1>Grimdark Future Rules <small>3.4.1</small></h1>
       <hr />
       <section name="general-rules">
@@ -341,12 +349,12 @@
         </p>
       </section>
       <hr />
-      <section name="special-rules-ref">
+      <section id="glossary-section" class="nav-scroll-top">
         <div id="special-rules-container">
           <h2>Glossary and Special Rules Reference</h2>
           <div id="glossary-list"></div>
         </div>
       </section>
-    </div>
+    </main>
   </body>
 </html>

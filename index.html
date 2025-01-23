@@ -39,6 +39,9 @@
     />
     <script src="assets/js/color-modes.js"></script>
     <script src="assets/js/leaderboard.js"></script>
+    <script src="assets/js/definitions.js"></script>
+    <script src="assets/js/dice.js"></script>
+    <script src="assets/js/index.js"></script>
     <link href="assets/css/style.css" rel="stylesheet" />
     <title>The Awakening of the Mechanist Nexus</title>
   </head>
@@ -51,7 +54,7 @@
         aria-label="Main navigation"
       >
         <div class="d-lg-none" style="width: 4.25rem"></div>
-        <a class="navbar-brand p-0 me-0 me-lg-2" href="/" aria-label="Navbar"
+        <a class="navbar-brand p-0 me-0 me-lg-2" href="#" aria-label="Navbar"
           ><img
             src="assets/img/logo.png"
             width="40"
@@ -128,7 +131,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
-                    <a class="dropdown-item" href="#mission1-item"
+                    <a class="dropdown-item" href="#missions-section"
                       >Mission 1: The Unearthed Tomb</a
                     >
                   </li>
@@ -382,9 +385,7 @@
             <strong>Special Objectives:</strong> In addition to the mission
             objectives, players may earn a bonus of 75pts by completing special
             objectives. Roll one
-            <button type="button" class="btn btn-outline-primary dice-notation">
-              D6
-            </button>
+            <button type="button" class="btn">D6</button>
             each to see which objective you get:
           </li>
         </ul>
@@ -565,10 +566,7 @@
                     hidden in the center of the battlefield within a piece of
                     dense terrain (such as a crumbling ruin or ancient control
                     room). When any unit enters this terrain, they must roll a
-                    <button
-                      type="button"
-                      class="btn btn-outline-primary dice-notation"
-                    >
+                    <button type="button" class="btn btn-outline-primary">
                       D6</button
                     >:
                   </li>
@@ -578,12 +576,7 @@
                     </li>
                     <li>
                       On a 1-3, a random malfunction occurs (players roll a
-                      <button
-                        type="button"
-                        class="btn btn-outline-primary dice-notation"
-                      >
-                        D6
-                      </button>
+                      <button type="button" class="btn">D6</button>
                       for a random event):
                     </li>
                     <ol>
@@ -595,10 +588,7 @@
                         <strong>Tech Surge:</strong> A nearby machine becomes
                         active and shoots at the unit that touched the artifact,
                         dealing a
-                        <button
-                          type="button"
-                          class="btn btn-outline-primary dice-notation"
-                        >
+                        <button type="button" class="btn btn-outline-primary">
                           D6
                         </button>
                         damage to one model in that unit.
