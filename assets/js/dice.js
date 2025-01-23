@@ -21,6 +21,7 @@ function showToast(message) {
   toast.role = "alert";
   toast.ariaLive = "assertive";
   toast.ariaAtomic = "true";
+  toast.style.marginBottom = "10px";
   toast.innerHTML = `
         <div class="d-flex">
           <div class="toast-body" style="font-size:2em">🎲 ${message}</div>
