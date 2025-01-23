@@ -43,7 +43,6 @@ function handleDiceNotationClick(event) {
   var notation = event.target.textContent;
   var dicePattern = /(\d*)d(\d+)([+-]\d+)?/i;
   var match = notation.match(dicePattern);
-  console.log(match);
 
   if (match) {
     var numDice = parseInt(match[1]) || 1; // Default to 1 if no number is specified
