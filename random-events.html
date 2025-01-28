@@ -47,7 +47,244 @@
   </head>
 
   <body style="margin-right: 0px" class>
-    <div id="header"></div>
+    <header
+      id="header"
+      class="navbar navbar-expand-lg bd-navbar bg-body border-bottom sticky-top"
+    >
+      <nav
+        class="container-xxl bd-gutter flex-wrap flex-lg-nowrap"
+        aria-label="Main navigation"
+      >
+        <div class="d-lg-none" style="width: 4.25rem"></div>
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <img
+            src="assets/img/logo.png"
+            width="30"
+            height="30"
+            alt="Logo"
+            class="me-2"
+          />
+          <span class="navbar-title d-none d-md-block d-lg-none"
+            >The Awakening of the Mechanist Nexus</span
+          >
+        </a>
+
+        <div class="d-flex">
+          <button
+            class="navbar-toggler d-flex d-lg-none order-3 p-2"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#bdNavbar"
+            aria-controls="bdNavbar"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+        <div
+          class="offcanvas-lg offcanvas-end flex-grow-1"
+          tabindex="-1"
+          id="bdNavbar"
+          aria-labelledby="bdNavbarOffcanvasLabel"
+          data-bs-scroll="true"
+        >
+          <div class="offcanvas-header px-4 pb-0">
+            <h5 class="offcanvas-title" id="bdNavbarOffcanvasLabel">
+              The Awakening of the Mechanist Nexus
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+              data-bs-target="#bdNavbar"
+            ></button>
+          </div>
+
+          <div class="offcanvas-body p-4 pt-0 p-lg-0">
+            <hr class="d-lg-none" />
+            <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="index.html">Home</a>
+              </li>
+            </ul>
+            <hr class="d-lg-none" />
+            <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="#">Random Events</a>
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="#event-section"
+                  >Event List</a
+                >
+              </li>
+            </ul>
+            <hr class="d-lg-none" />
+
+            <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="rules.html"
+                  >Grimdark Future Rules</a
+                >
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="random-events.html"
+                  >Random Events</a
+                >
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="armies.html"
+                  >Armies</a
+                >
+              </li>
+              <hr class="d-lg-none my-2" />
+              <li class="nav-item dropdown">
+                <button
+                  type="button"
+                  class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-bs-display="static"
+                >
+                  External Links
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://army-forge.onepagerules.com/"
+                    >
+                      <i
+                        class="bi bi-box-arrow-up-right me-1 opacity-75"
+                        role="img"
+                        aria-label="external link icon"
+                      ></i
+                      >Army Forge
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/671a88493d3bab9a55a9e004_GF%20-%20Core%20Rules%20v3.4.1%20-%20Print%20Friendly.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Core Rules v3.4.1</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/671a943e62a6cb93732e3371_GF%20-%20Beginner%27s%20Guide%20v3.4.1%20-%20Print-Friendly.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Beginner's Guide v3.4.1</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/66f684dc94f97125698755b6_GF%20-%20Campaign%20Rules%20v3.4.0.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Campaign Rules v3.4.0</a
+                    >
+                  </li>
+                </ul>
+              </li>
+
+              <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                <div class="vr d-none d-lg-flex h-100 mx-lg-2"></div>
+                <hr class="d-lg-none my-2" />
+              </li>
+              <li class="nav-item dropdown">
+                <button
+                  class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center"
+                  id="bd-theme"
+                  type="button"
+                  aria-expanded="false"
+                  data-bs-toggle="dropdown"
+                  data-bs-display="static"
+                  aria-label="Toggle theme (dark)"
+                >
+                  <i class="bi bi-moon"></i>
+
+                  <span class="d-lg-none ms-2" id="bd-theme-text"
+                    >Toggle theme</span
+                  >
+                </button>
+                <ul
+                  class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="bd-theme-text"
+                >
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center"
+                      data-bs-theme-value="light"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-sun me-1 opacity-50"></i>
+                      Light
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center theme-change-active active"
+                      data-bs-theme-value="dark"
+                      aria-pressed="true"
+                    >
+                      <i class="bi bi-moon me-1 opacity-50"></i>
+                      Dark
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center"
+                      data-bs-theme-value="auto"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-circle-half me-1 opacity-50"></i>
+                      Auto
+                    </button>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div
+          class="toast align-items-center text-bg-primary border-0"
+          role="alert"
+          id="themeToast"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div class="d-flex">
+            <div class="toast-body"></div>
+            <button
+              type="button"
+              class="btn-close me-2 m-auto"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </header>
 
     <button
       class="floating-btn"
@@ -607,30 +844,5 @@
         </div>
       </section>
     </main>
-
-    <script>
-      // Dynamically load the header
-      fetch("assets/html/header.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header").innerHTML = data;
-          // Add page-specific links after header is loaded
-          const pageSpecificLinks = `
-            <li class="nav-item col-6 col-lg-auto">
-              <a class="nav-link py-2 px-0 px-lg-2" href="index.html">Home</a>
-              </li>
-              <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="#event-section"
-                >Event List</a
-                >
-                </li>
-              </ul>
-              `;
-          const pageSpecificLinksElement = document.getElementById(
-            "page-specific-links"
-          );
-          pageSpecificLinksElement.innerHTML = pageSpecificLinks;
-        });
-    </script>
   </body>
 </html>
