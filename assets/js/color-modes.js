@@ -126,9 +126,15 @@
   // Once the DOM is fully loaded, set up the theme switcher
   window.addEventListener("DOMContentLoaded", () => {
     showActiveTheme(getPreferredTheme());
+    console.log("DOM loaded, adding event listeners");
+    console.log(
+      "Adding clicks to: " + document.querySelectorAll("[data-bs-theme-value]")
+    );
 
     document.querySelectorAll("[data-bs-theme-value]").forEach((toggle) => {
+      console.log("found toggle: " + toggle);
       toggle.addEventListener("click", () => {
+        console.log("added click to:" + toggle);
         const theme = toggle.getAttribute("data-bs-theme-value");
         setStoredTheme(theme);
         setTheme(theme);

@@ -37,16 +37,97 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
     />
-    <script src="assets/js/color-modes.js"></script>
-    <script src="assets/js/header.js"></script>
-    <script src="assets/js/definitions.js"></script>
-    <script src="assets/js/dice.js"></script>
-    <script src="assets/js/index.js"></script>
+
     <link href="assets/css/style.css" rel="stylesheet" />
-    <title>The Awakening of the Mechanist Nexus</title>
+    <title>Armies - The Awakening of the Mechanist Nexus</title>
   </head>
   <body>
     <div id="header"></div>
+    <main class="container py-4">
+      <div class="row">
+        <section id="the-ashen-pact" class="mb-5 col-12 col-md-6 col-lg-4">
+          <div class="card border-secondary">
+            <div class="card-header bg-dark text-light">
+              <h2 class="mb-0">The Ashen Pact</h2>
+              <small class="text-info">Blessed Sisters & Jackals</small>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title text-secondary">
+                Commander: <span class="text-body">Cody Black</span>
+              </h4>
+              <p class="lead">
+                The Ashen Pact is a fragile alliance between the dedicated
+                Blessed Sisters, driven by a divine crusade against the Robot
+                Legion's unholy machines, and the cunning Jackals, who seek to
+                dismantle and repurpose the Legion's technology for their own
+                survival, bound together by the need to combat a common,
+                mechanical foe.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="necrons" class="mb-5 col-12 col-md-6 col-lg-4">
+          <div class="card border-secondary">
+            <div class="card-header bg-dark text-light">
+              <h2 class="mb-0">Necrons</h2>
+              <small class="text-info">Necrons</small>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title text-secondary">
+                Commander: <span class="text-body">Claire Kelley</span>
+              </h4>
+              <p class="lead">
+                The Necrons are an ancient race of soulless, immortal machines,
+                once proud and living beings, who traded their flesh for cold
+                metal bodies in a dark pact, only to awaken millions of years
+                later to reclaim the galaxy as their rightful dominion.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="astra-militarum" class="mb-5 col-12 col-md-6 col-lg-4">
+          <div class="card border-secondary">
+            <div class="card-header bg-dark text-light">
+              <h2 class="mb-0">Astra Militarum</h2>
+              <small class="text-info">Astra Militarum</small>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title text-secondary">
+                Commander: <span class="text-body">Alex Bland</span>
+              </h4>
+              <p class="lead">
+                The Astra Militarum, the mighty hammer of the Imperium, is a
+                vast and disciplined army of human soldiers who stand as the
+                first and often last line of defense against the galaxy's
+                horrors.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="saurian-starhost" class="mb-5 col-12 col-md-6 col-lg-4">
+          <div class="card border-secondary">
+            <div class="card-header bg-dark text-light">
+              <h2 class="mb-0">Saurian Starhost</h2>
+              <small class="text-info">Saurian Starhost </small>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title text-secondary">
+                Commander: <span class="text-body">Andrew Linn</span>
+              </h4>
+              <p class="lead">
+                The Saurian Starhost is a primordial race of reptilian warriors
+                guided by ancient celestial wisdom, striving to bring balance
+                and order to the cosmos through calculated warfare.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
     <script>
       // Dynamically load the header
       fetch("assets/html/header.html")
@@ -55,41 +136,39 @@
           document.getElementById("header").innerHTML = data;
           // Add page-specific links after header is loaded
           const pageSpecificLinks = `
-              <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="#the-ashen-pact">The Ashen Pact</a>
-              </li>
-            `;
+              <li class="nav-item dropdown">
+              <button
+                type="button"
+                class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                data-bs-display="static"
+              >
+                Armies
+              </button>
+            <ul class="dropdown-menu dropdown-menu-start">
+                <li class="dropdown-item col-6 col-lg-auto">
+                  <a class="nav-link py-2 px-0 px-lg-2" href="#the-ashen-pact">The Ashen Pact</a>
+                </li>
+                <li class="dropdown-item col-6 col-lg-auto">
+                  <a class="nav-link py-2 px-0 px-lg-2" href="#necrons">Necrons</a>
+                </li>
+                <li class="dropdown-item col-6 col-lg-auto">
+                  <a class="nav-link py-2 px-0 px-lg-2" href="#astra-militarum">Astra Militarum</a>
+                </li>
+                <li class="dropdown-item col-6 col-lg-auto">
+                  <a class="nav-link py-2 px-0 px-lg-2" href="#saurian-starhost">Saurian Starhost</a>
+                </li>
+            </ul>
+              `;
           const pageSpecificLinksElement = document.getElementById(
             "page-specific-links"
           );
           pageSpecificLinksElement.innerHTML = pageSpecificLinks;
-
-          // Add <hr> if there are page-specific links
-          if (pageSpecificLinksElement.innerHTML.trim() !== "") {
-            const hrElement = document.createElement("hr");
-            hrElement.className = "d-lg-none";
-            pageSpecificLinksElement.parentNode.insertBefore(
-              hrElement,
-              pageSpecificLinksElement
-            );
-          }
         });
     </script>
-    <main class="container-fluid px-4 my-4">
-      <section
-        id="campaign-rules"
-        class="nav-scroll-top mt-4 px-md-4 px-sm-3 px-1"
-      >
-        <h1>The Ashen Pact</h1>
-
-        <p class="lead">
-          The Ashen Pact is a fragile alliance between the dedicated Blessed
-          Sisters, driven by a divine crusade against the Robot Legion's unholy
-          machines, and the cunning Jackals, who seek to dismantle and repurpose
-          the Legion's technology for their own survival, bound together by the
-          need to combat a common, mechanical foe.
-        </p>
-      </section>
-    </main>
+    <script src="assets/js/color-modes.js"></script>
+    <script src="assets/js/dice.js"></script>
+    <script src="assets/js/index.js" defer></script>
   </body>
 </html>
