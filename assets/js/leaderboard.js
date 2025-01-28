@@ -25,6 +25,15 @@ function loadCSV() {
         // Ensure no undefined or empty values in cols
         const trimmedCols = cols.map((col) => (col ? col.trim() : ""));
 
+        // Create a URL-friendly version of the army name
+        const armyName = trimmedCols[1];
+        const armyUrl = `/armies.html#${armyName
+          .toLowerCase()
+          .replace(/\s+/g, "-")}`;
+
+        // Replace the army name with an anchor tag
+        trimmedCols[1] = `<a href="${armyUrl}">${armyName}</a>`;
+
         // Ensure we have valid Wins, Losses, Special Objectives, EarnedVP, and EarnedPoints (numeric)
         const wins = parseInt(trimmedCols[2], 10);
         const losses = parseInt(trimmedCols[3], 10);
