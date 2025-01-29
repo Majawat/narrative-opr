@@ -3,7 +3,7 @@
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-  background-color: var(--bs-link-color);
+  background-color: var(--bs-primary);
   color: white;
   border-radius: 50%;
   width: 60px;
@@ -18,7 +18,7 @@
   font-size: 2rem;
 }
 .floating-btn:hover {
-  background-color: var(--bs-link-hover-color);
+  background-color: var(--bs-primary-border-subtle);
 }
 
 #eventContainer {
@@ -42,4 +42,7 @@
 }
 .random-event-container {
   margin: 20px;
+}
+.random-event {
+  scroll-margin-top: 85px;
 }

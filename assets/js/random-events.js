@@ -16,17 +16,30 @@ function rollDiceAndHighlight() {
   // Highlight and scroll to the selected event
   if (eventElement) {
     eventElement.classList.add("highlight");
-    eventElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    eventElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(function () {
+      eventElement.classList.remove("highlight");
+    }, 4000);
   } else {
     alert(`Event #${eventNumber} not found.`);
   }
 }
 
+
 document.addEventListener("DOMContentLoaded", function () {
   var tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
+
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
+    var tooltip = new bootstrap.Tooltip(tooltipTriggerEl);
+
+    tooltipTriggerEl.addEventListener("click", function () {
+      setTimeout(function () {
+        tooltip.hide();
+      }, 2000); // 2-second delay before hiding
+    });
+
+    return tooltip;
   });
 });
