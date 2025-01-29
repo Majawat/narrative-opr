@@ -121,7 +121,7 @@ function autoWrapDefinitions() {
     sortedTerms.forEach((term) => {
       const listItem = document.createElement("li");
       listItem.className =
-        "list-group-item d-flex justify-content-between align-items-start bg-dark text-light";
+        "list-group-item d-flex justify-content-between align-items-start bg-body text-body";
       let definition = terms[term];
 
       // Loop over the terms and replace them in the definition text
