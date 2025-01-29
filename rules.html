@@ -37,17 +37,18 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
     />
-    <script src="assets/js/color-modes.js"></script>
-    <script src="assets/js/definitions.js"></script>
-    <script src="assets/js/dice.js"></script>
-    <script src="assets/js/index.js"></script>
-    <script src="assets/js/rules.js"></script>
+    <script src="assets/js/color-modes.js" defer></script>
+    <script src="assets/js/definitions.js" defer></script>
+    <script src="assets/js/dice.js" defer></script>
+    <script src="assets/js/index.js" defer></script>
+    <script src="assets/js/rules.js" defer></script>
     <link href="assets/css/style.css" rel="stylesheet" />
     <title>The Awakening of the Mechanist Nexus</title>
   </head>
 
   <body style="margin-right: 0px" class>
     <header
+      id="header"
       class="navbar navbar-expand-lg bd-navbar bg-body border-bottom sticky-top"
     >
       <nav
@@ -55,16 +56,19 @@
         aria-label="Main navigation"
       >
         <div class="d-lg-none" style="width: 4.25rem"></div>
-        <a
-          class="navbar-brand p-0 me-0 me-lg-2"
-          href="index.html"
-          aria-label="Navbar"
-          ><img
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <img
             src="assets/img/logo.png"
-            width="40"
-            height="40"
-            class="d-block my-1"
-        /></a>
+            width="30"
+            height="30"
+            alt="Logo"
+            class="me-2"
+          />
+          <span class="navbar-title d-none d-md-block d-lg-none"
+            >The Awakening of the Mechanist Nexus</span
+          >
+        </a>
+
         <div class="d-flex">
           <button
             class="navbar-toggler d-flex d-lg-none order-3 p-2"
@@ -103,6 +107,15 @@
               <li class="nav-item col-6 col-lg-auto">
                 <a class="nav-link py-2 px-0 px-lg-2" href="index.html">Home</a>
               </li>
+            </ul>
+
+            <hr class="d-lg-none" />
+            <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="#campaign-rules"
+                  >Campaign Rules</a
+                >
+              </li>
               <li class="nav-item col-6 col-lg-auto">
                 <a class="nav-link py-2 px-0 px-lg-2" href="#general-rules"
                   >General Rules</a
@@ -123,13 +136,18 @@
 
             <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
               <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="#"
-                  >Grimdark Future Rules</a
+                <a class="nav-link py-2 px-0 px-lg-2" href="rules.html"
+                  >Gameplay Rules</a
                 >
               </li>
               <li class="nav-item col-6 col-lg-auto">
                 <a class="nav-link py-2 px-0 px-lg-2" href="random-events.html"
                   >Random Events</a
+                >
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="armies.html"
+                  >Armies</a
                 >
               </li>
               <hr class="d-lg-none my-2" />
@@ -201,7 +219,6 @@
                 <div class="vr d-none d-lg-flex h-100 mx-lg-2"></div>
                 <hr class="d-lg-none my-2" />
               </li>
-
               <li class="nav-item dropdown">
                 <button
                   class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center"
@@ -281,7 +298,114 @@
         </div>
       </div>
     </header>
+
     <main class="container-fluid px-4 my-4">
+      <section
+        id="campaign-rules"
+        class="nav-scroll-top mt-4 px-md-4 px-sm-3 px-1"
+      >
+        <h1>Campaign Rules</h1>
+        <ul>
+          <li>
+            <strong>Campaign length is Game-Limi&zwnj;ted</strong>. We will play
+            10 games. Once each month starting in February and ending in
+            November.
+          </li>
+          <li>
+            <strong>Army Sheet:</strong> Each army and unit must be given a
+            <em>unique name</em>, which you can edit on your Army List.
+          </li>
+          <li>
+            <strong>Army Point Limits:</strong> there is no upper bound of
+            available points, however no army may bring over 250pts more than
+            the army with the lowest point value.
+          </li>
+          <li>
+            <strong>Underdog Bonus:</strong> Any army that has a point value
+            lower than at least one other gets an underdog bonus. You get 1
+            underdog point for every 50pts difference between your army and the
+            one with the highest value. Each underdog point can be spent to
+            modify all dice in a friendly or enemy roll by +1 or -1, but only
+            one point can be spent per roll.
+          </li>
+          <li>
+            <strong>Random Events - </strong> At the
+            <em>beginning of each round</em>
+            players must roll a
+            <button type="button" class="btn dice-notation">D6</button>, and on
+            a 5+ a <a href="random-events.html">random event</a> happens.
+          </li>
+          <li>
+            <strong>Special Objectives:</strong> In addition to the mission
+            objectives, players may earn a bonus of 75pts by completing special
+            objectives. Roll one
+            <button type="button" class="btn dice-notation">D6</button>
+            each to see which objective you get:
+          </li>
+        </ul>
+        <p></p>
+        <div class="container">
+          <table
+            class="table table-striped table-hover table-bordered w-auto mx-auto table-auto"
+          >
+            <caption>
+              If you roll an objective which can't be completed, then you must
+              re-roll.
+            </caption>
+            <thead>
+              <tr>
+                <th>Result</th>
+                <th>Objective</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              <tr>
+                <td class="text-align-center">1</td>
+                <td>
+                  <strong>Mastery - </strong>One friendly unit in each table
+                  quarter at the end.
+                </td>
+              </tr>
+              <tr>
+                <td class="text-align-center">2</td>
+                <td>
+                  <strong>Honor - </strong>No enemy units in own deployment zone
+                  at the end.
+                </td>
+              </tr>
+              <tr>
+                <td class="text-align-center">3</td>
+                <td>
+                  <strong>Casting - </strong>At least one attempt to cast a
+                  spell per round.
+                </td>
+              </tr>
+              <tr>
+                <td class="text-align-center">4</td>
+                <td>
+                  <strong>Recovery - </strong>First player to stop a unit from
+                  being shaken.
+                </td>
+              </tr>
+              <tr>
+                <td class="text-align-center">5</td>
+                <td>
+                  <strong>Rage - </strong> First player to destroy an enemy
+                  unit.
+                </td>
+              </tr>
+              <tr>
+                <td class="text-align-center">6</td>
+                <td>
+                  <strong>Destruction - </strong>Most expensive enemy unit
+                  destroyed.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <hr />
       <h1>Grimdark Future Rules <small>3.4.1</small></h1>
       <hr />
       <section id="general-rules" class="nav-scroll-top">
@@ -334,9 +458,10 @@
           Models in range and line of sight may fire all ranged weapons, and may
           fire at up to two different targets with different weapon types.
           Shooting models take one quality test per attack, and each success is
-          a hit. For each hit defending units roll a <button type="button" class="btn dice-notation">D6</button> trying to score their
-          Defense value or higher to block, and each fail causes one wound. For
-          each wound, the defender must remove one model.
+          a hit. For each hit defending units roll a
+          <button type="button" class="btn dice-notation">D6</button> trying to
+          score their Defense value or higher to block, and each fail causes one
+          wound. For each wound, the defender must remove one model.
         </p>
         <h2>Melee</h2>
         <p>
@@ -636,8 +761,10 @@
                       </h5>
                       <p>
                         Pick one friendly model that just suffered a wound which
-                        would kill it and roll <button type="button" class="btn dice-notation">D6</button>, on a 4+ that wound is
-                        ignored.
+                        would kill it and roll
+                        <button type="button" class="btn dice-notation">
+                          D6</button
+                        >, on a 4+ that wound is ignored.
                       </p>
                       <hr />
                       <h5>
@@ -670,8 +797,11 @@
                       </h5>
                       <p>
                         Pick one friendly unit that is within 12” of an enemy,
-                        and it may move up to <button type="button" class="btn dice-notation">D6+2</button> inches directly away from the
-                        closest enemy.
+                        and it may move up to
+                        <button type="button" class="btn dice-notation">
+                          D6+2
+                        </button>
+                        inches directly away from the closest enemy.
                       </p>
                     </div>
                   </div>
@@ -733,8 +863,11 @@
                       </h5>
                       <p>
                         Pick one enemy unit that is about to strike in melee and
-                        roll one <button type="button" class="btn dice-notation">D6</button>, on a 4+ that unit counts as fatigued for
-                        that melee, but doesn't get fatigued from that melee.
+                        roll one
+                        <button type="button" class="btn dice-notation">
+                          D6</button
+                        >, on a 4+ that unit counts as fatigued for that melee,
+                        but doesn't get fatigued from that melee.
                       </p>
                       <hr />
                       <h5>
@@ -861,8 +994,11 @@
                       </h5>
                       <p>
                         Pick one friendly unit that just became Shaken, which
-                        may move up to <button type="button" class="btn dice-notation">2D6+4</button> inches directly away from the closest
-                        enemy.
+                        may move up to
+                        <button type="button" class="btn dice-notation">
+                          2D6+4
+                        </button>
+                        inches directly away from the closest enemy.
                       </p>
                       <hr />
                       <h5>

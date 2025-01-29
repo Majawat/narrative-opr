@@ -27,7 +27,7 @@ function loadCSV() {
 
         // Create a URL-friendly version of the army name
         const armyName = trimmedCols[1];
-        const armyUrl = `/armies.html#${armyName
+        const armyUrl = `armies.html#${armyName
           .toLowerCase()
           .replace(/\s+/g, "-")}`;
 

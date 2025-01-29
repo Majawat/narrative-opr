@@ -37,59 +37,469 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
     />
-    <script src="assets/js/color-modes.js"></script>
-    <script src="assets/js/header.js"></script>
-    <script src="assets/js/definitions.js"></script>
-    <script src="assets/js/dice.js"></script>
-    <script src="assets/js/index.js"></script>
+    <script src="assets/js/color-modes.js" defer></script>
+    <script src="assets/js/dice.js" defer></script>
+    <script src="assets/js/index.js" defer></script>
     <link href="assets/css/style.css" rel="stylesheet" />
-    <title>The Awakening of the Mechanist Nexus</title>
+    <title>Armies - The Awakening of the Mechanist Nexus</title>
   </head>
   <body>
-    <div id="header"></div>
-    <script>
-      // Dynamically load the header
-      fetch("assets/html/header.html")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header").innerHTML = data;
-          // Add page-specific links after header is loaded
-          const pageSpecificLinks = `
-              <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="#the-ashen-pact">The Ashen Pact</a>
-              </li>
-            `;
-          const pageSpecificLinksElement = document.getElementById(
-            "page-specific-links"
-          );
-          pageSpecificLinksElement.innerHTML = pageSpecificLinks;
-
-          // Add <hr> if there are page-specific links
-          if (pageSpecificLinksElement.innerHTML.trim() !== "") {
-            const hrElement = document.createElement("hr");
-            hrElement.className = "d-lg-none";
-            pageSpecificLinksElement.parentNode.insertBefore(
-              hrElement,
-              pageSpecificLinksElement
-            );
-          }
-        });
-    </script>
-    <main class="container-fluid px-4 my-4">
-      <section
-        id="campaign-rules"
-        class="nav-scroll-top mt-4 px-md-4 px-sm-3 px-1"
+    <header
+      id="header"
+      class="navbar navbar-expand-lg bd-navbar bg-body border-bottom sticky-top"
+    >
+      <nav
+        class="container-xxl bd-gutter flex-wrap flex-lg-nowrap"
+        aria-label="Main navigation"
       >
-        <h1>The Ashen Pact</h1>
+        <div class="d-lg-none" style="width: 4.25rem"></div>
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <img
+            src="assets/img/logo.png"
+            width="30"
+            height="30"
+            alt="Logo"
+            class="me-2"
+          />
+          <span class="navbar-title d-none d-md-block d-lg-none"
+            >The Awakening of the Mechanist Nexus</span
+          >
+        </a>
 
-        <p class="lead">
-          The Ashen Pact is a fragile alliance between the dedicated Blessed
-          Sisters, driven by a divine crusade against the Robot Legion's unholy
-          machines, and the cunning Jackals, who seek to dismantle and repurpose
-          the Legion's technology for their own survival, bound together by the
-          need to combat a common, mechanical foe.
-        </p>
-      </section>
+        <div class="d-flex">
+          <button
+            class="navbar-toggler d-flex d-lg-none order-3 p-2"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#bdNavbar"
+            aria-controls="bdNavbar"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+        <div
+          class="offcanvas-lg offcanvas-end flex-grow-1"
+          tabindex="-1"
+          id="bdNavbar"
+          aria-labelledby="bdNavbarOffcanvasLabel"
+          data-bs-scroll="true"
+        >
+          <div class="offcanvas-header px-4 pb-0">
+            <h5 class="offcanvas-title" id="bdNavbarOffcanvasLabel">
+              The Awakening of the Mechanist Nexus
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+              data-bs-target="#bdNavbar"
+            ></button>
+          </div>
+
+          <div class="offcanvas-body p-4 pt-0 p-lg-0">
+            <hr class="d-lg-none" />
+            <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="index.html">Home</a>
+              </li>
+            </ul>
+            <hr class="d-lg-none" />
+            <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+              <li class="nav-item dropdown">
+                <button
+                  type="button"
+                  class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-bs-display="static"
+                >
+                  Armies
+                </button>
+                <ul class="dropdown-menu dropdown-menu-start">
+                  <li class="dropdown-item col-6 col-lg-auto">
+                    <a class="nav-link py-2 px-0 px-lg-2" href="#the-ashen-pact"
+                      >The Ashen Pact</a
+                    >
+                  </li>
+                  <li class="dropdown-item col-6 col-lg-auto">
+                    <a class="nav-link py-2 px-0 px-lg-2" href="#necrons"
+                      >Necrons</a
+                    >
+                  </li>
+                  <li class="dropdown-item col-6 col-lg-auto">
+                    <a
+                      class="nav-link py-2 px-0 px-lg-2"
+                      href="#astra-militarum"
+                      >Astra Militarum</a
+                    >
+                  </li>
+                  <li class="dropdown-item col-6 col-lg-auto">
+                    <a
+                      class="nav-link py-2 px-0 px-lg-2"
+                      href="#saurian-starhost"
+                      >Saurian Starhost</a
+                    >
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <hr class="d-lg-none" />
+
+            <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="rules.html"
+                  >Gameplay Rules</a
+                >
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="random-events.html"
+                  >Random Events</a
+                >
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="armies.html"
+                  >Armies</a
+                >
+              </li>
+              <hr class="d-lg-none my-2" />
+              <li class="nav-item dropdown">
+                <button
+                  type="button"
+                  class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-bs-display="static"
+                >
+                  External Links
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://army-forge.onepagerules.com/"
+                    >
+                      <i
+                        class="bi bi-box-arrow-up-right me-1 opacity-75"
+                        role="img"
+                        aria-label="external link icon"
+                      ></i
+                      >Army Forge
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/671a88493d3bab9a55a9e004_GF%20-%20Core%20Rules%20v3.4.1%20-%20Print%20Friendly.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Core Rules v3.4.1</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/671a943e62a6cb93732e3371_GF%20-%20Beginner%27s%20Guide%20v3.4.1%20-%20Print-Friendly.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Beginner's Guide v3.4.1</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/66f684dc94f97125698755b6_GF%20-%20Campaign%20Rules%20v3.4.0.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Campaign Rules v3.4.0</a
+                    >
+                  </li>
+                </ul>
+              </li>
+
+              <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                <div class="vr d-none d-lg-flex h-100 mx-lg-2"></div>
+                <hr class="d-lg-none my-2" />
+              </li>
+              <li class="nav-item dropdown">
+                <button
+                  class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center"
+                  id="bd-theme"
+                  type="button"
+                  aria-expanded="false"
+                  data-bs-toggle="dropdown"
+                  data-bs-display="static"
+                  aria-label="Toggle theme (dark)"
+                >
+                  <i class="bi bi-moon"></i>
+
+                  <span class="d-lg-none ms-2" id="bd-theme-text"
+                    >Toggle theme</span
+                  >
+                </button>
+                <ul
+                  class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="bd-theme-text"
+                >
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center"
+                      data-bs-theme-value="light"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-sun me-1 opacity-50"></i>
+                      Light
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center theme-change-active active"
+                      data-bs-theme-value="dark"
+                      aria-pressed="true"
+                    >
+                      <i class="bi bi-moon me-1 opacity-50"></i>
+                      Dark
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center"
+                      data-bs-theme-value="auto"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-circle-half me-1 opacity-50"></i>
+                      Auto
+                    </button>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div
+          class="toast align-items-center text-bg-primary border-0"
+          role="alert"
+          id="themeToast"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div class="d-flex">
+            <div class="toast-body"></div>
+            <button
+              type="button"
+              class="btn-close me-2 m-auto"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container py-4">
+      <div class="row">
+        <section
+          id="the-ashen-pact"
+          class="mb-5 col-12 col-md-6 col-lg-5 nav-scroll-top mx-auto"
+        >
+          <div class="card border-secondary">
+            <img
+              src="assets/img/ashen-pact.jpg"
+              class="card-img-top img-fluid"
+              style="
+                width: 100%;
+                height: 250px;
+                object-fit: cover;
+                object-position: center 25%;
+              "
+              alt="The Ashen Pact Army"
+            />
+
+            <div class="card-header bg-gradient bg-dark text-light">
+              <h2 class="mb-0">The Ashen Pact</h2>
+              <small class="text-info">Jackals & Blessed Sisters</small>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title text-secondary">
+                Packlord <span class="text-body fw-bold">Cody</span>
+              </h4>
+              <p class="lead mb-3 text-muted">
+                An Uneasy Alliance Against the Iron Tide
+              </p>
+              <p>
+                The Ashen Pact is a fragile alliance between the dedicated
+                Blessed Sisters, driven by a divine crusade against the Robot
+                Legion's unholy machines, and the cunning Jackals, who seek to
+                dismantle and repurpose the Legion's technology for their own
+                survival, bound together by the need to combat a common,
+                mechanical foe.
+              </p>
+              <div class="text-end mt-3">
+                <a
+                  href="https://army-forge.onepagerules.com/share?id=vMzljLVC6ZGv&name=The_Ashen%20Pact"
+                  target="_blank"
+                  class="btn btn-outline-primary"
+                >
+                  View Full Army Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="necrons"
+          class="mb-5 col-12 col-md-6 col-lg-5 nav-scroll-top mx-auto"
+        >
+          <div class="card border-secondary mx-auto">
+            <img
+              src="assets/img/necrons.jpg"
+              class="card-img-top img-fluid"
+              style="
+                width: 100%;
+                height: 250px;
+                object-fit: cover;
+                object-position: center 20%;
+              "
+              alt="The Necrons Army"
+            />
+            <div class="card-header bg-gradient bg-dark text-light">
+              <h2 class="mb-0">Necrons</h2>
+              <small class="text-info">Necrons</small>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title text-secondary">
+                Overlord <span class="text-body fw-bold">Claire</span>
+              </h4>
+              <p class="lead mb-3 text-muted">
+                Immortal Machines, Awakened to Conquer
+              </p>
+              <p>
+                The Necrons are an ancient race of soulless, immortal machines,
+                once proud and living beings, who traded their flesh for cold
+                metal bodies in a dark pact, only to awaken millions of years
+                later to reclaim the galaxy as their rightful dominion.
+              </p>
+              <div class="text-end mt-3">
+                <a
+                  href=""
+                  target="_blank"
+                  class="btn btn-outline-primary disabled"
+                >
+                  View Full Army Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="astra-militarum"
+          class="mb-5 col-12 col-md-6 col-lg-5 nav-scroll-top mx-auto"
+        >
+          <div class="card border-secondary">
+            <img
+              src="assets/img/astra.jpg"
+              class="card-img-top img-fluid"
+              style="
+                width: 100%;
+                height: 250px;
+                object-fit: cover;
+                object-position: center 40%;
+              "
+              alt="The Astra Militarum Army"
+            />
+            <div class="card-header bg-gradient bg-dark text-light">
+              <h2 class="mb-0">Astra Militarum</h2>
+              <small class="text-info">Astra Militarum</small>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title text-secondary">
+                General <span class="text-body fw-bold">Alex</span>
+              </h4>
+              <p class="lead mb-3 text-muted">
+                The Imperium's Shield Against the Darkness
+              </p>
+              <p>
+                The Astra Militarum, the mighty hammer of the Imperium, is a
+                vast and disciplined army of human soldiers who stand as the
+                first and often last line of defense against the galaxy's
+                horrors.
+              </p>
+              <div class="text-end mt-3">
+                <a
+                  href=""
+                  target="_blank"
+                  class="btn btn-outline-primary disabled"
+                >
+                  View Full Army Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="saurian-starhost"
+          class="mb-5 col-12 col-md-6 col-lg-5 nav-scroll-top mx-auto"
+        >
+          <div class="card border-secondary">
+            <img
+              src="assets/img/starhost.jpg"
+              class="card-img-top img-fluid"
+              style="
+                width: 100%;
+                height: 250px;
+                object-fit: cover;
+                object-position: center 40%;
+              "
+              alt="The Saurian Starhost Army"
+            />
+            <div class="card-header bg-gradient bg-dark text-light">
+              <h2 class="mb-0">Saurian Starhost</h2>
+              <small class="text-info">Saurian Starhost</small>
+            </div>
+            <div class="card-body">
+              <h4 class="card-title text-secondary">
+                Starseer <span class="text-body fw-bold">Andrew</span>
+              </h4>
+              <p class="lead mb-3 text-muted">
+                Celestial Guardians of Balance and Order
+              </p>
+              <p>
+                The Saurian Starhost is a primordial race of reptilian warriors
+                guided by ancient celestial wisdom, striving to bring balance
+                and order to the cosmos through calculated warfare.
+              </p>
+              <div class="text-end mt-3">
+                <a
+                  href=""
+                  target="_blank"
+                  class="btn btn-outline-primary disabled"
+                >
+                  View Full Army Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
   </body>
 </html>
