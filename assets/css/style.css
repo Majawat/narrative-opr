@@ -63,6 +63,17 @@ th.sortable.sort-desc::after {
   transition: transform 0.2s ease-in-out;
 }
 
-.logo {
-  color:white;
+.mission-current {
+  background-color: rgba(40, 167, 69, 0.1);
+  border-left: 4px solid #28a745;
+}
+
+.mission-upcoming {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-left: 4px solid #ffc107;
+}
+
+.mission-completed {
+  background-color: rgba(108, 117, 125, 0.1);
+  border-left: 4px solid #6c757d;
 }
