@@ -3,14 +3,112 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="assets/armies/the-ashen-pact/the-ashen-pact.js" defer></script>
-    <script src="assets/js/definitions.js" defer></script>
-    <title>The Ashen Pact</title>
+    <title>The Ashen Pact - Army Details</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .unit-card {
+        border-left: 4px solid #6c757d;
+        margin-bottom: 2rem;
+      }
+      .stats-table {
+        font-size: 0.9rem;
+      }
+      .special-rules {
+        font-style: italic;
+      }
+    </style>
   </head>
-  <body>
-    <div class="container">
-      <h1>The Ashen Pact</h1>
-      <div id="ashen-pact"></div>
+  <body class="bg-dark text-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">The Iron Tide War</a>
+        <!-- Navigation items same as main page -->
+      </div>
+    </nav>
+
+    <div class="container my-5">
+      <div class="row">
+        <div class="col-md-8">
+          <h1 class="display-4">The Ashen Pact</h1>
+          <h3 class="text-secondary">
+            An Uneasy Alliance Against the Iron Tide
+          </h3>
+          <div class="d-flex align-items-center mb-4">
+            <span class="badge bg-secondary me-2">Jackals</span>
+            <span class="badge bg-secondary">Blessed Sisters</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <img
+            src="assets/img/ashen-pact.jpg"
+            class="img-fluid rounded"
+            alt="The Ashen Pact"
+          />
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col">
+          <h4>Commander</h4>
+          <p class="lead">Packlord Cody</p>
+          <p class="mb-5">
+            The Ashen Pact is a fragile alliance between the dedicated Blessed
+            Sisters, driven by a divine crusade against the Robot Legion's
+            unholy machines, and the cunning Jackals, who seek to dismantle and
+            repurpose the Legion's technology for their own survival, bound
+            together by the need to combat a common, mechanical foe.
+          </p>
+        </div>
+      </div>
+
+      <h2 class="mb-4">Units</h2>
+
+      <!-- Unit Card -->
+      <div class="unit-card p-4 bg-dark rounded">
+        <div class="row">
+          <div class="col-md-6">
+            <h3>Ironclaw Vanguard</h3>
+            <p><strong>Type:</strong> Nomads [10 models]</p>
+            <p><strong>Joined to:</strong> Zarek Thal</p>
+            <p><strong>Quality:</strong> 5+ | <strong>Defense:</strong> 5+</p>
+            <p class="special-rules">
+              <strong>Special Rules:</strong> Carnivore, Hero, Tough(3), Beacon
+            </p>
+          </div>
+          <div class="col-md-6">
+            <h4>Weapons</h4>
+            <table class="table table-sm stats-table table-dark table-hover">
+              <thead>
+                <tr>
+                  <th>Weapon</th>
+                  <th>RNG</th>
+                  <th>ATK</th>
+                  <th>AP</th>
+                  <th>SPE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2x CCWs</td>
+                  <td>-</td>
+                  <td>A1</td>
+                  <td>-</td>
+                  <td>Blast(3), Poison, Reliable</td>
+                </tr>
+                <!-- Add other weapons -->
+              </tbody>
+            </table>
+            <p><strong>Upgrades:</strong> 1x Satellite Backpack (Beacon)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional unit cards would go here -->
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
