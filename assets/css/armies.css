@@ -2,3 +2,12 @@
   border-left: 4px solid #6c757d;
   margin-bottom: 2rem;
 }
+
+img:hover {
+  transform: scale(1.01);
+  transition: transform 0.5s;
+}
+
+.badge {
+  font-size: 0.9rem;
+}

@@ -3,6 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="The Ashen Pact - An Uneasy Alliance Against the Iron Tide. Explore units, strategies, and the lore behind this fragile coalition."
+    />
+    <meta property="og:title" content="The Ashen Pact" />
+    <meta
+      property="og:description"
+      content="An Uneasy Alliance Against the Iron Tide"
+    />
+    <meta property="og:image" content="assets/img/ashen-pact.jpg" />
 
     <link
       rel="icon"
@@ -304,7 +314,7 @@
           <img
             src="assets/img/ashen-pact.jpg"
             class="img-fluid rounded"
-            alt="The Ashen Pact army"
+            alt="Banner depicting The Ashen Pact army marching into battle"
             style="
               width: 100%;
               height: 250px;
@@ -341,28 +351,45 @@
       <h2 class="mb-4">Units</h2>
       <div class="unit-card card p-4 bg-body rounded">
         <div class="row">
-          <div class="col-md-4">
-            <h3>Ironclaw Vanguard</h3>
-            <p class="text-muted">5 Elites joined to Zarek Thal</p>
-            <div class="d-flex flex-wrap justify-content-center mb-2">
-              <span
-                class="badge bg-secondary me-2 align-items-center d-flex"
-                style="height: 35px"
-                >Quality 4+</span
-              >
-              <span
-                class="badge bg-secondary me-2 align-items-center d-flex"
-                style="height: 35px"
-                >Defense 4+</span
-              >
-              <span
-                class="badge bg-secondary me-2 align-items-center d-flex"
-                style="height: 35px"
-                >Tough 0</span
-              >
+          <div class="card mb-4 bg-body text-body col-md-4">
+            <div class="card-body">
+              <h3 class="card-title">Ironclaw Vanguard</h3>
+              <h5 class="card-subtitle mb-2 text-muted">
+                5 Elites joined to Zarek Thal
+              </h5>
+              <div class="d-flex justify-content-center mb-3">
+                <div class="me-4 text-center">
+                  <i
+                    class="bi bi-star-fill"
+                    style="font-size: 1.5rem; color: #ffc107"
+                  ></i>
+                  <p class="mb-0">Quality</p>
+                  <p class="fw-bold">4+</p>
+                </div>
+                <div class="me-4 text-center">
+                  <i
+                    class="bi bi-shield-shaded"
+                    style="font-size: 1.5rem; color: #17a2b8"
+                  ></i>
+                  <p class="mb-0">Defense</p>
+                  <p class="fw-bold">4+</p>
+                </div>
+                <div class="text-center">
+                  <i
+                    class="bi bi-heart-fill"
+                    style="font-size: 1.5rem; color: #dc3545"
+                  ></i>
+                  <p class="mb-0">Tough</p>
+                  <p class="fw-bold">0</p>
+                </div>
+              </div>
+              <p>
+                <span class="badge bg-secondary me-1">Carnivore</span>
+                <span class="badge bg-secondary me-1">Relentless</span>
+                <span class="badge bg-secondary me-1">Strider</span>
+                <span class="badge bg-secondary">1x Beacon</span>
+              </p>
             </div>
-
-            <p>Carnivore, Relentless, Strider, 1x Beacon</p>
           </div>
           <div class="col-md-8">
             <h4>Weapons</h4>
@@ -416,6 +443,7 @@
       </div>
     </main>
 
+    <script src="assets/js/load-ashen-pact.js" defer></script>
     <script src="assets/js/color-modes.js" defer></script>
     <script src="assets/js/index.js" defer></script>
   </body>
