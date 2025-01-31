@@ -1,6 +1,7 @@
 // Fetch data when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-  fetch("https://army-forge.onepagerules.com/api/tts?id=vMzljLVC6ZGv")
+  const armyForgeId = document.getElementById("army-forge-id").textContent;
+  fetch("https://army-forge.onepagerules.com/api/tts?id=" + armyForgeId)
     .then((response) => response.json())
     .then((data) => {
       // Process and display the data
