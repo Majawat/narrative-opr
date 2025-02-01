@@ -1,80 +1,391 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found</title>
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #111827;
-            font-family: system-ui, -apple-system, sans-serif;
-            color: #D1D5DB;
-            text-align: center;
-            padding: 1rem;
-        }
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        .container {
-            max-width: 28rem;
-        }
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/img/favicons/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="assets/img/favicons/favicon.svg"
+    />
+    <link rel="shortcut icon" href="assets/img/favicons/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/img/favicons/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content="OPR" />
+    <link rel="manifest" href="assets/img/favicons/site.webmanifest" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
+    />
+    <script src="assets/js/color-modes.js" defer></script>
+    <script src="assets/js/leaderboard.js" defer></script>
+    <script src="assets/js/definitions.js" defer></script>
+    <script src="assets/js/dice.js" defer></script>
+    <script src="assets/js/index.js" defer></script>
+    <link href="assets/css/style.css" rel="stylesheet" />
+    <title>The Awakening of the Mechanist Nexus</title>
+  </head>
+  <body style="margin-right: 0px" class>
+    <header
+      id="header"
+      class="navbar navbar-expand-lg bd-navbar bg-body-tertiary border-bottom sticky-top"
+    >
+      <nav
+        class="container-xxl bd-gutter flex-wrap flex-lg-nowrap"
+        aria-label="Main navigation"
+      >
+        <div class="d-lg-none" style="width: 4.25rem"></div>
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <img
+            src="assets/img/logo.png"
+            height="50"
+            alt="Logo"
+            id="logo"
+            class="me-2 logo"
+          />
+          <span class="navbar-title d-none d-sm-block d-lg-none"
+            >The Awakening of the Mechanist Nexus</span
+          >
+        </a>
 
-        .skull {
-            width: 6rem;
-            height: 6rem;
-            margin: 0 auto 1.5rem;
-            color: #DC2626;
-        }
-
-        h1 {
-            color: #DC2626;
-            font-size: 2.25rem;
-            margin: 0 0 1.5rem;
-        }
-
-        p {
-            margin: 1rem 0;
-        }
-
-        .quote {
-            font-style: italic;
-            font-size: 0.875rem;
-            margin: 1.5rem 0;
-        }
-
-        .button {
-            display: inline-block;
-            background-color: #DC2626;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.25rem;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 1.5rem;
-            transition: background-color 0.2s;
-        }
-
-        .button:hover {
-            background-color: #B91C1C;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <svg class="skull" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 4C7.58172 4 4 7.58172 4 12C4 14.9006 5.60861 17.4273 8 18.7765V20C8 21.1046 8.89543 22 10 22H14C15.1046 22 16 21.1046 16 20V18.7765C18.3914 17.4273 20 14.9006 20 12C20 7.58172 16.4183 4 12 4Z"/>
-            <path d="M9 16H9.01"/>
-            <path d="M15 16H15.01"/>
-        </svg>
-        <h1>404 - PAGE NOT FOUND</h1>
-        <div>
-            <p>The requested scroll has been declared heretical and purged by order of the Inquisition.</p>
-            <p class="quote">"Success is measured in blood; yours or your enemy's." - Imperial Guard motto</p>
-            <a href="/" class="button">Return to Holy Terra</a>
+        <div class="d-flex">
+          <button
+            class="navbar-toggler d-flex d-lg-none order-3 p-2"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#bdNavbar"
+            aria-controls="bdNavbar"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
         </div>
+        <div
+          class="offcanvas-lg offcanvas-end flex-grow-1"
+          tabindex="-1"
+          id="bdNavbar"
+          aria-labelledby="bdNavbarOffcanvasLabel"
+          data-bs-scroll="true"
+        >
+          <div class="offcanvas-header px-4 pb-0">
+            <h5 class="offcanvas-title" id="bdNavbarOffcanvasLabel">
+              The Awakening of the Mechanist Nexus
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+              data-bs-target="#bdNavbar"
+            ></button>
+          </div>
+
+          <div class="offcanvas-body p-4 pt-0 p-lg-0">
+            <hr class="d-lg-none" />
+            <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="index.html">Home</a>
+              </li>
+            </ul>
+
+            <hr class="d-lg-none" />
+            <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+              <li class="nav-item col-6 col-lg-auto">
+                <a
+                  class="nav-link py-2 px-0 px-lg-2"
+                  href="#leaderboard-section"
+                  >Leaderboard</a
+                >
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="#story-section"
+                  >Story</a
+                >
+              </li>
+              <li class="nav-item dropdown">
+                <button
+                  type="button"
+                  class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-bs-display="static"
+                >
+                  Missions
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a class="dropdown-item" href="#missions-section"
+                      >Mission 1: The Unearthed Tomb</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission2-item"
+                      >Mission 2: Awakening Threats</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission3-item"
+                      >Mission 3: TBD</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission4-item"
+                      >Mission 4: TBD</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission5-item"
+                      >Mission 5: TBD</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission6-item"
+                      >Mission 6: TBD</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission7-item"
+                      >Mission 7: TBD</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission8-item"
+                      >Mission 8: TBD</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission9-item"
+                      >Mission 9: TBD</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#mission10-item"
+                      >Mission 10: TBD</a
+                    >
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <hr class="d-lg-none" />
+
+            <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="rules.html"
+                  >Gameplay Rules</a
+                >
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="random-events.html"
+                  >Random Events</a
+                >
+              </li>
+              <li class="nav-item col-6 col-lg-auto">
+                <a class="nav-link py-2 px-0 px-lg-2" href="armies.html"
+                  >Armies</a
+                >
+              </li>
+              <hr class="d-lg-none my-2" />
+              <li class="nav-item dropdown">
+                <button
+                  type="button"
+                  class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-bs-display="static"
+                >
+                  External Links
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://army-forge.onepagerules.com/"
+                    >
+                      <i
+                        class="bi bi-box-arrow-up-right me-1 opacity-75"
+                        role="img"
+                        aria-label="external link icon"
+                      ></i
+                      >Army Forge
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/671a88493d3bab9a55a9e004_GF%20-%20Core%20Rules%20v3.4.1%20-%20Print%20Friendly.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Core Rules v3.4.1</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/671a943e62a6cb93732e3371_GF%20-%20Beginner%27s%20Guide%20v3.4.1%20-%20Print-Friendly.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Beginner's Guide v3.4.1</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="https://cdn.prod.website-files.com/636c3b6dcdb4eb2dce722889/66f684dc94f97125698755b6_GF%20-%20Campaign%20Rules%20v3.4.0.pdf"
+                      ><i
+                        class="bi bi-filetype-pdf me-1 opacity-75"
+                        role="img"
+                        aria-label="PDF icon"
+                      ></i
+                      >Campaign Rules v3.4.0</a
+                    >
+                  </li>
+                </ul>
+              </li>
+
+              <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                <div class="vr d-none d-lg-flex h-100 mx-lg-2"></div>
+                <hr class="d-lg-none my-2" />
+              </li>
+              <li class="nav-item dropdown">
+                <button
+                  class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center"
+                  id="bd-theme"
+                  type="button"
+                  aria-expanded="false"
+                  data-bs-toggle="dropdown"
+                  data-bs-display="static"
+                  aria-label="Toggle theme (dark)"
+                >
+                  <i class="bi bi-moon"></i>
+
+                  <span class="d-lg-none ms-2" id="bd-theme-text"
+                    >Toggle theme</span
+                  >
+                </button>
+                <ul
+                  class="dropdown-menu dropdown-menu-end"
+                  aria-labelledby="bd-theme-text"
+                >
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center"
+                      data-bs-theme-value="light"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-sun me-1 opacity-50"></i>
+                      Light
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center theme-change-active active"
+                      data-bs-theme-value="dark"
+                      aria-pressed="true"
+                    >
+                      <i class="bi bi-moon me-1 opacity-50"></i>
+                      Dark
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown-item d-flex align-items-center"
+                      data-bs-theme-value="auto"
+                      aria-pressed="false"
+                    >
+                      <i class="bi bi-circle-half me-1 opacity-50"></i>
+                      Auto
+                    </button>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div
+        id="toast-container"
+        class="toast-container position-fixed bottom-0 end-0 p-3"
+      >
+        <div
+          class="toast align-items-center text-bg-primary border-0"
+          role="alert"
+          id="themeToast"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div class="d-flex">
+            <div class="toast-body"></div>
+            <button
+              type="button"
+              class="btn-close me-2 m-auto"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="container text-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 512 512"
+        style="height: 200px; width: 100%"
+        class="mb-4"
+      >
+        <g transform="translate(0,0)">
+          <path
+            d="M268.725 389.28l3.74 28.7h-30.89l3.74-28.7a11.705 11.705 0 1 1 23.41 0zm33.84-71.83a29.5 29.5 0 1 0 29.5 29.5 29.5 29.5 0 0 0-29.51-29.5zm-94.4 0a29.5 29.5 0 1 0 29.5 29.5 29.5 29.5 0 0 0-29.51-29.5zm245.71-62c0 98.2-48.22 182.68-117.39 220.24-46 28.26-112.77 28.26-156.19 2.5-71.72-36.21-122.17-122.29-122.17-222.73 0-78.16 30.54-147.63 77.89-191.67 0 0-42.08 82.86 9.1 135-11.67-173.77 169.28-63 118-184 151.79 83.33 9.14 105 84.1 148.21 0 0 66.21 47 36.4-91.73 42.95 43.99 70.25 110.3 70.25 184.19zm-68.54 29.87c-2.45-65.49-54.88-119.59-120.26-124.07-3.06-.21-6.15-.31-9.16-.31a129.4 129.4 0 0 0-129.43 129.35 132.15 132.15 0 0 0 24.51 76v25a35 35 0 0 0 34.74 34.69h6.26v16.61a34.66 34.66 0 0 0 34.71 34.39h61.78a34.48 34.48 0 0 0 34.51-34.39v-16.61h5.38a34.89 34.89 0 0 0 34.62-34.75v-28a129.32 129.32 0 0 0 22.33-77.9z"
+            fill="#fff"
+            fill-opacity="1"
+          ></path>
+        </g>
+      </svg>
+      <div class="alert alert-danger">
+        <h1>404 - PAGE NOT FOUND</h1>
+        <hr />
+        <p>
+          The requested scroll has been declared heretical and purged by order
+          of the Inquisition.
+        </p>
+      </div>
+      <p class="quote">
+        "Success is measured in blood; yours or your enemy's." - Imperial Guard
+        motto
+      </p>
+      <a href="index.html" class="button btn btn-danger"
+        >Return to Holy Terra</a
+      >
     </div>
-</body>
+  </body>
 </html>
