@@ -77,3 +77,17 @@ th.sortable.sort-desc::after {
   background-color: rgba(108, 117, 125, 0.1);
   border-left: 4px solid #6c757d;
 }
+
+.blockquote p {
+  max-width: 40ch; /* Limits width for better readability */
+  margin: auto; /* Centers the text */
+  text-wrap: balance; /* Ensures better line breaks */
+  hyphens: auto; /* Enables hyphenation */
+}
+
+.blockquote-footer {
+  max-width: 40ch; /* Limits width for better readability */
+  margin: auto; /* Centers the text */
+  text-wrap: balance; /* Ensures better line breaks */
+  hyphens: auto; /* Enables hyphenation */
+}
