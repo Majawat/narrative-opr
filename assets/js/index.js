@@ -44,31 +44,35 @@ function generateRandomCode() {
 
 // Set a random quote to the page
 function setRandomQuote() {
-  const quotes = [
-    {
-      quote: "Success is measured in blood; yours or your enemy's.",
-      author: "Imperial Guard motto",
-    },
-    {
-      quote: "Trazyn, you fool! You got us front row seats to a coup!",
-      author: "Orikan the Divine",
-    },
-    {
-      quote: "Sorry, I prefer blondes.",
-      author:
-        "Commissar Ciaphas Cain, shortly before shooting a Slaaneshi Succubus",
-    },
-  ];
+  if (document.getElementById("40k-quote")) {
+    const quotes = [
+      {
+        quote: "Success is measured in blood; yours or your enemy's.",
+        author: "Imperial Guard motto",
+      },
+      {
+        quote: "Trazyn, you fool! You got us front row seats to a coup!",
+        author: "Orikan the Divine",
+      },
+      {
+        quote: "Sorry, I prefer blondes.",
+        author:
+          "Commissar Ciaphas Cain<br/><small>shortly before shooting a Slaaneshi Succubus</small>",
+      },
+    ];
 
-  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
 
-  document.getElementById("40k-quote").textContent = randomQuote.quote;
-  document.getElementById("40k-author").textContent = randomQuote.author;
+    document.getElementById("40k-quote").textContent = randomQuote.quote;
+    document.getElementById("40k-author").innerHTML = randomQuote.author;
+  }
 }
 
 // Initialize all page elements after DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
   setExternalLinks();
-  document.getElementById("error-code").textContent = generateRandomCode();
+  if (document.getElementById("error-code")) {
+    document.getElementById("error-code").textContent = generateRandomCode();
+  }
   setRandomQuote();
 });

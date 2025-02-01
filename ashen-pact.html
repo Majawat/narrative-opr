@@ -352,7 +352,28 @@
           </p>
         </div>
       </div>
-      <h2 class="mb-4">Units</h2>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Units</h2>
+            <!-- Refresh Button -->
+            <button
+              id="refresh-data"
+              class="btn btn-sm btn-outline-primary"
+              title="Refresh Army Data"
+            >
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+          <div
+            class="d-flex justify-content-end align-items-center text-muted small mb-2"
+          >
+            <span>Last modified: <strong id="last-modified"></strong></span>
+            <span class="mx-2">|</span>
+            <span>Last fetched: <strong id="last-fetched"></strong></span>
+          </div>
+        </div>
+      </div>
       <div id="unit-container">
         <!-- Units will go here -->
       </div>

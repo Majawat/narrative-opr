@@ -1,12 +1,51 @@
 // Fetch data when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   const armyForgeId = document.getElementById("army-forge-id").textContent;
-  fetch("https://army-forge.onepagerules.com/api/tts?id=" + armyForgeId)
+  const localStorageKey = `armyData_${armyForgeId}`;
+  // Cache duration in milliseconds (1 hour = 3600000 ms)
+  const cacheDuration = 3600000;
+  const now = Date.now();
+  const armyFetched = document.getElementById("last-fetched");
+
+  // Function to process and display the data
+  function processData(data) {
+    displayArmy(data);
+    displayUnits(data);
+  }
+
+  // Try to get cached data from localStorage
+  const cachedDataString = localStorage.getItem(localStorageKey);
+  if (cachedDataString) {
+    try {
+      // Expect cachedData to have a structure like { data: ..., fetchedAt: ... }
+      const cachedDataObj = JSON.parse(cachedDataString);
+      const lastFetchTime = cachedDataObj.fetchedAt;
+      if (now - lastFetchTime < cacheDuration) {
+        console.log(
+          "Using cached data from " + new Date(lastFetchTime).toLocaleString()
+        );
+        armyFetched.textContent = new Date(lastFetchTime).toLocaleString();
+        processData(cachedDataObj.data);
+        return; // Data is fresh, so no need to fetch
+      }
+    } catch (e) {
+      console.error("Error parsing cached data:", e);
+    }
+  }
+  // If there's no cached data or it's stale, fetch new data.
+  const apiUrl =
+    "https://army-forge.onepagerules.com/api/tts?id=" + armyForgeId;
+  fetch(apiUrl)
     .then((response) => response.json())
     .then((data) => {
-      // Process and display the data
-      displayArmy(data);
-      displayUnits(data);
+      // Save the fetched data along with the current timestamp.
+      const cacheObject = {
+        data: data,
+        fetchedAt: Date.now(),
+      };
+      localStorage.setItem(localStorageKey, JSON.stringify(cacheObject));
+      armyFetched.textContent = new Date(Date.now()).toLocaleString();
+      processData(data);
     })
     .catch((error) => console.error("Error fetching JSON:", error));
 });
@@ -166,6 +205,8 @@ function displayUnits(army) {
      </div>  `;
 
     unitDiv.innerHTML = unitDivText;
+    armyModified = document.getElementById("last-modified");
+    armyModified.textContent = new Date(army.modified).toLocaleString();
 
     container.appendChild(unitDiv);
   }
