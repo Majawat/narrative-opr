@@ -91,3 +91,71 @@ th.sortable.sort-desc::after {
   text-wrap: balance; /* Ensures better line breaks */
   hyphens: auto; /* Enables hyphenation */
 }
+
+@keyframes textFlicker {
+  0%,
+  100% {
+    content: "404";
+    opacity: 1;
+  }
+  45% {
+    content: "404";
+    opacity: 1;
+  }
+  46% {
+    content: "40K";
+    opacity: 0.8;
+  }
+  47% {
+    content: "404";
+    opacity: 0.9;
+  }
+  48% {
+    content: "40K";
+    opacity: 1;
+  }
+  50% {
+    content: "404";
+    opacity: 0.8;
+  }
+  52% {
+    content: "40K";
+    opacity: 1;
+  }
+  54% {
+    content: "404";
+    opacity: 0.9;
+  }
+  56% {
+    content: "40K";
+    opacity: 1;
+  }
+  85% {
+    content: "404";
+    opacity: 1;
+  }
+}
+
+.error-text::before {
+  content: "404";
+  animation: inherit;
+}
+.error-text {
+  animation: textFlicker 4s infinite;
+}
+
+svg {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
