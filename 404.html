@@ -1,13 +1,80 @@
-<div className="min-h-screen bg-gray-900 flex items-center justify-center text-center p-4">
-      <div className="space-y-6">
-        <Skull className="w-24 h-24 mx-auto text-red-600" />
-        <h1 className="text-4xl font-bold text-red-600">404 - PAGE NOT FOUND</h1>
-        <div className="max-w-md mx-auto space-y-4 text-gray-300">
-          <p className="text-xl">The requested scroll has been declared heretical and purged by order of the Inquisition.</p>
-          <p className="text-sm italic">"Success is measured in blood; yours or your enemy's." - Imperial Guard motto</p>
-          <a href="/" className="inline-block mt-6 px-6 py-3 bg-red-600 text-white font-bold rounded hover:bg-red-700 transition-colors">
-            Return to Holy Terra
-          </a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #111827;
+            font-family: system-ui, -apple-system, sans-serif;
+            color: #D1D5DB;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 28rem;
+        }
+
+        .skull {
+            width: 6rem;
+            height: 6rem;
+            margin: 0 auto 1.5rem;
+            color: #DC2626;
+        }
+
+        h1 {
+            color: #DC2626;
+            font-size: 2.25rem;
+            margin: 0 0 1.5rem;
+        }
+
+        p {
+            margin: 1rem 0;
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: 0.875rem;
+            margin: 1.5rem 0;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #DC2626;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background-color: #B91C1C;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg class="skull" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 4C7.58172 4 4 7.58172 4 12C4 14.9006 5.60861 17.4273 8 18.7765V20C8 21.1046 8.89543 22 10 22H14C15.1046 22 16 21.1046 16 20V18.7765C18.3914 17.4273 20 14.9006 20 12C20 7.58172 16.4183 4 12 4Z"/>
+            <path d="M9 16H9.01"/>
+            <path d="M15 16H15.01"/>
+        </svg>
+        <h1>404 - PAGE NOT FOUND</h1>
+        <div>
+            <p>The requested scroll has been declared heretical and purged by order of the Inquisition.</p>
+            <p class="quote">"Success is measured in blood; yours or your enemy's." - Imperial Guard motto</p>
+            <a href="/" class="button">Return to Holy Terra</a>
         </div>
-      </div>
-</div>
+    </div>
+</body>
+</html>
