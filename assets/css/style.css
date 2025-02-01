@@ -78,14 +78,7 @@ th.sortable.sort-desc::after {
   border-left: 4px solid #6c757d;
 }
 
-.blockquote p {
-  max-width: 40ch; /* Limits width for better readability */
-  margin: auto; /* Centers the text */
-  text-wrap: balance; /* Ensures better line breaks */
-  hyphens: auto; /* Enables hyphenation */
-}
-
-.blockquote-footer {
+.text-balance {
   max-width: 40ch; /* Limits width for better readability */
   margin: auto; /* Centers the text */
   text-wrap: balance; /* Ensures better line breaks */
@@ -158,4 +151,8 @@ svg {
   100% {
     transform: translateY(0px);
   }
+}
+
+.blockquote-footer {
+  color: var(--bs-body-emphasis);
 }
