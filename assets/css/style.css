@@ -79,10 +79,9 @@ th.sortable.sort-desc::after {
 }
 
 .text-balance {
-  max-width: 40ch; /* Limits width for better readability */
-  margin: auto; /* Centers the text */
-  text-wrap: balance; /* Ensures better line breaks */
-  hyphens: auto; /* Enables hyphenation */
+  max-width: 40ch;
+  margin: auto;
+  text-wrap: balance;
 }
 
 @keyframes textFlicker {
