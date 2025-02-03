@@ -1,54 +1,130 @@
-// Fetch data when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   const armyForgeId = document.getElementById("army-forge-id").textContent;
   const localStorageKey = `armyData_${armyForgeId}`;
-  // Cache duration in milliseconds (1 hour = 3600000 ms)
   const cacheDuration = 3600000;
-  const now = Date.now();
   const armyFetched = document.getElementById("last-fetched");
+  const refreshButton = document.getElementById("refresh-data");
+
+  // Enhanced logging and error handling
+  console.log("Script initialized");
+  console.log("Army Forge ID:", armyForgeId);
+  console.log("Refresh Button:", refreshButton ? "Found" : "Not Found");
 
   // Function to process and display the data
   function processData(data) {
+    // Clear existing units before displaying new ones
+    const container = document.getElementById("unit-container");
+    container.innerHTML = "";
+
     displayArmy(data);
     displayUnits(data);
+    console.log("Data processed successfully");
   }
 
-  // Try to get cached data from localStorage
-  const cachedDataString = localStorage.getItem(localStorageKey);
-  if (cachedDataString) {
-    try {
-      // Expect cachedData to have a structure like { data: ..., fetchedAt: ... }
-      const cachedDataObj = JSON.parse(cachedDataString);
-      const lastFetchTime = cachedDataObj.fetchedAt;
-      if (now - lastFetchTime < cacheDuration) {
-        console.log(
-          "Using cached data from " + new Date(lastFetchTime).toLocaleString()
-        );
-        armyFetched.textContent = new Date(lastFetchTime).toLocaleString();
-        processData(cachedDataObj.data);
-        return; // Data is fresh, so no need to fetch
+  // Function to fetch and cache data
+  function fetchAndCacheData() {
+    const apiUrl = `https://army-forge.onepagerules.com/api/tts?id=${armyForgeId}`;
+    console.log("Full API URL:", apiUrl); // Add this line
+
+    fetch(apiUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const cacheObject = {
+          data: data,
+          fetchedAt: Date.now(),
+        };
+        localStorage.setItem(localStorageKey, JSON.stringify(cacheObject));
+
+        if (armyFetched) {
+          armyFetched.textContent = new Date(Date.now()).toLocaleString();
+        }
+
+        processData(data);
+        console.log("Data refreshed and cached successfully");
+      })
+      .catch((error) => {
+        console.error("Fetch error:", error);
+        alert(`Failed to refresh data: ${error.message}`);
+      });
+  }
+
+  // Function to load cached or fetch new data
+  function loadData() {
+    const now = Date.now();
+    const cachedDataString = localStorage.getItem(localStorageKey);
+
+    if (cachedDataString) {
+      try {
+        const cachedDataObj = JSON.parse(cachedDataString);
+        const lastFetchTime = cachedDataObj.fetchedAt;
+
+        if (now - lastFetchTime < cacheDuration) {
+          console.log(
+            "Using cached data from " + new Date(lastFetchTime).toLocaleString()
+          );
+
+          if (armyFetched) {
+            armyFetched.textContent = new Date(lastFetchTime).toLocaleString();
+          }
+
+          processData(cachedDataObj.data);
+          return;
+        }
+      } catch (e) {
+        console.error("Error parsing cached data:", e);
       }
-    } catch (e) {
-      console.error("Error parsing cached data:", e);
+    }
+
+    // If no valid cached data, fetch new data
+    fetchAndCacheData();
+  }
+
+  // Attach event listener with multiple methods to ensure it works
+  function attachRefreshListener() {
+    if (refreshButton) {
+      refreshButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        console.log("Refresh button clicked directly");
+
+        // Remove cached data
+        localStorage.removeItem(localStorageKey);
+
+        // Fetch fresh data
+        fetchAndCacheData();
+      });
+    } else {
+      console.error("Refresh button not found!");
     }
   }
-  // If there's no cached data or it's stale, fetch new data.
-  const apiUrl =
-    "https://army-forge.onepagerules.com/api/tts?id=" + armyForgeId;
-  fetch(apiUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      // Save the fetched data along with the current timestamp.
-      const cacheObject = {
-        data: data,
-        fetchedAt: Date.now(),
-      };
-      localStorage.setItem(localStorageKey, JSON.stringify(cacheObject));
-      armyFetched.textContent = new Date(Date.now()).toLocaleString();
-      processData(data);
-    })
-    .catch((error) => console.error("Error fetching JSON:", error));
+
+  // Dedicated refresh handler
+  function handleRefresh(event) {
+    console.log("Refresh attempt triggered");
+
+    // Prevent any default actions
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // Clear localStorage for this specific army
+    localStorage.removeItem(localStorageKey);
+
+    // Force a fresh fetch
+    fetchAndCacheData();
+  }
+
+  // Initial setup
+  attachRefreshListener();
+  loadData();
 });
+
+// Rest of the original display functions remain the same...
 
 function displayArmy(army) {
   document.getElementById("army-name").textContent = army.name;
@@ -58,25 +134,39 @@ function displayUnits(army) {
   const container = document.getElementById("unit-container");
 
   for (const unit of army.units) {
+    if (!unit.customName) {
+      unit.customName = unit.name;
+      unit.name = "";
+    }
+
     const unitDiv = document.createElement("div");
-    unitDiv.classList.add("unit-card", "card", "p-4", "bg-body", "rounded");
 
     var unitDivText = `
-      <div class="row">
-      <div class="card mb-4 mb-sm-0 bg-body text-body border-0 col-md-4">
-      <div class="card-body">
-      <h3 class="card-title">${unit.customName}</h3>
-      <h5 class="card-subtitle mb-2 text-muted">${unit.name} [${unit.size}] - <small class="text-muted">${unit.cost}pts.</small></h5>      
-    `;
-
+      <div class="accordion" id="unitAccordion${unit.selectionId}">
+        <div class="accordion-item">
+          <h3 class="accordion-header" id="heading${unit.selectionId}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${unit.selectionId}" aria-expanded="false" aria-controls="collapse${unit.id}">
+              ${unit.customName}
+              <small class="text-muted ms-2">${unit.name} [${unit.size}] - ${unit.cost}pts.</small>
+            </button>
+          </h3>
+          <div id="collapse${unit.selectionId}" class="accordion-collapse collapse" aria-labelledby="heading${unit.selectionId}" data-bs-parent="#unitAccordion${unit.selectionId}">
+          <div class="accordion-body"><div class="card-body">`;
     if (unit.joinToUnit) {
       for (const joinToUnit of army.units) {
         if (joinToUnit.selectionId === unit.joinToUnit) {
+          if (!joinToUnit.customName) {
+            joinToUnit.customName = joinToUnit.name;
+          }
           unitDivText += `
-      <p class="card-text">Joined to: ${joinToUnit.customName}</p>`;
+                  <p >Joined to: ${joinToUnit.customName}</p>`;
         }
       }
     }
+    unitDivText += `  
+            <div class="unit-card card p-4 bg-body rounded">
+    `;
+
     var toughHTML = "";
     for (const rule of unit.rules) {
       if (rule.name === "Tough") {
@@ -117,7 +207,7 @@ function displayUnits(army) {
     unitDivText += `</div></div>`;
 
     unitDivText += `
-    <div class="col-md-8">
+    <div class="unit-card card p-4 bg-body rounded">
       <h4>Weapons</h4>
       <table class="table table-sm table-hover table-striped table-body table-responsive">
         <thead>
@@ -205,7 +295,7 @@ function displayUnits(army) {
      </div>  `;
 
     unitDiv.innerHTML = unitDivText;
-    armyModified = document.getElementById("last-modified");
+    const armyModified = document.getElementById("last-modified");
     armyModified.textContent = new Date(army.modified).toLocaleString();
 
     container.appendChild(unitDiv);

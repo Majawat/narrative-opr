@@ -136,7 +136,7 @@ th.sortable.sort-desc::after {
   animation: textFlicker 4s infinite;
 }
 
-svg {
+#404-icon {
   animation: float 6s ease-in-out infinite;
 }
 
