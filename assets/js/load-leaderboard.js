@@ -74,16 +74,18 @@ function displayLeaderboard(processedData) {
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${row.position}</td>
+      <td style="text-align: center">${row.position}</td>
       <td>${row.player}</td>
       <td>${row.army}</td>
-      <td>${row.victoryPoints}</td>
-      <td>${row.wins}</td>
-      <td>${row.losses}</td>
-      <td>${row.objectives}</td>
-      <td>${row.availablePoints}</td>
-      <td>${row.underdogPoints}</td>
+      <td style="text-align: center">${row.victoryPoints}</td>
+      <td style="text-align: center">${row.wins}</td>
+      <td style="text-align: center">${row.losses}</td>
+      <td style="text-align: center">${row.objectives}</td>
+      <td style="text-align: center">${row.availablePoints}</td>
+      <td style="text-align: center">${row.underdogPoints}</td>
     `;
     tbody.appendChild(tr);
   }
 }
+
+//TODO: create SORT TABLE FUNCTION
