@@ -58,10 +58,10 @@ function processLeaderboard(data) {
 
 function displayLeaderboard(processedData) {
   const tbody = document.querySelector("#leaderboard-table tbody");
-  tbody.innerHTML = ""; // Clear any existing rows
+  tbody.innerHTML = "";
   for (const row of processedData) {
     console.log(row.armyURL);
-    const armyLink = row.army;
+    let armyLink = row.army;
     if (row.armyURL) {
       armyLink =
         '<a href="armies.html#' + row.armyURL + '">' + row.army + "</a>";
