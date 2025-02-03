@@ -38,11 +38,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
     />
-    <script src="assets/js/color-modes.js" defer></script>
-    <script src="assets/js/leaderboard.js" defer></script>
-    <script src="assets/js/definitions.js" defer></script>
-    <script src="assets/js/dice.js" defer></script>
-    <script src="assets/js/index.js" defer></script>
     <link href="assets/css/style.css" rel="stylesheet" />
     <title>The Awakening of the Mechanist Nexus</title>
   </head>
@@ -369,6 +364,17 @@
             We'll go up by 200pts every month, except for November, which we'll
             go up by 400pts.
           </p>
+        </div>
+        <div id="leaderboard-loading" class="alert alert-info">
+          <div class="d-flex align-items-center">
+            <strong role="status">Loading leaderboard...</strong>
+            <div class="spinner-border ms-auto" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div id="leaderboard-error" class="alert alert-danger">
+          <strong role="status">
+            Error loading leaderboard, please try again later.
+          </strong>
         </div>
         <div class="table-responsive">
           <table
@@ -870,5 +876,11 @@
         </div>
       </section>
     </main>
+
+    <script src="assets/js/color-modes.js" defer></script>
+    <script src="assets/js/load-leaderboard.js" defer></script>
+    <script src="assets/js/definitions.js" defer></script>
+    <script src="assets/js/dice.js" defer></script>
+    <script src="assets/js/index.js" defer></script>
   </body>
 </html>

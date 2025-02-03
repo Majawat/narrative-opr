@@ -1,72 +1,73 @@
-[
-  {
-    "basePoints": 1000,
-    "armies": [
-      {
-        "player": "Cody",
-        "playerTitle": "Packlord",
-        "army": "The Ashen Pact",
-        "tagline": "An Uneasy Alliance Against the Iron Tide",
-        "summary": "The Ashen Pact is a fragile alliance between the dedicated Blessed Sisters, driven by a divine crusade against the Robot Legion's unholy machines, and the cunning Jackals, who seek to dismantle and repurpose the Legion's technology for their own survival, bound together by the need to combat a common, mechanical foe.",
-        "faction": ["Jackals", "Blessed Sisters"],
-        "image": "assets/img/ashen-pact.jpg",
-        "image-position": "center 25%",
-        "armyURL": "the-ashen-pact.html",
-        "armyForgeID": "vMzljLVC6ZGv",
-        "wins": 0,
-        "losses": 0,
-        "objectives": 0,
-        "earnedVP": 0,
-        "earnedPts": 0
-      },
-      {
-        "player": "Claire",
-        "playerTitle": "Overlord",
-        "army": "The Iron Daisy Dynasty",
-        "tagline": "Immortal Machines, Awakened to Conquer",
-        "summary": "The Necrons are an ancient race of soulless, immortal machines, once proud and living beings, who traded their flesh for cold metal bodies in a dark pact, only to awaken millions of years later to reclaim the galaxy as their rightful dominion.",
-        "faction": ["Necrons"],
-        "image": "assets/img/necrons.jpg",
-        "image-position": "center 20%",
-        "armyForgeID": null,
-        "wins": 0,
-        "losses": 0,
-        "objectives": 0,
-        "earnedVP": 0,
-        "earnedPts": 0
-      },
-      {
-        "player": "Alex",
-        "playerTitle": "General",
-        "army": "The Blandholm 42nd Siege Corps",
-        "tagline": "The Imperium's Shield Against the Darkness",
-        "summary": "The Astra Militarum, the mighty hammer of the Imperium, is a vast and disciplined army of human soldiers who stand as the first and often last line of defense against the galaxy's horrors.",
-        "faction": ["Astra Militarum"],
-        "image": "assets/img/astra.jpg",
-        "image-position": "center 40%",
-        "armyForgeID": null,
-        "Wins": 0,
-        "Losses": 0,
-        "Objectives": 0,
-        "EarnedVP": 0,
-        "EarnedPoints": 0
-      },
-      {
-        "player": "Andrew",
-        "playerTitle": "Starseer",
-        "army": "The Andrewen Sunlinns",
-        "tagline": "Celestial Guardians of Balance and Order",
-        "summary": "The Saurian Starhost is a primordial race of reptilian warriors guided by ancient celestial wisdom, striving to bring balance and order to the cosmos through calculated warfare.",
-        "faction": ["Saurian Starhost"],
-        "image": "assets/img/starhost.jpg",
-        "image-position": "center 40%",
-        "armyForgeID": null,
-        "Wins": 0,
-        "Losses": 0,
-        "Objectives": 0,
-        "EarnedVP": 0,
-        "EarnedPoints": 0
-      }
-    ]
-  }
-]
+{
+  "basePoints": 1000,
+  "armies": [
+    {
+      "player": "Cody",
+      "playerTitle": "Packlord",
+      "army": "The Ashen Pact",
+      "tagline": "An Uneasy Alliance Against the Iron Tide",
+      "summary": "The Ashen Pact is a fragile alliance between the dedicated Blessed Sisters, driven by a divine crusade against the Robot Legion's unholy machines, and the cunning Jackals, who seek to dismantle and repurpose the Legion's technology for their own survival, bound together by the need to combat a common, mechanical foe.",
+      "faction": ["Jackals", "Blessed Sisters"],
+      "image": "assets/img/ashen-pact.jpg",
+      "image-position": "center 25%",
+      "armyURL": "the-ashen-pact",
+      "armyForgeID": "vMzljLVC6ZGv",
+      "wins": 0,
+      "losses": 0,
+      "objectives": 0,
+      "earnedVP": 0,
+      "earnedPts": 0
+    },
+    {
+      "player": "Claire",
+      "playerTitle": "Overlord",
+      "army": "The Iron Daisy Dynasty",
+      "tagline": "Immortal Machines, Awakened to Conquer",
+      "summary": "The Necrons are an ancient race of soulless, immortal machines, once proud and living beings, who traded their flesh for cold metal bodies in a dark pact, only to awaken millions of years later to reclaim the galaxy as their rightful dominion.",
+      "faction": ["Necrons"],
+      "image": "assets/img/necrons.jpg",
+      "image-position": "center 20%",
+      "armyURL": null,
+      "armyForgeID": null,
+      "wins": 0,
+      "losses": 0,
+      "objectives": 0,
+      "earnedVP": 0,
+      "earnedPts": 0
+    },
+    {
+      "player": "Alex",
+      "playerTitle": "General",
+      "army": "The Blandholm 42nd Siege Corps",
+      "tagline": "The Imperium's Shield Against the Darkness",
+      "summary": "The Astra Militarum, the mighty hammer of the Imperium, is a vast and disciplined army of human soldiers who stand as the first and often last line of defense against the galaxy's horrors.",
+      "faction": ["Astra Militarum"],
+      "image": "assets/img/astra.jpg",
+      "image-position": "center 40%",
+      "armyURL": null,
+      "armyForgeID": null,
+      "wins": 0,
+      "losses": 0,
+      "objectives": 0,
+      "earnedVP": 0,
+      "earnedPts": 0
+    },
+    {
+      "player": "Andrew",
+      "playerTitle": "Starseer",
+      "army": "The Andrewen Sunlinns",
+      "tagline": "Celestial Guardians of Balance and Order",
+      "summary": "The Saurian Starhost is a primordial race of reptilian warriors guided by ancient celestial wisdom, striving to bring balance and order to the cosmos through calculated warfare.",
+      "faction": ["Saurian Starhost"],
+      "image": "assets/img/starhost.jpg",
+      "image-position": "center 40%",
+      "armyURL": null,
+      "armyForgeID": null,
+      "wins": 0,
+      "losses": 0,
+      "objectives": 0,
+      "earnedVP": 0,
+      "earnedPts": 0
+    }
+  ]
+}
