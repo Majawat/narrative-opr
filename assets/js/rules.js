@@ -20,3 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+// RULES API: https://army-forge.onepagerules.com/api/rules/common/2
+// Blessed Sisters Faction book: https://army-forge.onepagerules.com/api/army-books/7oi8zeiqfamiur21?gameSystem=2
+// List of factions: https://army-forge.onepagerules.com/api/army-books?filters=official&gameSystemSlug=grimdark-future&searchText=&page=1&unitCount=0&balanceValid=false&customRules=true&fans=false&sortBy=null
