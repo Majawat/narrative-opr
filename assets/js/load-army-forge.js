@@ -5,11 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const armyFetched = document.getElementById("last-fetched");
   const refreshButton = document.getElementById("refresh-data");
 
-  // Enhanced logging and error handling
-  console.log("Script initialized");
-  console.log("Army Forge ID:", armyForgeId);
-  console.log("Refresh Button:", refreshButton ? "Found" : "Not Found");
-
   // Function to process and display the data
   function processData(data) {
     // Clear existing units before displaying new ones
@@ -18,13 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     displayArmy(data);
     displayUnits(data);
-    console.log("Data processed successfully");
   }
 
   // Function to fetch and cache data
   function fetchAndCacheData() {
     const apiUrl = `https://army-forge.onepagerules.com/api/tts?id=${armyForgeId}`;
-    console.log("Full API URL:", apiUrl); // Add this line
 
     fetch(apiUrl)
       .then((response) => {
@@ -45,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         processData(data);
-        console.log("Data refreshed and cached successfully");
       })
       .catch((error) => {
         console.error("Fetch error:", error);
@@ -95,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem(localStorageKey);
 
         // Fetch fresh data
-        fetchAndCacheData();
+        handleRefresh();
       });
     } else {
       console.error("Refresh button not found!");
@@ -127,6 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
 // Rest of the original display functions remain the same...
 
 function displayArmy(army) {
+  const jsonURL = "assets/leaderboard.json";
+  fetch(jsonURL).then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  });
   document.getElementById("army-name").textContent = army.name;
 }
 
