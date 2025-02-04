@@ -1,12 +1,18 @@
+const leaderboardTable = document.getElementById("leaderboard-table");
+const leaderboardLoading = document.getElementById("leaderboard-loading");
+const leaderboardError = document.getElementById("leaderboard-error");
+
 // Run the function after the DOM content is loaded
 document.addEventListener("DOMContentLoaded", loadJSON);
 
 function loadJSON() {
   const jsonURL = "assets/leaderboard.json";
-  const leaderboardTable = document.getElementById("leaderboard-table");
-  const leaderboardLoading = document.getElementById("leaderboard-loading");
-  const leaderboardError = document.getElementById("leaderboard-error");
+
   const tbody = document.querySelector("#leaderboard-table tbody");
+
+  leaderboardLoading.style.display = "none";
+  leaderboardError.style.display = "none";
+  leaderboardTable.style.display = "block";
 
   tbody.innerHTML = ""; // Clear any existing rows
 
