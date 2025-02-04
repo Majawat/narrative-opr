@@ -94,4 +94,61 @@ function displayLeaderboard(processedData) {
   }
 }
 
-//TODO: create SORT TABLE FUNCTION
+function sortTable(columnIndex) {
+  const table = document.getElementById("leaderboard-table");
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  let direction = table.getAttribute("data-sort-direction");
+
+  const defaultSortDirections = {
+    0: "asc", // Position
+    1: "asc", // Player
+    2: "asc", // Army
+    3: "desc", // Victory Points
+    4: "desc", // Wins
+    5: "asc", // Losses
+    6: "desc", // Special Objectives Completed
+    7: "desc", // Available Points
+    8: "desc", // Underdog Points
+  };
+
+  // Determine the sort direction
+  if (table.getAttribute("data-sort-column") == columnIndex) {
+    direction = direction === "asc" ? "desc" : "asc";
+  } else {
+    direction = defaultSortDirections[columnIndex] || "desc";
+  }
+
+  console.log("Sorting by column", columnIndex, "in", direction, "order");
+
+  // Sort the rows
+  rows.sort((a, b) => {
+    const aText = a.cells[columnIndex].innerText.trim();
+    const bText = b.cells[columnIndex].innerText.trim();
+    const aValue = isNaN(aText) ? aText.toLowerCase() : parseFloat(aText);
+    const bValue = isNaN(bText) ? bText.toLowerCase() : parseFloat(bText);
+
+    if (aValue < bValue) {
+      return direction === "asc" ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return direction === "asc" ? 1 : -1;
+    }
+    return 0;
+  });
+
+  // Reattach sorted rows
+  rows.forEach((row) => tbody.appendChild(row));
+
+  // Update sort direction and column
+  table.setAttribute("data-sort-direction", direction);
+  table.setAttribute("data-sort-column", columnIndex);
+
+  // Update sort indicators
+  document.querySelectorAll("th.sortable").forEach((th, index) => {
+    th.classList.remove("sort-asc", "sort-desc");
+    if (index === columnIndex) {
+      th.classList.add(direction === "asc" ? "sort-asc" : "sort-desc");
+    }
+  });
+}
