@@ -6,7 +6,7 @@ const leaderboardError = document.getElementById("leaderboard-error");
 document.addEventListener("DOMContentLoaded", loadJSON);
 
 function loadJSON() {
-  const jsonURL = "assets/leaderboard.json";
+  const jsonURL = "assets/campaign.json";
 
   const tbody = document.querySelector("#leaderboard-table tbody");
 

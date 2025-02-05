@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Rest of the original display functions remain the same...
 
 function displayArmy(army) {
-  const jsonURL = "assets/leaderboard.json";
+  const jsonURL = "assets/campaign.json";
   fetch(jsonURL).then((response) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
