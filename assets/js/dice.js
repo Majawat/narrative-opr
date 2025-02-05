@@ -5,7 +5,7 @@ function rollDie(sides) {
 
 // Function to display a toast message
 function showToast(message) {
-  var toastContainer = document.getElementById("toast-container");
+ const toastContainer = document.getElementById("toast-container");
   if (!toastContainer) {
     toastContainer = document.createElement("div");
     toastContainer.id = "toast-container";
@@ -16,7 +16,7 @@ function showToast(message) {
     document.body.appendChild(toastContainer);
   }
 
-  var toast = document.createElement("div");
+  const toast = document.createElement("div");
   toast.className = "toast align-items-center text-bg-primary border-0";
   toast.role = "alert";
   toast.ariaLive = "assertive";
@@ -30,7 +30,7 @@ function showToast(message) {
       `;
 
   toastContainer.appendChild(toast);
-  var bsToast = new bootstrap.Toast(toast);
+  const bsToast = new bootstrap.Toast(toast);
   bsToast.show();
 
   setTimeout(function () {
@@ -41,26 +41,25 @@ function showToast(message) {
 
 // Function to handle dice notation clicks
 function handleDiceNotationClick(event) {
-  var notation = event.target.textContent;
-  var dicePattern = /(\d*)d(\d+)([+-]\d+)?/i;
-  var match = notation.match(dicePattern);
+  let notation = event.target.textContent;
+  let dicePattern = /(\d*)d(\d+)([+-]\d+)?/i;
+  let match = notation.match(dicePattern);
 
   if (match) {
-    var numDice = parseInt(match[1]) || 1; // Default to 1 if no number is specified
-    var sides = parseInt(match[2], 10);
-    var modifier = match[3] ? parseInt(match[3], 10) : 0;
+    let numDice = parseInt(match[1]) || 1; // Default to 1 if no number is specified
+    let sides = parseInt(match[2], 10);
+    let modifier = match[3] ? parseInt(match[3], 10) : 0;
 
-    var total = 0;
-    var rolls = [];
-    for (var i = 0; i < numDice; i++) {
-      var roll = rollDie(sides);
+    let total = 0;
+    let rolls = [];
+    for (let i = 0; i < numDice; i++) {
+      let roll = rollDie(sides);
       rolls.push(roll);
       total += roll;
     }
     total += modifier;
 
-    //var resultMessage = rolls.join(" + ");
-    var resultMessage = rolls
+    let resultMessage = rolls
       .map((roll) => `<span class="btn btn-outline-light">${roll}</span>`)
       .join(" + ");
     if (modifier !== 0) {
@@ -76,7 +75,7 @@ function handleDiceNotationClick(event) {
   }
 }
 window.addEventListener("DOMContentLoaded", () => {
-  var diceNotations = document.querySelectorAll(".dice-notation");
+  let diceNotations = document.querySelectorAll(".dice-notation");
   diceNotations.forEach(function (notation) {
     notation.addEventListener("click", handleDiceNotationClick);
     notation.classList.add("btn-primary");

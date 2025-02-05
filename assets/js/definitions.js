@@ -102,10 +102,10 @@ function autoWrapDefinitions() {
   });
 
   // Initialize Bootstrap tooltips
-  var tooltipTriggerList = [].slice.call(
+  let tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
 
@@ -143,10 +143,10 @@ function autoWrapDefinitions() {
     glossaryList.appendChild(list);
 
     // Initialize Bootstrap tooltips for glossary items
-    var glossaryTooltipTriggerList = [].slice.call(
+    let glossaryTooltipTriggerList = [].slice.call(
       glossaryList.querySelectorAll('[data-bs-toggle="tooltip"]')
     );
-    var glossaryTooltipList = glossaryTooltipTriggerList.map(function (
+    let glossaryTooltipList = glossaryTooltipTriggerList.map(function (
       tooltipTriggerEl
     ) {
       return new bootstrap.Tooltip(tooltipTriggerEl);

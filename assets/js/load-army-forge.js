@@ -140,7 +140,7 @@ function displayUnits(army) {
 
     const unitDiv = document.createElement("div");
 
-    var unitDivText = `
+    let unitDivText = `
       <div class="accordion" id="unitAccordion${unit.selectionId}">
         <div class="accordion-item">
           <h3 class="accordion-header" id="heading${unit.selectionId}">
@@ -166,7 +166,7 @@ function displayUnits(army) {
             <div class="unit-card card p-4 bg-body rounded">
     `;
 
-    var toughHTML = "";
+    let toughHTML = "";
     for (const rule of unit.rules) {
       if (rule.name === "Tough") {
         toughHTML = `
