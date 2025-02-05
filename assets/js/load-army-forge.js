@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const armyFetched = document.getElementById("last-fetched");
   const refreshButton = document.getElementById("refresh-data");
 
+  refreshButton.addEventListener("click", (event) => handleRefresh(event));
+
   // Function to process and display the data
   function processData(data) {
     // Clear existing units before displaying new ones
@@ -97,12 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Dedicated refresh handler
   function handleRefresh(event) {
     console.log("Refresh attempt triggered");
-
-    // Prevent any default actions
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
 
     // Clear localStorage for this specific army
     localStorage.removeItem(localStorageKey);
