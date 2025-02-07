@@ -162,3 +162,39 @@ th.sortable.sort-desc::after {
 .blockquote-footer {
   color: var(--bs-body-emphasis);
 }
+
+/* -------------------------------------------- */
+.glossary-term {
+  border-left: 4px solid var(--bs-primary);
+  padding-left: 0.75rem; /* Add padding to maintain alignment */
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease-in-out;
+  scroll-margin-top: 85px;
+}
+
+.glossary-term:hover {
+  border-left-width: 8px;
+  padding-left: calc(
+    0.75rem - 4px
+  ); /* Adjust to counteract the border width increase */
+  background-color: var(--bs-secondary-bg-subtle);
+}
+
+.term-header {
+  font-weight: 600;
+  color: var(--bs-body-emphasis);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.term-definition {
+  color: var(--bs-body-secondary);
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .glossary-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
