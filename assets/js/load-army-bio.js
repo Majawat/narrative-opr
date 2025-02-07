@@ -2,6 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const armiesContainer = document.getElementById("armiesContainer");
   const jsonURL = "assets/campaign.json";
 
+  const tooltipTriggerList = document.querySelectorAll(
+    '[data-bs-toggle="tooltip"]'
+  );
+  const tooltipList = [...tooltipTriggerList].map(
+    (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+  );
+
   armiesContainer.innerHTML = `<div class="alert alert-info" role="alert">Loading Army Data...</div>`;
 
   fetch(jsonURL)
@@ -15,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((data) => {
       armiesContainer.innerHTML = "";
       for (army of data.armies) {
-        console.log(army);
         let armyContent = `
         <section
           id="${army.armyURL}"
@@ -37,8 +43,15 @@ document.addEventListener("DOMContentLoaded", () => {
         armyContent += `<div class="card-header bg-gradient bg-dark text-light">
               <h2 class="mb-0">${army.armyName}</h2>`;
 
-        for (faction of army.faction) {
-          armyContent += `<span class="badge  me-1 text-bg-info">${faction}</span>`;
+        if (army.faction[0].alias) {
+          for (faction of army.faction) {
+            console.log(faction.alias, faction.name);
+            armyContent += `<span class="badge me-1 text-bg-info" data-bs-toggle="tooltip" data-bs-title="${faction.name}">${faction.alias}</span>`;
+          }
+        } else {
+          for (faction of army.faction) {
+            armyContent += `<span class="badge me-1 text-bg-info">${faction}</span>`;
+          }
         }
 
         armyContent += `</div>`;
@@ -53,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
               </p>`;
         armyContent += `<p>${army.summary}</p>`;
 
-        console.log(army.armyURL);
         if (army.armyURL == null) {
           armyContent += `<div class="text-end mt-3"> <a href="" class="btn btn-outline-primary disabled">View Full Army Details</a> </div>`;
         } else {

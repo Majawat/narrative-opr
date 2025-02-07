@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const armyFetched = document.getElementById("last-fetched");
   const refreshButton = document.getElementById("refresh-data");
 
-  refreshButton.addEventListener("click", (event) => handleRefresh(event));
+  refreshButton.addEventListener("click", () => handleRefresh());
 
   // Function to process and display the data
   function processData(data) {
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Dedicated refresh handler
-  function handleRefresh(event) {
+  function handleRefresh() {
     console.log("Refresh attempt triggered");
 
     // Clear localStorage for this specific army
@@ -111,8 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
   attachRefreshListener();
   loadData();
 });
-
-// Rest of the original display functions remain the same...
 
 function displayArmy(army) {
   const jsonURL = "assets/campaign.json";
@@ -159,7 +157,7 @@ function displayUnits(army) {
       }
     }
     unitDivText += `  
-            <div class="unit-card card p-4 bg-body rounded">
+            <div class="unit-card card bg-body rounded">
     `;
 
     let toughHTML = "";
@@ -176,7 +174,7 @@ function displayUnits(army) {
       }
     }
     unitDivText += `
-    <div class="d-flex justify-content-center mb-3">
+    <div class="d-flex justify-content-center pt-3">
       <div class="mx-2 text-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="32" fill="currentColor" class="bi bi-award-fill" viewBox="0 0 16 16">
         <path style="fill: #ad3e25" d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864z"/>

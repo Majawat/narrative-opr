@@ -67,7 +67,6 @@
             src="assets/img/logo.png"
             height="50"
             alt="Logo"
-            loading="lazy"
             id="logo"
             class="me-2 logo"
           />
@@ -317,7 +316,6 @@
           <img
             src="assets/img/roughnecks.jpg"
             class="img-fluid rounded"
-            loading="lazy"
             alt="Banner depicting van Louen's Roughnecks marching into battle"
             style="
               width: 100%;
@@ -364,7 +362,7 @@
         </div>
       </div>
       <div class="card shadow-sm mb-4">
-        <div class="card-body">
+        <div class="card-header bg-gradient bg-dark text-light">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">Units</h2>
             <!-- Refresh Button -->
@@ -372,10 +370,13 @@
               id="refresh-data"
               class="btn btn-sm btn-outline-primary"
               title="Refresh Army Data"
+              type="button"
             >
               <i class="bi bi-arrow-clockwise"></i>
             </button>
           </div>
+        </div>
+        <div class="card-body">
           <div
             class="d-flex justify-content-end align-items-center text-muted small mb-2"
           >
@@ -384,10 +385,10 @@
             <span>Last fetched: <strong id="last-fetched"></strong></span>
           </div>
         </div>
-      </div>
+      
       <div id="unit-container">
         <!-- Units will go here -->
-      </div>
+      </div></div>
     </main>
 
     <script src="assets/js/load-army-forge.js" defer></script>

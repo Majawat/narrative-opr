@@ -25,7 +25,12 @@
       "armyName": "van Louen's Roughnecks",
       "tagline": "The Imperium's Shield Against the Darkness",
       "summary": "During the defense of Croatoas, then Captain van Louen led the 5th company, 832nd Regiment in the defense of industrial city Krassus' Point against the forces of Chaos. After being denied requested supplies and reinforcements van Louen had his forces organize a retreat from the city to an orbital defense fortress outside the city. With the help of the superior defenses of the fortress the 5th company was able to repel repeated attacks from the Chaos forces until the siege of the planet was broken. However Colonel Drast, the commander of the 832nd regiment, viewed the retreat to a defensible position as cowardice and the loss of Krassus' Point as a dereliction of duty by van Louen. Drast had van Louen demoted to the rank of lieutenant and van Louen has since been assigned only security patrols and other rear echelon duties. Unknown to van Louen the coming events could be the path to his rising through the ranks and regaining his honor....",
-      "faction": ["Human Defense Force"],
+      "faction": [
+        {
+          "name": "Human Defense Force",
+          "alias": "832nd Mechanized Infantry Regiment"
+        }
+      ],
       "image": "assets/img/roughnecks.jpg",
       "imagePosition": "center 40%",
       "armyURL": "roughnecks",
