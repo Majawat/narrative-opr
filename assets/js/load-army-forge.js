@@ -114,13 +114,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function displayArmy(army) {
   const jsonURL = "assets/campaign.json";
-  fetch(jsonURL).then((response) => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  });
-  document.getElementById("army-name").textContent = army.name;
+  fetch(jsonURL)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((jsonArmies) => {
+      for (jsonArmy of jsonArmies.armies) {
+        if (army.id === jsonArmy.armyForgeID && army.id !== null) {
+          document.getElementById("army-name").textContent = jsonArmy.armyName;
+          document.getElementById("army-backstory").innerHTML =
+            jsonArmy.backstory;
+        }
+      }
+    });
 }
 
 function displayUnits(army) {

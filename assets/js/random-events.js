@@ -25,14 +25,13 @@ function rollDiceAndHighlight() {
   }
 }
 
-
 document.addEventListener("DOMContentLoaded", function () {
   let tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
 
   let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    l tooltip = new bootstrap.Tooltip(tooltipTriggerEl);
+    let tooltip = new bootstrap.Tooltip(tooltipTriggerEl);
 
     tooltipTriggerEl.addEventListener("click", function () {
       setTimeout(function () {
