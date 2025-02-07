@@ -32,7 +32,7 @@ function processLeaderboard(data) {
   for (const army of data.armies) {
     const row = {
       player: army.player,
-      army: army.army,
+      armyName: army.armyName,
       armyURL: army.armyURL,
       victoryPoints: 2 * army.wins + army.earnedVP,
       wins: army.wins,
@@ -70,12 +70,10 @@ function displayLeaderboard(processedData) {
     let armyLink = row.army;
     if (row.armyURL) {
       armyLink =
-        '<a href="armies.html#' + row.armyURL + '">' + row.army + "</a>";
+        '<a href="armies.html#' + row.armyURL + '">' + row.armyName + "</a>";
       row.army = armyLink;
     } else {
-      armyLink.href = "armies.html";
-      armyLink.textContent = row.army;
-      row.army = armyLink;
+      row.army = row.armyName;
     }
 
     const tr = document.createElement("tr");
