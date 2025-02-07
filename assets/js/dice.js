@@ -5,7 +5,7 @@ function rollDie(sides) {
 
 // Function to display a toast message
 function showToast(message) {
- const toastContainer = document.getElementById("toast-container");
+  const toastContainer = document.getElementById("toast-container");
   if (!toastContainer) {
     toastContainer = document.createElement("div");
     toastContainer.id = "toast-container";
@@ -60,7 +60,9 @@ function handleDiceNotationClick(event) {
     total += modifier;
 
     let resultMessage = rolls
-      .map((roll) => `<span class="btn btn-outline-light">${roll}</span>`)
+      .map(
+        (roll) => `<span class="btn btn-outline-light shadow-lg no-interaction">${roll}</span>`
+      )
       .join(" + ");
     if (modifier !== 0) {
       if (modifier > 0) {
