@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log(army.armyURL);
         if (army.armyURL == null) {
-          armyContent += `<div class="text-end mt-3"> <a href="" class="btn btn-primary disabled">View Full Army Details</a> </div>`;
+          armyContent += `<div class="text-end mt-3"> <a href="" class="btn btn-outline-primary disabled">View Full Army Details</a> </div>`;
         } else {
           armyContent += `<div class="text-end mt-3"> <a href="${army.armyURL}.html" class="btn btn-primary">View Full Army Details</a> </div>`;
         }
