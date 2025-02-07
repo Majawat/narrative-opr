@@ -16,6 +16,7 @@ th.sortable.sort-desc::after {
 .definition {
   cursor: pointer;
   text-decoration: underline;
+  text-decoration-style: dashed;
 }
 
 .nav-scroll-top {
