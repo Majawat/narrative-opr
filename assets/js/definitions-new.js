@@ -5,6 +5,8 @@ function autoWrapDefinitions() {
     "https://army-forge.onepagerules.com/api/rules/common/2";
   const customRulesURL = "assets/json/custom-definitions.json";
 
+  var allRules = [];
+
   fetch(armyForgeRulesURL)
     .then((response) => response.json())
     .then((armyForgeRules) => {
@@ -12,7 +14,7 @@ function autoWrapDefinitions() {
         .then((response) => response.json())
         .then((customRules) => {
           //combine the Custom and Army Forge rules
-          const allRules = armyForgeRules;
+          allRules = armyForgeRules;
           customRules.rules?.forEach((customRule) => {
             allRules.rules.push(customRule);
           });
@@ -73,6 +75,16 @@ function autoWrapDefinitions() {
           document
             .getElementById("special-rules-container")
             .appendChild(ruleCountElement);
+
+          console.log(allRules);
+
+          // Initialize Bootstrap tooltips
+          let tooltipTriggerList = [].slice.call(
+            document.querySelectorAll('[data-bs-toggle="tooltip"]')
+          );
+          let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+          });
         });
     });
 }
