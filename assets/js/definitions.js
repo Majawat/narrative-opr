@@ -110,7 +110,7 @@ function autoWrapDefinitions() {
   });
 
   // Generate glossary list
-  const glossaryList = document.getElementById("glossary-list");
+  const glossaryList = document.getElementById("special-rules-container");
   if (glossaryList) {
     const list = document.createElement("ul");
     list.className = "list-group list-group-flush";
