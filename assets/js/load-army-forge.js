@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to process and display the data
   function processData(data) {
-    // Clear existing units before displaying new ones
     const container = document.getElementById("unit-container");
     container.innerHTML = "";
 
@@ -17,7 +16,25 @@ document.addEventListener("DOMContentLoaded", () => {
     displayUnits(data);
   }
 
-  // Function to fetch and cache data
+  // Function to get local data
+  function getLocalData() {
+    const cachedDataString = localStorage.getItem(localStorageKey);
+    if (cachedDataString) {
+      try {
+        const cachedDataObj = JSON.parse(cachedDataString);
+        return {
+          data: cachedDataObj.data,
+          fetchedAt: cachedDataObj.fetchedAt,
+        };
+      } catch (e) {
+        console.error("Error parsing cached data:", e);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  // Function to fetch and cache data with fallback
   function fetchAndCacheData() {
     const apiUrl = `https://army-forge.onepagerules.com/api/tts?id=${armyForgeId}`;
 
@@ -43,72 +60,64 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch((error) => {
         console.error("Fetch error:", error);
-        alert(`Failed to refresh data: ${error.message}`);
+
+        // Try to use local data as fallback
+        const localData = getLocalData();
+        if (localData) {
+          if (armyFetched) {
+            armyFetched.textContent = `${new Date(
+              localData.fetchedAt
+            ).toLocaleString()} (Offline)`;
+          }
+          processData(localData.data);
+        } else {
+          // Only show error if we have no local data to fall back to
+          alert(
+            "Failed to load army data: No internet connection and no local data available"
+          );
+        }
       });
   }
 
   // Function to load cached or fetch new data
   function loadData() {
     const now = Date.now();
-    const cachedDataString = localStorage.getItem(localStorageKey);
+    const localData = getLocalData();
 
-    if (cachedDataString) {
-      try {
-        const cachedDataObj = JSON.parse(cachedDataString);
-        const lastFetchTime = cachedDataObj.fetchedAt;
+    if (localData) {
+      const lastFetchTime = localData.fetchedAt;
 
-        if (now - lastFetchTime < cacheDuration) {
-          console.log(
-            "Using cached data from " + new Date(lastFetchTime).toLocaleString()
-          );
+      if (now - lastFetchTime < cacheDuration) {
+        console.log(
+          "Using cached data from " + new Date(lastFetchTime).toLocaleString()
+        );
 
-          if (armyFetched) {
-            armyFetched.textContent = new Date(lastFetchTime).toLocaleString();
-          }
-
-          processData(cachedDataObj.data);
-          return;
+        if (armyFetched) {
+          armyFetched.textContent = new Date(lastFetchTime).toLocaleString();
         }
-      } catch (e) {
-        console.error("Error parsing cached data:", e);
+
+        processData(localData.data);
+        return;
       }
     }
 
-    // If no valid cached data, fetch new data
+    // If no valid cached data or cache expired, try to fetch new data
     fetchAndCacheData();
-  }
-
-  // Attach event listener with multiple methods to ensure it works
-  function attachRefreshListener() {
-    if (refreshButton) {
-      refreshButton.addEventListener("click", function (event) {
-        event.preventDefault();
-        console.log("Refresh button clicked directly");
-
-        // Remove cached data
-        localStorage.removeItem(localStorageKey);
-
-        // Fetch fresh data
-        handleRefresh();
-      });
-    } else {
-      console.error("Refresh button not found!");
-    }
   }
 
   // Dedicated refresh handler
   function handleRefresh() {
     console.log("Refresh attempt triggered");
-
-    // Clear localStorage for this specific army
-    localStorage.removeItem(localStorageKey);
-
-    // Force a fresh fetch
     fetchAndCacheData();
   }
 
   // Initial setup
-  attachRefreshListener();
+  refreshButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    console.log("Refresh button clicked directly");
+    handleRefresh();
+  });
+
   loadData();
 });
 
@@ -135,7 +144,7 @@ function displayArmy(army) {
 function displayUnits(army) {
   const container = document.getElementById("unit-container");
 
-  let baseCounts = [];
+  const baseCounts = [];
 
   for (const unit of army.units) {
     if (!unit.customName) {
@@ -143,13 +152,24 @@ function displayUnits(army) {
       unit.name = "";
     }
 
-    console.log(unit.bases);
     const baseSize = unit.bases.round;
-    if (baseSize) {
-      baseCounts[baseSize] = (baseCounts[baseSize] || 0) + unit.size;
-    }
+    const baseCount = unit.size;
 
-    
+    if (baseCounts.length === 0) {
+      baseCounts.push({ baseSize, baseCount });
+    } else {
+      let found = false;
+      for (let i = 0; i < baseCounts.length; i++) {
+        if (baseSize === baseCounts[i].baseSize) {
+          baseCounts[i].baseCount += baseCount;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        baseCounts.push({ baseSize, baseCount });
+      }
+    }
 
     const unitDiv = document.createElement("div");
 
@@ -159,7 +179,7 @@ function displayUnits(army) {
           <h3 class="accordion-header" id="heading${unit.selectionId}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${unit.selectionId}" aria-expanded="false" aria-controls="collapse${unit.id}">
               ${unit.customName}
-              <small class="text-muted ms-2">${unit.name} [${unit.size}] - ${unit.cost}pts. - ${unit.bases}</small>
+              <small class="text-muted ms-2">${unit.name} [${unit.size}] - ${unit.cost}pts. - ${unit.bases.round}mm round base</small>
             </button>
           </h3>
           <div id="collapse${unit.selectionId}" class="accordion-collapse collapse" aria-labelledby="heading${unit.selectionId}" data-bs-parent="#unitAccordion${unit.selectionId}">
@@ -312,4 +332,36 @@ function displayUnits(army) {
 
     container.appendChild(unitDiv);
   }
+
+  //Display table and counts of base sizes in the army
+  console.log(baseCounts);
+  const baseCountDiv = document.createElement("div");
+  baseCountDiv.classList.add("card", "p-4", "bg-body", "rounded");
+
+  const baseCountTable = document.createElement("table");
+  baseCountTable.classList.add(
+    "table",
+    "table-sm",
+    "table-hover",
+    "table-body",
+    "table-responsive"
+  );
+  baseCountTable.innerHTML = `
+  <thead>
+    <tr>
+      <th>Suggested Base Size</th>
+      <th>Count</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${baseCounts
+      .map(
+        ({ baseSize, baseCount }) =>
+          `<tr><td>${baseSize}mm</td><td>${baseCount}</td></tr>`
+      )
+      .join("")}
+  </tbody>
+`;
+  baseCountDiv.innerHTML = baseCountTable.outerHTML;
+  container.appendChild(baseCountDiv);
 }
