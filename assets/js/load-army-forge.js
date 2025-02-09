@@ -135,11 +135,21 @@ function displayArmy(army) {
 function displayUnits(army) {
   const container = document.getElementById("unit-container");
 
+  let baseCounts = [];
+
   for (const unit of army.units) {
     if (!unit.customName) {
       unit.customName = unit.name;
       unit.name = "";
     }
+
+    console.log(unit.bases);
+    const baseSize = unit.bases.round;
+    if (baseSize) {
+      baseCounts[baseSize] = (baseCounts[baseSize] || 0) + unit.size;
+    }
+
+    
 
     const unitDiv = document.createElement("div");
 
@@ -149,7 +159,7 @@ function displayUnits(army) {
           <h3 class="accordion-header" id="heading${unit.selectionId}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${unit.selectionId}" aria-expanded="false" aria-controls="collapse${unit.id}">
               ${unit.customName}
-              <small class="text-muted ms-2">${unit.name} [${unit.size}] - ${unit.cost}pts.</small>
+              <small class="text-muted ms-2">${unit.name} [${unit.size}] - ${unit.cost}pts. - ${unit.bases}</small>
             </button>
           </h3>
           <div id="collapse${unit.selectionId}" class="accordion-collapse collapse" aria-labelledby="heading${unit.selectionId}" data-bs-parent="#unitAccordion${unit.selectionId}">
