@@ -134,7 +134,7 @@ function displayArmy(army) {
       for (jsonArmy of jsonArmies.armies) {
         //Set army navigation links
         let armyNav = document.getElementById("army-nav-links");
-        console.log(armyNav, jsonArmy.armyName);
+
         if (jsonArmy.armyURL) {
           const navLink = document.createElement("li");
           navLink.className = "nav-item col-6 col-lg-auto";
@@ -167,8 +167,8 @@ function displayArmy(army) {
               armyContent += `<span class="badge me-1 text-bg-info" data-bs-toggle="tooltip" data-bs-title="${faction.name}">${faction.alias}</span>`;
             }
           } else {
-            for (faction of army.faction) {
-              armyContent += `<span class="badge me-1 text-bg-info">${faction}</span>`;
+            for (faction of jsonArmy.faction) {
+              armyContent += `<span class="badge me-1 text-bg-info">${faction.name}</span>`;
             }
           }
 
@@ -222,7 +222,7 @@ function displayUnits(army) {
           <h3 class="accordion-header" id="heading${unit.selectionId}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${unit.selectionId}" aria-expanded="false" aria-controls="collapse${unit.id}">
               ${unit.customName}
-              <small class="text-muted ms-2">${unit.name} [${unit.size}] - ${unit.cost}pts.</small>
+              <small class="text-muted ms-2">${unit.name} [${unit.size}] with ${unit.xp} XP - ${unit.cost}pts.</small>
             </button>
           </h3>
           <div id="collapse${unit.selectionId}" class="accordion-collapse collapse" aria-labelledby="heading${unit.selectionId}" data-bs-parent="#unitAccordion${unit.selectionId}">
@@ -278,6 +278,10 @@ function displayUnits(army) {
       .map(
         (rule) => `<span class="badge bg-secondary m-1">${rule.label}</span>`
       )
+      .join("")}</p>`;
+
+    unitDivText += `<p class="d-flex flex-wrap justify-content-center">${unit.traits
+      .map((trait) => `<span class="badge bg-secondary m-1">${trait}</span>`)
       .join("")}</p>`;
     unitDivText += `</div></div>`;
 
@@ -420,4 +424,37 @@ function displayUnits(army) {
   baseCountDiv.innerHTML = baseCountTable.outerHTML;
   const armyContainer = document.getElementById("armyUnit-container");
   armyContainer.appendChild(baseCountDiv);
+
+  //Display Special Rules for this army
+  const specialRulesDiv = document.createElement("div");
+  specialRulesDiv.classList.add("card", "p-3", "bg-body", "rounded");
+
+  const specialRulesTable = document.createElement("table");
+  specialRulesTable.classList.add(
+    "table",
+    "table-sm",
+    "table-hover",
+    "table-body",
+    "table-responsive"
+  );
+
+  specialRulesTable.innerHTML = `
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>description</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${army.specialRules
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(
+        ({ name, description }) =>
+          `<tr><td style="white-space: nowrap;"><strong>${name}</strong></td><td>${description}</td></tr>`
+      )
+      .join("")}
+  </tbody>
+`;
+  specialRulesDiv.innerHTML = specialRulesTable.outerHTML;
+  armyContainer.appendChild(specialRulesDiv);
 }

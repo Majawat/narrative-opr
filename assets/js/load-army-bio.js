@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         } else {
           for (faction of army.faction) {
-            armyContent += `<span class="badge me-1 text-bg-info">${faction}</span>`;
+            armyContent += `<span class="badge me-1 text-bg-info">${faction.name}</span>`;
           }
         }
 
