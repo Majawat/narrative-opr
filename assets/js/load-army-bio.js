@@ -21,7 +21,21 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then((data) => {
       armiesContainer.innerHTML = "";
+      let armyNav = document.getElementById("army-nav-links");
+      armyNav.innerHTML = "";
       for (army of data.armies) {
+        const navLink = document.createElement("li");
+        const link = document.createElement("a");
+        link.textContent = army.armyName;
+        link.className = "dropdown-item";
+        if (army.armyURL) {
+          link.href = `#${army.armyURL}`;
+        } else {
+          army.armyURL = "";
+        }
+        navLink.appendChild(link);
+        armyNav.appendChild(navLink);
+
         let armyContent = `
         <section
           id="${army.armyURL}"

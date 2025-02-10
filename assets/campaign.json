@@ -49,7 +49,7 @@
       "armyName": "The Iron Daisy Dynasty",
       "tagline": "Immortal Machines, Awakened to Conquer",
       "summary": "The Necrons are an ancient race of soulless, immortal machines, once proud and living beings, who traded their flesh for cold metal bodies in a dark pact, only to awaken millions of years later to reclaim the galaxy as their rightful dominion.",
-      "faction": [{ "name": "Necrons", "alias": "Robot Legions" }],
+      "faction": [{ "name": "Robot Legions", "alias": "Necrons" }],
       "image": "assets/img/necrons.jpg",
       "imagePosition": "center 20%",
       "armyURL": null,
