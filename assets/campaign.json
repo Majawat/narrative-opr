@@ -107,6 +107,86 @@
       "title": "The Fractured Signal",
       "overview": "A garbled transmission emanates from deep within the Nexus—an intelligence trapped within? Or a warning?",
       "victory": null
+    },
+    {
+      "number": 4,
+      "points": 1600,
+      "title": "TBD",
+      "datetime": null,
+      "month": "May",
+      "overview": "TBD",
+      "objective": "TBD",
+      "victory": "TBD"
+    },
+    {
+      "number": 5,
+      "points": 1800,
+      "title": "TBD",
+      "datetime": null,
+      "month": "June",
+      "overview": "TBD",
+      "objective": "TBD",
+      "victory": "TBD"
+    },
+    {
+      "number": 6,
+      "points": 2000,
+      "title": "TBD",
+      "datetime": null,
+      "month": "July",
+      "overview": "TBD",
+      "objective": "TBD",
+      "victory": "TBD"
+    },
+    {
+      "number": 7,
+      "points": 2200,
+      "title": "TBD",
+      "datetime": null,
+      "month": "July",
+      "overview": "TBD",
+      "objective": "TBD",
+      "victory": "TBD"
+    },
+    {
+      "number": 8,
+      "points": 2400,
+      "title": "TBD",
+      "datetime": null,
+      "month": "August",
+      "overview": "TBD",
+      "objective": "TBD",
+      "victory": "TBD"
+    },
+    {
+      "number": 7,
+      "points": 2600,
+      "title": "TBD",
+      "datetime": null,
+      "month": "September",
+      "overview": "TBD",
+      "objective": "TBD",
+      "victory": "TBD"
+    },
+    {
+      "number": 8,
+      "points": 2800,
+      "title": "TBD",
+      "datetime": null,
+      "month": "October",
+      "overview": "TBD",
+      "objective": "TBD",
+      "victory": "TBD"
+    },
+    {
+      "number": 9,
+      "points": 3000,
+      "title": "TBD",
+      "datetime": null,
+      "month": "November",
+      "overview": "TBD",
+      "objective": "TBD",
+      "victory": "TBD"
     }
   ]
 }
