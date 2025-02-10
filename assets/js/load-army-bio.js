@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((data) => {
       armiesContainer.innerHTML = "";
       let armyNav = document.getElementById("army-nav-links");
+      let armyContent = "";
       armyNav.innerHTML = "";
       for (army of data.armies) {
         const navLink = document.createElement("li");
@@ -30,17 +31,20 @@ document.addEventListener("DOMContentLoaded", () => {
         link.className = "dropdown-item";
         if (army.armyURL) {
           link.href = `#${army.armyURL}`;
+          armyContent = `
+            <article
+            id="${army.armyURL}"
+            class="col-12 col-md-6 col-lg-5 nav-scroll-top"
+            >`;
         } else {
-          army.armyURL = "";
+          armyContent = `
+          <article
+          class="col-12 col-md-6 col-lg-5 nav-scroll-top"
+          >`;
         }
         navLink.appendChild(link);
         armyNav.appendChild(navLink);
 
-        let armyContent = `
-        <section
-          id="${army.armyURL}"
-          class="col-12 col-md-6 col-lg-5 nav-scroll-top"
-        >`;
         armyContent += `<div class="card border-secondary h-100">`;
         armyContent += `            <img
               src="${army.image}"
@@ -58,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (army.faction[0].alias) {
           for (faction of army.faction) {
-            console.log(faction.alias, faction.name);
             armyContent += `<span class="badge me-1 text-bg-secondary" data-bs-toggle="tooltip" data-bs-title="${faction.name}">${faction.alias}</span>`;
           }
         } else {

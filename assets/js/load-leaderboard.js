@@ -1,18 +1,24 @@
-const leaderboardTable = document.getElementById("leaderboard-table");
+const leaderboardTable = document.getElementById("leaderboard-container");
 const leaderboardLoading = document.getElementById("leaderboard-loading");
 const leaderboardError = document.getElementById("leaderboard-error");
 
 // Run the function after the DOM content is loaded
-document.addEventListener("DOMContentLoaded", loadJSON);
+document.addEventListener("DOMContentLoaded", () => {
+  leaderboardLoading.classList.replace("d-none", "d-flex");
+  leaderboardTable.style.display = "none";
+  leaderboardError.style.display = "none";
+
+  loadJSON();
+
+  leaderboardLoading.classList.replace("d-flex", "d-none");
+  leaderboardTable.style.display = "block";
+  leaderboardError.style.display = "none";
+});
 
 function loadJSON() {
   const jsonURL = "assets/campaign.json";
 
   const tbody = document.querySelector("#leaderboard-table tbody");
-
-  leaderboardLoading.style.display = "none";
-  leaderboardError.style.display = "none";
-  leaderboardTable.style.display = "block";
 
   tbody.innerHTML = ""; // Clear any existing rows
 
@@ -66,7 +72,6 @@ function displayLeaderboard(processedData) {
   const tbody = document.querySelector("#leaderboard-table tbody");
   tbody.innerHTML = "";
   for (const row of processedData) {
-    console.log(row.armyURL);
     let armyLink = row.army;
     if (row.armyURL) {
       armyLink =

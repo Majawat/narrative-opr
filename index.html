@@ -53,7 +53,7 @@
         <div class="d-lg-none" style="width: 4.25rem"></div>
         <a class="navbar-brand d-flex align-items-center" href="index.html">
           <img
-            src="assets/img/logo.png"
+            src="assets/img/logo.webp"
             height="50"
             alt="Logo"
             id="logo"
@@ -365,18 +365,20 @@
             go up by 400pts.
           </p>
         </div>
-        <div id="leaderboard-loading" class="">
-          <div class="alert alert-info d-flex align-items-center">
-            <strong role="status">Loading leaderboard...</strong>
-            <div class="spinner-border ms-auto" aria-hidden="true"></div>
-          </div>
+
+        <div
+          id="leaderboard-loading"
+          class="alert alert-info d-none align-items-center"
+        >
+          <strong role="status">Loading leaderboard...</strong>
+          <div class="spinner-border ms-auto" aria-hidden="true"></div>
         </div>
         <div id="leaderboard-error" class="alert alert-danger">
           <strong role="status">
             Error loading leaderboard, please try again later.
           </strong>
         </div>
-        <div class="table-responsive d-flex">
+        <div id="leaderboard-container" class="table-responsive d-flex">
           <table
             id="leaderboard-table"
             class="table table-striped table-hover table-bordered table-auto w-auto mx-auto"
