@@ -132,10 +132,53 @@ function displayArmy(army) {
     })
     .then((jsonArmies) => {
       for (jsonArmy of jsonArmies.armies) {
+        //Set army navigation links
+        let armyNav = document.getElementById("army-nav-links");
+        console.log(armyNav, jsonArmy.armyName);
+        if (jsonArmy.armyURL) {
+          const navLink = document.createElement("li");
+          navLink.className = "nav-item col-6 col-lg-auto";
+          const link = document.createElement("a");
+          link.className = "nav-link py-2 px-0 px-lg-2";
+          link.href = `${jsonArmy.armyURL + ".html"}`;
+          link.textContent = jsonArmy.armyName;
+          navLink.appendChild(link);
+          armyNav.appendChild(navLink);
+        }
+
         if (army.id === jsonArmy.armyForgeID && army.id !== null) {
           document.getElementById("army-name").textContent = jsonArmy.armyName;
           document.getElementById("army-backstory").innerHTML =
             jsonArmy.backstory;
+          document.title = `${jsonArmy.armyName} | The Awakening of the Mechanist Nexus`;
+          const armyHeroImage = document.getElementById("army-hero-image");
+          armyHeroImage.setAttribute("src", jsonArmy.image);
+          armyHeroImage.setAttribute("alt", jsonArmy.armyName);
+          armyHeroImage.style.objectPosition = jsonArmy.imagePosition;
+          document.getElementById("player-title").textContent =
+            jsonArmy.playerTitle;
+          document.getElementById("army-player").textContent = jsonArmy.player;
+          document.getElementById("army-tagline").textContent =
+            jsonArmy.tagline;
+
+          let armyContent = "";
+          if (jsonArmy.faction[0].alias) {
+            for (faction of jsonArmy.faction) {
+              armyContent += `<span class="badge me-1 text-bg-info" data-bs-toggle="tooltip" data-bs-title="${faction.name}">${faction.alias}</span>`;
+            }
+          } else {
+            for (faction of army.faction) {
+              armyContent += `<span class="badge me-1 text-bg-info">${faction}</span>`;
+            }
+          }
+
+          document.getElementById("army-faction").innerHTML = armyContent;
+          const tooltipTriggerList = document.querySelectorAll(
+            '[data-bs-toggle="tooltip"]'
+          );
+          const tooltipList = [...tooltipTriggerList].map(
+            (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+          );
         }
       }
     });
@@ -179,7 +222,7 @@ function displayUnits(army) {
           <h3 class="accordion-header" id="heading${unit.selectionId}">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${unit.selectionId}" aria-expanded="false" aria-controls="collapse${unit.id}">
               ${unit.customName}
-              <small class="text-muted ms-2">${unit.name} [${unit.size}] - ${unit.cost}pts. - ${unit.bases.round}mm round base</small>
+              <small class="text-muted ms-2">${unit.name} [${unit.size}] - ${unit.cost}pts.</small>
             </button>
           </h3>
           <div id="collapse${unit.selectionId}" class="accordion-collapse collapse" aria-labelledby="heading${unit.selectionId}" data-bs-parent="#unitAccordion${unit.selectionId}">
@@ -323,6 +366,7 @@ function displayUnits(army) {
            : ""
        }
           </div>
+           <p class="text-end">${unit.bases.round}mm round base</p>
         </div>
      </div>  `;
 
@@ -334,9 +378,8 @@ function displayUnits(army) {
   }
 
   //Display table and counts of base sizes in the army
-  console.log(baseCounts);
   const baseCountDiv = document.createElement("div");
-  baseCountDiv.classList.add("card", "p-4", "bg-body", "rounded");
+  baseCountDiv.classList.add("card", "p-3", "bg-body", "col-md-6", "rounded");
 
   const baseCountTable = document.createElement("table");
   baseCountTable.classList.add(
@@ -346,6 +389,12 @@ function displayUnits(army) {
     "table-body",
     "table-responsive"
   );
+
+  const totalBases = baseCounts.reduce(
+    (sum, { baseCount }) => sum + baseCount,
+    0
+  );
+
   baseCountTable.innerHTML = `
   <thead>
     <tr>
@@ -357,11 +406,18 @@ function displayUnits(army) {
     ${baseCounts
       .map(
         ({ baseSize, baseCount }) =>
-          `<tr><td>${baseSize}mm</td><td>${baseCount}</td></tr>`
+          `<tr><td>${baseSize}mm</td><td class="text-align-center">${baseCount}</td></tr>`
       )
       .join("")}
   </tbody>
+  <tfoot>
+    <tr>
+      <td class="text-end"><small>Total:</small></td>
+      <td class="text-align-center"><small>${totalBases}</small></td>
+    </tr>
+  </tfoot>
 `;
   baseCountDiv.innerHTML = baseCountTable.outerHTML;
-  container.appendChild(baseCountDiv);
+  const armyContainer = document.getElementById("armyUnit-container");
+  armyContainer.appendChild(baseCountDiv);
 }

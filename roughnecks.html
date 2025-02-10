@@ -3,16 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="van Louen's Roughnecks - Betrayed by Command, Forged in Battle"
-    />
-    <meta property="og:title" content="van Louen's Roughnecks" />
-    <meta
-      property="og:description"
-      content="Betrayed by Command, Forged in Battle"
-    />
-    <meta property="og:image" content="assets/img/roughnecks.jpg" />
 
     <link
       rel="icon"
@@ -50,7 +40,7 @@
     />
     <link href="assets/css/armies.css" rel="stylesheet" />
     <link href="assets/css/style.css" rel="stylesheet" />
-    <title>van Louen's Roughnecks</title>
+    <title>Generic ArmyPage</title>
   </head>
   <body style="margin-right: 0px" class>
     <header
@@ -116,27 +106,11 @@
             </ul>
 
             <hr class="d-lg-none" />
-            <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
-              <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="#"
-                  >The Ashen Pact</a
-                >
-              </li>
-              <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="necrons.html"
-                  >Necrons</a
-                >
-              </li>
-              <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="roughnecks.html"
-                  >van Louen's Roughnecks</a
-                >
-              </li>
-              <li class="nav-item col-6 col-lg-auto">
-                <a class="nav-link py-2 px-0 px-lg-2" href="starhost.html"
-                  >Saurian Starhost</a
-                >
-              </li>
+            <ul
+              class="navbar-nav flex-row flex-wrap bd-navbar-nav"
+              id="army-nav-links"
+            >
+              <!--Army links end up here-->
             </ul>
             <hr class="d-lg-none" />
 
@@ -316,32 +290,31 @@
           <img
             src="assets/img/roughnecks.jpg"
             class="img-fluid rounded"
-            alt="Image depicting van Louen's Roughnecks marching into battle"
+            id="army-hero-image"
             style="
               width: 100%;
               height: 250px;
               object-fit: cover;
-              object-position: center 25%;
+              object-position: center 30%;
             "
           />
         </div>
         <div class="col-md-5">
-          <h1 id="army-name" class="mb-0 display-4"></h1>
+          <h1 id="army-name" class="mb-0 display-4">GENERIC ARMY NAME</h1>
           <h3 class="card-title text-secondary">
-            General <span class="text-body fw-bold">Alex</span>
+            <span id="player-title">GENERIC</span>
+            <span class="text-body fw-bold" id="army-player">PERSON</span>
           </h3>
-          <p class="lead text-muted">Betrayed by Command, Forged in Battle</p>
-          <div class="d-flex align-items-center mb-4">
-            <span class="badge bg-secondary me-2"
-              >832nd Mechanized Infantry Regiment</span
-            >
+          <p class="lead text-muted" id="army-tagline">GENERIC TAGLINE</p>
+          <div class="d-flex align-items-center mb-4" id="army-faction">
+            <span class="badge bg-secondary me-2">GENERIC FACTION</span>
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-xl-8" id="army-backstory"></div>
       </div>
-      <div class="card shadow-sm mb-4">
+      <div class="card shadow-sm mb-4" id="armyUnit-container">
         <div class="card-header bg-gradient bg-dark text-light">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="mb-0">Units</h2>
@@ -374,7 +347,7 @@
 
     <script src="assets/js/load-army-forge.js" defer></script>
     <script src="assets/js/color-modes.js" defer></script>
-    <script src="assets/js/definitions.js" defer></script>
+    <!--<script src="assets/js/definitions.js" defer></script>-->
     <script src="assets/js/index.js" defer></script>
   </body>
 </html>
