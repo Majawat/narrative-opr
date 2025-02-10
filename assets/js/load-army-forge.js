@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     displayArmy(data);
     displayUnits(data);
+    document.querySelectorAll(".placeholder").forEach(function (el) {
+      el.classList.remove("placeholder");
+    });
   }
 
   // Function to get local data
