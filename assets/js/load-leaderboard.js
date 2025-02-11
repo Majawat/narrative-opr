@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadJSON() {
-  const jsonURL = "assets/campaign.json";
+  const jsonURL = "assets//json/campaign.json";
 
   const tbody = document.querySelector("#leaderboard-table tbody");
 

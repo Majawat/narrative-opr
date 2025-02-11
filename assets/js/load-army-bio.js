@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const armiesContainer = document.getElementById("armiesContainer");
-  const jsonURL = "assets/campaign.json";
+  const jsonURL = "assets//json/campaign.json";
 
   const tooltipTriggerList = document.querySelectorAll(
     '[data-bs-toggle="tooltip"]'

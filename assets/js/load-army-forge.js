@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function displayArmy(army) {
-  const jsonURL = "assets/campaign.json";
+  const jsonURL = "assets//json/campaign.json";
   fetch(jsonURL)
     .then((response) => {
       if (!response.ok) {

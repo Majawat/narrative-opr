@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const jsonURL = "assets/campaign.json";
+  const jsonURL = "assets//json/campaign.json";
 
   fetch(jsonURL)
     .then((response) => response.json())
