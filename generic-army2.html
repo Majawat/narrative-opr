@@ -33,6 +33,79 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
     />
+    <style type="text/css">
+      .xp-badge {
+        background: linear-gradient(45deg, #ffd700, #ffa500);
+        color: black;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 1rem;
+        white-space: nowrap;
+        margin-left: 0.5rem;
+      }
+      .stat-container {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+      .stat-group {
+        text-align: center;
+        position: relative;
+      }
+      .stat-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 0.25rem;
+      }
+
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--bs-body-secondary);
+        margin: 0;
+      }
+
+      /* Ensure cards maintain equal height */
+      .card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card-body {
+        flex: 1 1 auto;
+      }
+      .stat-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--bs-light);
+        margin: 0;
+        position: absolute;
+        bottom: 2.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0 0.3rem;
+        border-radius: 3px;
+      }
+      dl.row dd,
+      dt {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .stat-container {
+          gap: 0.75rem;
+        }
+        .stat-icon {
+          width: 32px;
+          height: 32px;
+        }
+        .stat-value {
+          bottom: 1.75rem;
+        }
+      }
+    </style>
   </head>
   <body style="margin-right: 0px" class>
     <header
@@ -276,49 +349,100 @@
 
     <!-- ArmyForge ID -->
     <div id="army-forge-id" class="d-none">vMzljLVC6ZGv</div>
-    <main class="container my-5">
-      <!-- Hero section-->
-      <!-- Unit section-->
-      <nav>
-        <div class="nav nav-underline flex-row">
-          <button
-            class="flex-fill text-sm-center nav-link active"
-            id="nav-units-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#nav-units"
-            type="button"
-            role="tab"
-            aria-controls="nav-units"
-            aria-selected="true"
-          >
-            Units
-          </button>
-          <button
-            class="flex-fill text-sm-center nav-link"
-            id="nav-rules-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#nav-rules"
-            type="button"
-            role="tab"
-            aria-controls="nav-rules"
-            aria-selected="false"
-          >
-            Special Rules
-          </button>
-          <button
-            class="flex-fill text-sm-center nav-link"
-            id="nav-bases-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#nav-bases"
-            type="button"
-            role="tab"
-            aria-controls="nav-bases"
-            aria-selected="false"
-          >
-            Bases
-          </button>
+    <main class="container-fluid my-5">
+      <!-- Army section-->
+      <div class="row align-items-center">
+        <div class="col-md-4 mb-3 mb-md-0">
+          <img
+            id="army-image"
+            src="assets/img/ashen-pact-small.jpg"
+            alt="Army Image"
+            class="img-fluid rounded"
+            style="
+              max-height: 250px;
+              object-fit: cover;
+              object-position: center 30%;
+              width: 100%;
+            "
+          />
         </div>
-      </nav>
+        <div class="col-md-8">
+          <h1 id="army-name" class="display-4">Generic Army Name</h1>
+          <h2 class="h5 text-muted">Packlord: Cody</h2>
+          <p class="lead">An Uneasy Alliance Against the Iron Tide</p>
+          <p>
+            During the defense of Croatoas, Captain van Louen led his company in
+            repelling Chaos forces at Krassus' Point before being forced to
+            retreat to an orbital defense fortress after critical supplies and
+            reinforcements were denied. Branded a coward by Colonel Drast and
+            demoted to lieutenant, van Louen now awaits the opportunity to
+            reclaim his honor and rise through the ranks.
+          </p>
+        </div>
+      </div>
+
+      <!-- Unit section-->
+      <div class="nav-tabs-wrapper">
+        <nav class="mb-3">
+          <div class="nav nav-underline flex-row">
+            <button
+              class="flex-fill text-sm-center nav-link active"
+              id="nav-units-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#nav-units"
+              type="button"
+              role="tab"
+              aria-controls="nav-units"
+              aria-selected="true"
+            >
+              Units
+            </button>
+            <button
+              class="flex-fill text-sm-center nav-link"
+              id="nav-rules-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#nav-rules"
+              type="button"
+              role="tab"
+              aria-controls="nav-rules"
+              aria-selected="false"
+            >
+              Special Rules
+            </button>
+            <button
+              class="flex-fill text-sm-center nav-link"
+              id="nav-army-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#nav-army"
+              type="button"
+              role="tab"
+              aria-controls="nav-army"
+              aria-selected="false"
+            >
+              Army Bio
+            </button>
+            <button
+              class="flex-fill text-sm-center nav-link"
+              id="nav-bases-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#nav-bases"
+              type="button"
+              role="tab"
+              aria-controls="nav-bases"
+              aria-selected="false"
+            >
+              Bases
+            </button>
+            <button
+              class="text-sm-center btn btn-outline-primary btn-sm"
+              id="refresh-button"
+              type="button"
+            >
+              Refresh
+            </button>
+          </div>
+        </nav>
+      </div>
       <div class="tab-content" id="nav-tabContent">
         <div
           class="tab-pane fade show active"
@@ -327,7 +451,400 @@
           aria-labelledby="nav-units-tab"
           tabindex="0"
         >
-          Zarek Thrull
+          <div class="container-fluid py-4">
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+              <div class="col">
+                <div class="card h-100">
+                  <!--UNIT CARD STARTS HERE-->
+                  <div class="card-body">
+                    <div
+                      class="d-flex justify-content-between align-items-start mb-3"
+                    >
+                      <div id="unit-head-zarek">
+                        <h4 class="mb-1">
+                          Zarek Thal
+                          <span class="xp-badge"
+                            ><i class="bi bi-star-fill"></i> 0 XP</span
+                          >
+                        </h4>
+                        <p class="mb-0">Elite Veteran [1] - 50pts</p>
+                        <p class="mb-0">
+                          Joined to <a href="#ironclaw">Ironclaw Vanguard</a>
+                        </p>
+                        <p class="mb-0 text-muted small">
+                          <i class="bi bi-circle-fill me-1"></i>32mm
+                          <i class="bi bi-square-fill me-1"></i>30mm
+                        </p>
+                      </div>
+                      <div class="stat-container">
+                        <div class="stat-group">
+                          <svg
+                            class="stat-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              style="fill: #ad3e25"
+                              d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864z"
+                            />
+                            <path
+                              style="fill: #f9ddb7"
+                              d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1z"
+                            />
+                          </svg>
+                          <p class="stat-label">Quality</p>
+                          <p class="stat-value">4+</p>
+                        </div>
+                        <div class="stat-group">
+                          <svg
+                            class="stat-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              style="fill: #005f83"
+                              d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"
+                            />
+                          </svg>
+                          <p class="stat-label">Defense</p>
+                          <p class="stat-value">4+</p>
+                        </div>
+                        <div class="stat-group">
+                          <svg
+                            class="stat-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              style="fill: #dc3545"
+                              d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
+                            />
+                          </svg>
+                          <p class="stat-label">Tough</p>
+                          <p class="stat-value">3</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3" id="unit-traits-zarek">
+                      <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-secondary">Carnivore</span>
+                        <span class="badge bg-secondary">Hero</span>
+                        <span class="badge bg-secondary">Relentless</span>
+                        <span class="badge bg-secondary">Strider</span>
+                      </div>
+                    </div>
+                    <div class="p-2 table-responsive">
+                      <table
+                        class="table table-sm table-hover table-striped table-body"
+                      >
+                        <thead>
+                          <tr style="text-align: center">
+                            <th>Weapon</th>
+                            <th>Range</th>
+                            <th>Attack</th>
+                            <th>AP</th>
+                            <th>Special</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>1x Explosive Spear</td>
+                            <td style="text-align: center">-</td>
+                            <td style="text-align: center">A3</td>
+                            <td style="text-align: center">2</td>
+                            <td style="text-align: center">-</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="p-2 table-responsive">
+                      <table
+                        class="table table-sm table-hover table-striped table-body"
+                      >
+                        <thead>
+                          <tr>
+                            <th>Upgrade</th>
+                            <th>Special</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Satellite Backpack</td>
+                            <td>Beacon</td>
+                          </tr>
+                          <tr>
+                            <td>Pathfinder</td>
+                            <td>Hidden Route</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card h-100">
+                  <!--UNIT CARD STARTS HERE-->
+                  <div class="card-body">
+                    <div
+                      class="d-flex justify-content-between align-items-start mb-3"
+                    >
+                      <div id="ironclaw">
+                        <h4 class="mb-1">
+                          Zarek Thal
+                          <span class="xp-badge"
+                            ><i class="bi bi-star-fill"></i> 0 XP</span
+                          >
+                        </h4>
+                        <p class="mb-0">Elite Veteran [1] - 50pts</p>
+                        <p class="mb-0">
+                          Joined to <a href="#ironclaw">Ironclaw Vanguard</a>
+                        </p>
+                        <p class="mb-0 text-muted small">
+                          <i class="bi bi-circle-fill me-1"></i>32mm
+                          <i class="bi bi-square-fill me-1"></i>30mm
+                        </p>
+                      </div>
+                      <div class="stat-container">
+                        <div class="stat-group">
+                          <svg
+                            class="stat-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              style="fill: #ad3e25"
+                              d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864z"
+                            />
+                            <path
+                              style="fill: #f9ddb7"
+                              d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1z"
+                            />
+                          </svg>
+                          <p class="stat-label">Quality</p>
+                          <p class="stat-value">4+</p>
+                        </div>
+                        <div class="stat-group">
+                          <svg
+                            class="stat-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              style="fill: #005f83"
+                              d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"
+                            />
+                          </svg>
+                          <p class="stat-label">Defense</p>
+                          <p class="stat-value">4+</p>
+                        </div>
+                        <div class="stat-group">
+                          <svg
+                            class="stat-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              style="fill: #dc3545"
+                              d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
+                            />
+                          </svg>
+                          <p class="stat-label">Tough</p>
+                          <p class="stat-value">3</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3" id="unit-traits-zarek">
+                      <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-secondary">Carnivore</span>
+                        <span class="badge bg-secondary">Hero</span>
+                        <span class="badge bg-secondary">Relentless</span>
+                        <span class="badge bg-secondary">Strider</span>
+                        <span class="badge bg-secondary">Carnivore</span>
+                        <span class="badge bg-secondary">Hero</span>
+                        <span class="badge bg-secondary">Relentless</span>
+                        <span class="badge bg-secondary">Strider</span>
+                        <span class="badge bg-secondary">Carnivore</span>
+                        <span class="badge bg-secondary">Hero</span>
+                        <span class="badge bg-secondary">Relentless</span>
+                        <span class="badge bg-secondary">Strider</span>
+                        <span class="badge bg-secondary">Carnivore</span>
+                        <span class="badge bg-secondary">Hero</span>
+                        <span class="badge bg-secondary">Relentless</span>
+                        <span class="badge bg-secondary">Strider</span>
+                      </div>
+                    </div>
+                    <div class="p-2 table-responsive">
+                      <table
+                        class="table table-sm table-hover table-striped table-body"
+                      >
+                        <thead>
+                          <tr style="text-align: center">
+                            <th>Weapon</th>
+                            <th>Range</th>
+                            <th>Attack</th>
+                            <th>AP</th>
+                            <th>Special</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>1x Explosive Spear</td>
+                            <td style="text-align: center">-</td>
+                            <td style="text-align: center">A3</td>
+                            <td style="text-align: center">2</td>
+                            <td style="text-align: center">-</td>
+                          </tr>
+                          <tr>
+                            <td>1x Explosive Spear</td>
+                            <td style="text-align: center">-</td>
+                            <td style="text-align: center">A3</td>
+                            <td style="text-align: center">2</td>
+                            <td style="text-align: center">-</td>
+                          </tr>
+                          <tr>
+                            <td>1x Explosive Spear</td>
+                            <td style="text-align: center">-</td>
+                            <td style="text-align: center">A3</td>
+                            <td style="text-align: center">2</td>
+                            <td style="text-align: center">-</td>
+                          </tr>
+                          <tr>
+                            <td>1x Explosive Spear</td>
+                            <td style="text-align: center">-</td>
+                            <td style="text-align: center">A3</td>
+                            <td style="text-align: center">2</td>
+                            <td style="text-align: center">-</td>
+                          </tr>
+                          <tr>
+                            <td>1x Explosive Spear</td>
+                            <td style="text-align: center">-</td>
+                            <td style="text-align: center">A3</td>
+                            <td style="text-align: center">2</td>
+                            <td style="text-align: center">-</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="p-2 table-responsive">
+                      <table
+                        class="table table-sm table-hover table-striped table-body"
+                      >
+                        <thead>
+                          <tr>
+                            <th>Upgrade</th>
+                            <th>Special</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Satellite Backpack</td>
+                            <td>Beacon</td>
+                          </tr>
+                          <tr>
+                            <td>Pathfinder</td>
+                            <td>Hidden Route</td>
+                          </tr>
+                          <tr>
+                            <td>Pathfinder</td>
+                            <td>Hidden Route</td>
+                          </tr>
+                          <tr>
+                            <td>Pathfinder</td>
+                            <td>Hidden Route</td>
+                          </tr>
+                          <tr>
+                            <td>Pathfinder</td>
+                            <td>Hidden Route</td>
+                          </tr>
+                          <tr>
+                            <td>Pathfinder</td>
+                            <td>Hidden Route</td>
+                          </tr>
+                          <tr>
+                            <td>Pathfinder</td>
+                            <td>Hidden Route</td>
+                          </tr>
+                          <tr>
+                            <td>Pathfinder</td>
+                            <td>Hidden Route</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="tab-pane fade"
+          id="nav-army"
+          role="tabpanel"
+          aria-labelledby="nav-army-tab"
+          tabindex="0"
+        >
+          <h3>Origins of the Pact</h3>
+          <p>
+            Long ago, the Blessed Sisters and the Jackals were bitter rivals.
+            The Sisters, devout in their pursuit of purity and divine justice,
+            saw the Jackals as rogues and heretics, while the Jackals viewed the
+            Sisters as zealots blinded by dogma. Their skirmishes were frequent
+            and fierce, leaving scars across the worlds they battled upon.
+          </p>
+          <h3>The Rise of the Robot Legion</h3>
+          <p>
+            Amidst this turmoil, a dormant force stirred—the ancient and coldly
+            calculating Robot Legion. Awakened from their millennia-long
+            slumber, the Legion emerged with a singular purpose: to reclaim
+            their lost dominion and purge all organic life. Their relentless
+            advance brought devastation, wiping out entire worlds with
+            methodical precision.
+          </p>
+          <h3>The First Encounter</h3>
+          <p>
+            Both the Blessed Sisters and the Jackals suffered devastating
+            defeats at the hands of the Robot Legion. Realizing their strength
+            alone was insufficient, leaders from both factions, reluctantly at
+            first, agreed to a temporary truce. In their initial combined
+            efforts, they managed to halt the Legion’s advance, though victory
+            remained elusive.
+          </p>
+          <h3>The Pact Forged in Ash</h3>
+          <p>
+            Faced with the annihilation of their worlds and peoples, the leaders
+            of the Blessed Sisters and the Jackals gathered on the ruins of a
+            once-great city, now reduced to ashes. Here, they forged The Ashen
+            Pact, a sacred and solemn alliance against the greater threat. The
+            Sisters brought their unyielding faith and divine power, while the
+            Jackals contributed their cunning, adaptability, and guerrilla
+            warfare expertise.
+          </p>
+          <h3>Shared Purpose</h3>
+          <p>
+            The Robot Legion's mechanical nature and reanimation protocols
+            presented a unique challenge. The Sisters’ holy relics and
+            sanctified weaponry were effective against the Legion’s metallic
+            bodies and the dark energies that animated them. Meanwhile, the
+            Jackals’ hit-and-run tactics disrupted the Legion’s formations,
+            targeting key nodes to slow their relentless advance.
+          </p>
+          <h3>Ongoing Conflict</h3>
+          <p>
+            Despite their combined efforts, tensions persist within The Ashen
+            Pact. The Sisters struggle with the Jackals' morally ambiguous
+            methods, while the Jackals chafe under the Sisters' rigid structure
+            and unwavering faith. Yet, both know that unity is their only hope
+            for survival.
+          </p>
+          <h3>Prophecy of the Final Battle</h3>
+          <p>
+            Legends speak of a final, apocalyptic confrontation with the Robot
+            Legion, where only the combined might of light and shadow can bring
+            salvation. Until that day, The Ashen Pact fights on, a beacon of
+            hope in a galaxy overshadowed by cold, mechanical tyranny.
+          </p>
         </div>
         <div
           class="tab-pane fade"
@@ -336,7 +853,50 @@
           aria-labelledby="nav-rules-tab"
           tabindex="0"
         >
-          Ambush: When the round ends, pick one friendly unit with Ambush
+          <input
+            type="text"
+            class="form-control mb-3"
+            id="searchRules"
+            placeholder="Search rules..."
+          />
+
+          <dl class="row">
+            <dt class="col-sm-3">AP</dt>
+            <dd class="col-sm-9">
+              Targets get -X to Defense rolls when blocking hits.
+            </dd>
+
+            <dt class="col-sm-3">Ambush</dt>
+            <dd class="col-sm-9">
+              May be set aside before deployment. At the start of any round
+              after the first, may be deployed anywhere over 9” away from enemy
+              units. Players alternate in placing Ambush units, starting with
+              the player that activates next. Units that deploy via Ambush can’t
+              seize or contest objectives on the round they deploy.
+            </dd>
+
+            <dt class="col-sm-3">Beacon</dt>
+            <dd class="col-sm-9">
+              Friendly units using Ambush may ignore distance restrictions from
+              enemies if they are deployed within 6" of this model.
+            </dd>
+
+            <dt class="col-sm-3">Blast</dt>
+            <dd class="col-sm-9">
+              Ignores cover, and after resolving other special rules, each hit
+              is multiplied by X, where X is up to as many hits as models in the
+              target unit.
+            </dd>
+
+            <dt class="col-sm-3">Bounding</dt>
+            <dd class="col-sm-9">
+              When this unit is activated, you may place all models with this
+              rule in it anywhere within D3+1" of their position.
+            </dd>
+
+            <dt class="col-sm-3">Carnivore</dt>
+            <dd class="col-sm-9">Gets +1 to hit in melee.</dd>
+          </dl>
         </div>
         <div
           class="tab-pane fade"
@@ -391,6 +951,33 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <script>
+      //Refresh Button
+      document.getElementById("refresh-button").onclick = function () {
+        console.log("Refresh button clicked");
+      };
+
+      //Search Special Rules
+      document
+        .getElementById("searchRules")
+        ?.addEventListener("input", function (e) {
+          const search = e.target.value.toLowerCase();
+          // Select all dt elements within your definition list.
+          document.querySelectorAll("dl.row dt").forEach((dt) => {
+            // Assume the dd immediately follows the dt.
+            const dd = dt.nextElementSibling;
+            // Combine text from both dt and dd for the search.
+            const combinedText = (
+              dt.textContent +
+              " " +
+              dd.textContent
+            ).toLowerCase();
+            const display = combinedText.includes(search) ? "" : "none";
+            dt.style.display = display;
+            dd.style.display = display;
+          });
+        });
+    </script>
     <script src="assets/js/color-modes.js" defer></script>
     <script src="assets/js/index.js" defer></script>
   </body>
