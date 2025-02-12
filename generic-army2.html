@@ -105,6 +105,11 @@
           bottom: 1.75rem;
         }
       }
+      @media (max-width: 567px) {
+        dl.row dt {
+          border-bottom: none;
+        }
+      }
     </style>
   </head>
   <body style="margin-right: 0px" class>
@@ -386,6 +391,18 @@
         <nav class="mb-3">
           <div class="nav nav-underline flex-row">
             <button
+              class="flex-fill text-sm-center nav-link"
+              id="nav-army-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#nav-army"
+              type="button"
+              role="tab"
+              aria-controls="nav-army"
+              aria-selected="false"
+            >
+              Army Bio
+            </button>
+            <button
               class="flex-fill text-sm-center nav-link active"
               id="nav-units-tab"
               data-bs-toggle="tab"
@@ -409,18 +426,7 @@
             >
               Special Rules
             </button>
-            <button
-              class="flex-fill text-sm-center nav-link"
-              id="nav-army-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#nav-army"
-              type="button"
-              role="tab"
-              aria-controls="nav-army"
-              aria-selected="false"
-            >
-              Army Bio
-            </button>
+
             <button
               class="flex-fill text-sm-center nav-link"
               id="nav-bases-tab"
