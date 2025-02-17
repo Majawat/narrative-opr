@@ -140,11 +140,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     unitCardXP.innerHTML = `<i class="bi bi-star-fill"></i> ${unit.xp} XP`;
     unitCardName.appendChild(unitCardXP);
 
-    // Display unit type, #, and cost
+    // Display unit type, amount, and cost
     const unitCardType = document.createElement("p");
     unitCardType.classList.add("mb-0");
+    let unitCount = unit.size;
+    if (unit.combined) {
+      unitCount += unit.size;
+    } else {
+      unitCount = unit.size;
+    }
     unitCardType.textContent =
-      unit.name + " [" + unit.size + "] - " + unit.cost + "pts";
+      unit.name + " [" + unitCount + "] - " + unit.cost + "pts";
     unitCardBasics.appendChild(unitCardType);
 
     // Display if unit is joined to another unit
