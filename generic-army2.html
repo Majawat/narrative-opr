@@ -33,84 +33,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
     />
-    <style type="text/css">
-      .xp-badge {
-        background: linear-gradient(45deg, #ffd700, #ffa500);
-        color: black;
-        font-size: 0.8rem;
-        padding: 0.2rem 0.5rem;
-        border-radius: 1rem;
-        white-space: nowrap;
-        margin-left: 0.5rem;
-      }
-      .stat-container {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
-      }
-      .stat-group {
-        text-align: center;
-        position: relative;
-      }
-      .stat-icon {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 0.25rem;
-      }
-
-      .stat-label {
-        font-size: 0.75rem;
-        color: var(--bs-body-secondary);
-        margin: 0;
-      }
-
-      /* Ensure cards maintain equal height */
-      .card {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .card-body {
-        flex: 1 1 auto;
-      }
-      .stat-value {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: var(--bs-light);
-        margin: 0;
-        position: absolute;
-        bottom: 2.5rem;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 0 0.3rem;
-        border-radius: 3px;
-      }
-      dl.row dd,
-      dt {
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-
-      @media (max-width: 768px) {
-        .stat-container {
-          gap: 0.75rem;
-        }
-        .stat-icon {
-          width: 32px;
-          height: 32px;
-        }
-        .stat-value {
-          bottom: 1.75rem;
-        }
-      }
-      @media (max-width: 567px) {
-        dl.row dt {
-          border-bottom: none;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <title>The Awakening of the Mechanist Nexus</title>
   </head>
   <body style="margin-right: 0px" class>
     <header
@@ -391,7 +315,7 @@
 
       <!-- Unit section-->
       <div class="nav-tabs-wrapper">
-        <nav class="mb-3">
+        <nav>
           <div class="nav nav-underline flex-row">
             <button
               class="flex-fill text-sm-center nav-link"
@@ -502,7 +426,7 @@
                             />
                           </svg>
                           <p class="stat-label">Quality</p>
-                          <p class="stat-value">4+</p>
+                          <p class="stat-value-high">4+</p>
                         </div>
                         <div class="stat-group">
                           <svg
@@ -962,31 +886,9 @@
     ></script>
     <script>
       //Refresh Button
-      document.getElementById("refresh-button").onclick = function () {
-        console.log("Refresh button clicked");
-      };
-
-      //Search Special Rules
-      document
-        .getElementById("searchRules")
-        ?.addEventListener("input", function (e) {
-          const search = e.target.value.toLowerCase();
-          // Select all dt elements within your definition list.
-          document.querySelectorAll("dl.row dt").forEach((dt) => {
-            // Assume the dd immediately follows the dt.
-            const dd = dt.nextElementSibling;
-            // Combine text from both dt and dd for the search.
-            const combinedText = (
-              dt.textContent +
-              " " +
-              dd.textContent
-            ).toLowerCase();
-            const display = combinedText.includes(search) ? "" : "none";
-            dt.style.display = display;
-            dd.style.display = display;
-          });
-        });
+      
     </script>
+    <script src="assets/js/load-army-forge2.js" defer></script>
     <script src="assets/js/color-modes.js" defer></script>
     <script src="assets/js/index.js" defer></script>
   </body>
