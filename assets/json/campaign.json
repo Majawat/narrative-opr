@@ -51,7 +51,7 @@
       "summary": "",
       "faction": [{ "name": "Alien Swarm", "alias": "Tyranids" }],
       "image": "assets/img/nid-return.jpg",
-      "imagePosition": "center 10%",
+      "imagePosition": "center 30%",
       "armyURL": "nid-return",
       "armyForgeID": "Un3_pRTu2xBO",
       "wins": 0,
