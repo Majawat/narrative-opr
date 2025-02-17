@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const localJsonURL = "assets/json/campaign.json";
   const armyForgeId = document.getElementById("army-forge-id").textContent;
+  const localStorageKey = `armyData_${armyForgeId}`;
   const cacheDuration = 3600000;
   const refreshButton = document.getElementById("refresh-button");
 
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("player-name").textContent = army.player;
         document.getElementById("army-tagline").textContent = army.tagline;
         document.getElementById("army-summary").textContent = army.summary;
-        document.getElementById("army-backstory").textContent = army.backstory;
+        document.getElementById("army-backstory").innerHTML = army.backstory;
       }
     }
   }
@@ -52,7 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Store in cache with timestamp
     // Return parsed data
     const remoteJsonURL = `https://army-forge.onepagerules.com/api/tts?id=${armyForgeId}`;
-    const localStorageKey = `armyData_${armyForgeId}`;
     const cachedData = JSON.parse(localStorage.getItem(localStorageKey));
     if (cachedData) {
       const lastFetchTime = new Date(cachedData.fetchedAt);
@@ -69,7 +69,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       try {
         const remoteResponse = await fetch(remoteJsonURL);
         const remoteData = await remoteResponse.json();
-        console.log("Remote data:", remoteData);
         const cacheObject = {
           data: remoteData,
           fetchedAt: Date.now(),
@@ -153,7 +152,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const unitCardJoined = document.createElement("p");
       unitCardJoined.classList.add("mb-0");
       for (const remoteUnit of remoteData.units) {
-        console.log(remoteUnit.selectionId, unit.joinToUnit);
         if (remoteUnit.selectionId === unit.joinToUnit) {
           unitCardJoined.textContent = "Joined to " + remoteUnit.customName;
           unitCardBasics.appendChild(unitCardJoined);
@@ -168,7 +166,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function handleRefreshData() {
     console.log("Refreshing data...");
-    clearCachedData(currentArmyId);
-    initializeArmy(currentArmyId);
+    clearCachedData(localStorageKey);
+    initializeArmy();
+  }
+
+  function clearCachedData(localStorageKey) {
+    localStorage.removeItem(localStorageKey);
   }
 });

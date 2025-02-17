@@ -524,7 +524,7 @@
           aria-labelledby="nav-army-tab"
           tabindex="0"
         >
-          <div id="army-backstory">
+          <div class="py-4" id="army-backstory">
             <p>GENERIC BACKSTORY</p>
           </div>
         </div>
@@ -535,50 +535,53 @@
           aria-labelledby="nav-rules-tab"
           tabindex="0"
         >
-          <input
-            type="text"
-            class="form-control mb-3"
-            id="searchRules"
-            placeholder="Search rules..."
-          />
+          <div class="py-4">
+            <input
+              type="text"
+              class="form-control mb-3"
+              id="searchRules"
+              placeholder="Search rules..."
+            />
 
-          <dl class="row">
-            <dt class="col-sm-3">AP</dt>
-            <dd class="col-sm-9">
-              Targets get -X to Defense rolls when blocking hits.
-            </dd>
+            <dl class="row">
+              <dt class="col-sm-3">AP</dt>
+              <dd class="col-sm-9">
+                Targets get -X to Defense rolls when blocking hits.
+              </dd>
 
-            <dt class="col-sm-3">Ambush</dt>
-            <dd class="col-sm-9">
-              May be set aside before deployment. At the start of any round
-              after the first, may be deployed anywhere over 9” away from enemy
-              units. Players alternate in placing Ambush units, starting with
-              the player that activates next. Units that deploy via Ambush can’t
-              seize or contest objectives on the round they deploy.
-            </dd>
+              <dt class="col-sm-3">Ambush</dt>
+              <dd class="col-sm-9">
+                May be set aside before deployment. At the start of any round
+                after the first, may be deployed anywhere over 9” away from
+                enemy units. Players alternate in placing Ambush units, starting
+                with the player that activates next. Units that deploy via
+                Ambush can’t seize or contest objectives on the round they
+                deploy.
+              </dd>
 
-            <dt class="col-sm-3">Beacon</dt>
-            <dd class="col-sm-9">
-              Friendly units using Ambush may ignore distance restrictions from
-              enemies if they are deployed within 6" of this model.
-            </dd>
+              <dt class="col-sm-3">Beacon</dt>
+              <dd class="col-sm-9">
+                Friendly units using Ambush may ignore distance restrictions
+                from enemies if they are deployed within 6" of this model.
+              </dd>
 
-            <dt class="col-sm-3">Blast</dt>
-            <dd class="col-sm-9">
-              Ignores cover, and after resolving other special rules, each hit
-              is multiplied by X, where X is up to as many hits as models in the
-              target unit.
-            </dd>
+              <dt class="col-sm-3">Blast</dt>
+              <dd class="col-sm-9">
+                Ignores cover, and after resolving other special rules, each hit
+                is multiplied by X, where X is up to as many hits as models in
+                the target unit.
+              </dd>
 
-            <dt class="col-sm-3">Bounding</dt>
-            <dd class="col-sm-9">
-              When this unit is activated, you may place all models with this
-              rule in it anywhere within D3+1" of their position.
-            </dd>
+              <dt class="col-sm-3">Bounding</dt>
+              <dd class="col-sm-9">
+                When this unit is activated, you may place all models with this
+                rule in it anywhere within D3+1" of their position.
+              </dd>
 
-            <dt class="col-sm-3">Carnivore</dt>
-            <dd class="col-sm-9">Gets +1 to hit in melee.</dd>
-          </dl>
+              <dt class="col-sm-3">Carnivore</dt>
+              <dd class="col-sm-9">Gets +1 to hit in melee.</dd>
+            </dl>
+          </div>
         </div>
         <div
           class="tab-pane fade"
@@ -587,43 +590,45 @@
           aria-labelledby="nav-bases-tab"
           tabindex="0"
         >
-          <div class="card p-3 bg-body col-md-6 rounded mx-auto">
-            <table
-              class="table table-sm table-hover table-body table-responsive"
-            >
-              <thead>
-                <tr>
-                  <th style="text-align: center">Suggested Base Size</th>
-                  <th style="text-align: center">Count</th>
-                </tr>
-              </thead>
-              <tbody class="table-group-divider">
-                <tr>
-                  <td>32mm</td>
-                  <td style="text-align: center">1</td>
-                </tr>
-                <tr>
-                  <td>25mm</td>
-                  <td style="text-align: center">18</td>
-                </tr>
-                <tr>
-                  <td>60x35mm</td>
-                  <td style="text-align: center">3</td>
-                </tr>
-                <tr>
-                  <td>40mm</td>
-                  <td style="text-align: center">3</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td class="text-end">
-                    <small><strong>Total</strong></small>
-                  </td>
-                  <td style="text-align: center"><small>25</small></td>
-                </tr>
-              </tfoot>
-            </table>
+          <div class="py-3">
+            <div class="card p-3 bg-body col-md-6 rounded mx-auto">
+              <table
+                class="table table-sm table-hover table-body table-responsive"
+              >
+                <thead>
+                  <tr>
+                    <th style="text-align: center">Suggested Base Size</th>
+                    <th style="text-align: center">Count</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                  <tr>
+                    <td>32mm</td>
+                    <td style="text-align: center">1</td>
+                  </tr>
+                  <tr>
+                    <td>25mm</td>
+                    <td style="text-align: center">18</td>
+                  </tr>
+                  <tr>
+                    <td>60x35mm</td>
+                    <td style="text-align: center">3</td>
+                  </tr>
+                  <tr>
+                    <td>40mm</td>
+                    <td style="text-align: center">3</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td class="text-end">
+                      <small><strong>Total</strong></small>
+                    </td>
+                    <td style="text-align: center"><small>25</small></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
         </div>
       </div>
