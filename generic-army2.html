@@ -277,7 +277,7 @@
     </header>
 
     <!-- ArmyForge ID -->
-    <div id="army-forge-id" class="d-none">Un3_pRTu2xBO</div>
+    <div id="army-forge-id" class="d-none">vMzljLVC6ZGv</div>
 
     <main class="container-fluid my-5">
       <!-- Army section-->
@@ -300,10 +300,10 @@
           <h1 id="army-name" class="display-4">Generic Army Name</h1>
           <h3 class="text-secondary">
             <span id="player-title" class="">Commander</span>
-            <span class="text-body fw-bold" id="army-player">Player</span>
+            <span class="text-body fw-bold" id="player-name">Player</span>
           </h3>
-          <p class="lead">Tagline</p>
-          <p>SUMMARY</p>
+          <p class="lead" id="army-tagline">Tagline</p>
+          <p id="army-summary">SUMMARY</p>
         </div>
       </div>
 
@@ -379,7 +379,7 @@
           tabindex="0"
         >
           <div class="container-fluid py-4">
-            <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div class="row row-cols-1 row-cols-md-2 g-4" id="units-container">
               <div class="col">
                 <div class="card h-100">
                   <!--UNIT CARD STARTS HERE-->
@@ -524,66 +524,9 @@
           aria-labelledby="nav-army-tab"
           tabindex="0"
         >
-          <h3>Origins of the Pact</h3>
-          <p>
-            Long ago, the Blessed Sisters and the Jackals were bitter rivals.
-            The Sisters, devout in their pursuit of purity and divine justice,
-            saw the Jackals as rogues and heretics, while the Jackals viewed the
-            Sisters as zealots blinded by dogma. Their skirmishes were frequent
-            and fierce, leaving scars across the worlds they battled upon.
-          </p>
-          <h3>The Rise of the Robot Legion</h3>
-          <p>
-            Amidst this turmoil, a dormant force stirred—the ancient and coldly
-            calculating Robot Legion. Awakened from their millennia-long
-            slumber, the Legion emerged with a singular purpose: to reclaim
-            their lost dominion and purge all organic life. Their relentless
-            advance brought devastation, wiping out entire worlds with
-            methodical precision.
-          </p>
-          <h3>The First Encounter</h3>
-          <p>
-            Both the Blessed Sisters and the Jackals suffered devastating
-            defeats at the hands of the Robot Legion. Realizing their strength
-            alone was insufficient, leaders from both factions, reluctantly at
-            first, agreed to a temporary truce. In their initial combined
-            efforts, they managed to halt the Legion’s advance, though victory
-            remained elusive.
-          </p>
-          <h3>The Pact Forged in Ash</h3>
-          <p>
-            Faced with the annihilation of their worlds and peoples, the leaders
-            of the Blessed Sisters and the Jackals gathered on the ruins of a
-            once-great city, now reduced to ashes. Here, they forged The Ashen
-            Pact, a sacred and solemn alliance against the greater threat. The
-            Sisters brought their unyielding faith and divine power, while the
-            Jackals contributed their cunning, adaptability, and guerrilla
-            warfare expertise.
-          </p>
-          <h3>Shared Purpose</h3>
-          <p>
-            The Robot Legion's mechanical nature and reanimation protocols
-            presented a unique challenge. The Sisters’ holy relics and
-            sanctified weaponry were effective against the Legion’s metallic
-            bodies and the dark energies that animated them. Meanwhile, the
-            Jackals’ hit-and-run tactics disrupted the Legion’s formations,
-            targeting key nodes to slow their relentless advance.
-          </p>
-          <h3>Ongoing Conflict</h3>
-          <p>
-            Despite their combined efforts, tensions persist within The Ashen
-            Pact. The Sisters struggle with the Jackals' morally ambiguous
-            methods, while the Jackals chafe under the Sisters' rigid structure
-            and unwavering faith. Yet, both know that unity is their only hope
-            for survival.
-          </p>
-          <h3>Prophecy of the Final Battle</h3>
-          <p>
-            Legends speak of a final, apocalyptic confrontation with the Robot
-            Legion, where only the combined might of light and shadow can bring
-            salvation. Until that day, The Ashen Pact fights on, a beacon of
-            hope in a galaxy overshadowed by cold, mechanical tyranny.
-          </p>
+          <div id="army-backstory">
+            <p>GENERIC BACKSTORY</p>
+          </div>
         </div>
         <div
           class="tab-pane fade"
