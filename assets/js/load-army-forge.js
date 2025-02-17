@@ -422,8 +422,7 @@ function displayUnits(army) {
       <td class="text-end"><small>Total:</small></td>
       <td class="text-align-center"><small>${totalBases}</small></td>
     </tr>
-  </tfoot>
-`;
+  </tfoot>`;
   baseCountDiv.innerHTML = baseCountTable.outerHTML;
   const armyContainer = document.getElementById("armyUnit-container");
   armyContainer.appendChild(baseCountDiv);
