@@ -49,7 +49,7 @@
       "armyName": "Nid' Return",
       "tagline": "NID RETURN TAGLINE",
       "summary": "NID RETURN SUMMARY",
-      "faction": [{ "name": "Alien Swarm", "alias": "Tyranids" }],
+      "faction": [{ "name": "Alien Hives", "alias": "Tyranids" }],
       "image": "assets/img/nid-return-small.jpg",
       "imagePosition": "center 30%",
       "armyURL": "nid-return",
