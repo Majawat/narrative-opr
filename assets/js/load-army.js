@@ -204,29 +204,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 </table>
               </div>
             </div>
-    
-            <!-- Grand Total -->
-            <div class="row mt-3">
-              <div class="col-12">
-                <div class="card bg-body">
-                  <div class="card-body p-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <strong>Total Models</strong>
-                      <span>${
-                        Object.values(baseTotals.round).reduce(
-                          (a, b) => a + b,
-                          0
-                        ) +
-                        Object.values(baseTotals.square).reduce(
-                          (a, b) => a + b,
-                          0
-                        )
-                      }</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       `;
@@ -627,6 +604,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function addNavLinks(localData) {
     const armyNav = document.getElementById("army-nav-links");
+    armyNav.innerHTML = "";
 
     localData.armies.forEach((army) => {
       if (army.armyURL) {
