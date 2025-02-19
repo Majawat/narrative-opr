@@ -12,8 +12,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function initializeArmy() {
     const localData = await fetchLocalData(localJsonURL);
     displayArmyDetails(localData);
-    const remoteData = await fetchRemoteData(armyForgeId, cacheDuration);
+    const remoteData = await fetchRemoteData(
+      armyForgeId,
+      localStorageKey,
+      cacheDuration
+    );
     displayAllUnits(remoteData);
+    const baseTotals = tallyBaseCounts(remoteData.units);
+    displayBaseCounts(baseTotals);
+
+    displayRules(remoteData.specialRules);
   }
 
   async function fetchLocalData(localJsonURL) {
@@ -46,14 +54,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  async function fetchRemoteData(armyForgeId, cacheDuration) {
+  async function fetchRemoteData(armyForgeId, localStorageKey, cacheDuration) {
     // Check local storage first
     // If exists and fresh enough, return cached data
     // Otherwise fetch from API
     // Store in cache with timestamp
     // Return parsed data
+
     const remoteJsonURL = `https://army-forge.onepagerules.com/api/tts?id=${armyForgeId}`;
     const cachedData = JSON.parse(localStorage.getItem(localStorageKey));
+
     if (cachedData) {
       const lastFetchTime = new Date(cachedData.fetchedAt);
       if (Date.now() - lastFetchTime < cacheDuration) {
@@ -64,31 +74,232 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
         return cachedData.data;
       }
-    } else {
-      console.log("No cached data found, fetching new data...");
-      try {
-        const remoteResponse = await fetch(remoteJsonURL);
-        const remoteData = await remoteResponse.json();
-        const cacheObject = {
-          data: remoteData,
-          fetchedAt: Date.now(),
-        };
-        localStorage.setItem(localStorageKey, JSON.stringify(cacheObject));
-        console.log("New data:", remoteData);
-        return remoteData;
-      } catch (error) {
-        console.error("Error fetching data:", error);
+    }
+
+    try {
+      const remoteResponse = await fetch(remoteJsonURL);
+      const remoteData = await remoteResponse.json();
+      const cacheObject = {
+        data: remoteData,
+        fetchedAt: Date.now(),
+      };
+      localStorage.setItem(localStorageKey, JSON.stringify(cacheObject));
+      console.log("Fetched new data:", remoteData);
+      return remoteData;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return error;
+    }
+  }
+  function tallyBaseCounts(units) {
+    // Separate objects to track round and square bases
+    const roundBaseCounts = {};
+    const squareBaseCounts = {};
+
+    for (const unit of units) {
+      if (!unit.bases || !unit.size) continue; // Skip if missing required data
+
+      const quantity = parseInt(unit.size) || 0;
+      if (quantity === 0) continue; // Skip if invalid quantity
+
+      // Handle round bases
+      if (unit.bases.round) {
+        const roundSize = unit.bases.round.toString();
+        roundBaseCounts[roundSize] =
+          (roundBaseCounts[roundSize] || 0) + quantity;
+      }
+
+      // Handle square bases
+      if (unit.bases.square) {
+        const squareSize = unit.bases.square.toString();
+        squareBaseCounts[squareSize] =
+          (squareBaseCounts[squareSize] || 0) + quantity;
       }
     }
+
+    return {
+      round: roundBaseCounts,
+      square: squareBaseCounts,
+    };
+  }
+
+  function displayBaseCounts(baseTotals) {
+    const basesContainer = document.getElementById("nav-bases");
+
+    const html = `
+        <div class="py-3">
+          <div class="card p-3 bg-body col-md-8 rounded mx-auto">
+            <div class="row">
+              <!-- Round Bases Table -->
+              <div class="col-md-6">
+                <h6 class="text-center mb-3">Round Bases</h6>
+                <table class="table table-sm table-hover table-responsive">
+                  <thead>
+                    <tr>
+                      <th>Base Size</th>
+                      <th class="text-center">Count</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-group-divider">
+                    ${Object.entries(baseTotals.round)
+                      .map(
+                        ([size, count]) => `
+                        <tr>
+                          <td>${size}mm</td>
+                          <td class="text-center">${count}</td>
+                        </tr>
+                      `
+                      )
+                      .join("")}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td class="text-end"><small><strong>Total</strong></small></td>
+                      <td class="text-center">
+                        <small>${Object.values(baseTotals.round).reduce(
+                          (a, b) => a + b,
+                          0
+                        )}</small>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+    
+              <!-- Square Bases Table -->
+              <div class="col-md-6">
+                <h6 class="text-center mb-3">Square Bases</h6>
+                <table class="table table-sm table-hover table-responsive">
+                  <thead>
+                    <tr>
+                      <th>Base Size</th>
+                      <th class="text-center">Count</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-group-divider">
+                    ${Object.entries(baseTotals.square)
+                      .map(
+                        ([size, count]) => `
+                        <tr>
+                          <td>${size}mm</td>
+                          <td class="text-center">${count}</td>
+                        </tr>
+                      `
+                      )
+                      .join("")}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td class="text-end"><small><strong>Total</strong></small></td>
+                      <td class="text-center">
+                        <small>${Object.values(baseTotals.square).reduce(
+                          (a, b) => a + b,
+                          0
+                        )}</small>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+    
+            <!-- Grand Total -->
+            <div class="row mt-3">
+              <div class="col-12">
+                <div class="card bg-body">
+                  <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <strong>Total Models</strong>
+                      <span>${
+                        Object.values(baseTotals.round).reduce(
+                          (a, b) => a + b,
+                          0
+                        ) +
+                        Object.values(baseTotals.square).reduce(
+                          (a, b) => a + b,
+                          0
+                        )
+                      }</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+    basesContainer.innerHTML = html;
+  }
+
+  function displayRules(specialRules) {
+    const rulesContainer = document.getElementById("nav-rules");
+
+    // Sort rules alphabetically by name
+    const sortedRules = [...specialRules].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    // Create the HTML structure
+    const html = `
+    <div class="container-fluid py-4">
+      <div class="py-4">
+        <input
+          type="text"
+          class="form-control mb-3"
+          id="searchRules"
+          placeholder="Search rules..."
+        />
+  
+        <dl class="row" id="rulesList">
+          ${sortedRules
+            .map(
+              (rule) => `
+            <dt class="col-sm-3">${rule.name}</dt>
+            <dd class="col-sm-9">${rule.description}</dd>
+          `
+            )
+            .join("")}
+        </dl>
+      </div>
+      </div>
+    `;
+
+    rulesContainer.innerHTML = html;
+
+    // Add search functionality
+    const searchInput = document.getElementById("searchRules");
+    searchInput.addEventListener("input", (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const dtElements = document.querySelectorAll("#rulesList dt");
+      const ddElements = document.querySelectorAll("#rulesList dd");
+
+      for (let i = 0; i < dtElements.length; i++) {
+        const ruleName = dtElements[i].textContent.toLowerCase();
+        const ruleDescription = ddElements[i].textContent.toLowerCase();
+        const matches =
+          ruleName.includes(searchTerm) || ruleDescription.includes(searchTerm);
+
+        dtElements[i].style.display = matches ? "" : "none";
+        ddElements[i].style.display = matches ? "" : "none";
+      }
+    });
   }
 
   function displayAllUnits(remoteData) {
     // Clear existing unit display
     // Loop through units and call displayUnitCard
     const unitsContainer = document.getElementById("units-container");
-
     unitsContainer.innerHTML = "";
+
+    const displayedUnitsIds = new Set();
+    const totalBases = [];
+
     for (const unit of remoteData.units) {
+      if (displayedUnitsIds.has(unit.id)) {
+        continue;
+      }
+      displayedUnitsIds.add(unit.id);
       const unitCard = createUnitCard(unit, remoteData);
       unitsContainer.appendChild(unitCard);
     }
@@ -176,7 +387,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       unitCardJoined.classList.add("mb-0");
       for (const remoteUnit of remoteData.units) {
         if (remoteUnit.selectionId === unit.joinToUnit) {
-          unitCardJoined.textContent = "Joined to " + remoteUnit.customName;
+          let tempName = remoteUnit.customName || remoteUnit.name;
+          unitCardJoined.textContent = "Joined to " + tempName;
           unitCardBasics.appendChild(unitCardJoined);
         }
       }

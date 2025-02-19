@@ -112,16 +112,27 @@ function autoWrapDefinitions() {
   // Generate glossary list
   const glossaryList = document.getElementById("special-rules-container");
   if (glossaryList) {
-    const list = document.createElement("ul");
-    list.className = "list-group list-group-flush";
+    const searchBar = document.createElement("input");
+    searchBar.type = "text";
+    searchBar.className = "form-control mb-3";
+    searchBar.placeholder = "Search rules...";
+    searchBar.id = "searchRules";
+    glossaryList.appendChild(searchBar);
+
+    const dlList = document.createElement("dl");
+    dlList.className = "row";
+    dlList.id = "rulesList";
 
     // Sort terms alphabetically
     const sortedTerms = Object.keys(terms).sort();
 
     sortedTerms.forEach((term) => {
-      const listItem = document.createElement("li");
-      listItem.className =
-        "list-group-item d-flex justify-content-between align-items-start bg-body text-body";
+      const dtElement = document.createElement("dt");
+      dtElement.className = "col-sm-3";
+      dtElement.textContent = term;
+
+      const ddElement = document.createElement("dd");
+      ddElement.className = "col-sm-9";
       let definition = terms[term];
 
       // Loop over the terms and replace them in the definition text
@@ -137,10 +148,11 @@ function autoWrapDefinitions() {
         }
       });
 
-      listItem.innerHTML = `<div class="ms-2 me-auto"><div class="fw-bold">${term}</div> ${definition}</div>`;
-      list.appendChild(listItem);
+      ddElement.innerHTML = definition;
+      dlList.appendChild(dtElement);
+      dlList.appendChild(ddElement);
     });
-    glossaryList.appendChild(list);
+    glossaryList.appendChild(dlList);
 
     // Initialize Bootstrap tooltips for glossary items
     let glossaryTooltipTriggerList = [].slice.call(
@@ -150,6 +162,22 @@ function autoWrapDefinitions() {
       tooltipTriggerEl
     ) {
       return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    searchBar.addEventListener("input", (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const dtElements = document.querySelectorAll("#rulesList dt");
+      const ddElements = document.querySelectorAll("#rulesList dd");
+
+      for (let i = 0; i < dtElements.length; i++) {
+        const ruleName = dtElements[i].textContent.toLowerCase();
+        const ruleDescription = ddElements[i].textContent.toLowerCase();
+        const matches =
+          ruleName.includes(searchTerm) || ruleDescription.includes(searchTerm);
+
+        dtElements[i].style.display = matches ? "" : "none";
+        ddElements[i].style.display = matches ? "" : "none";
+      }
     });
   }
 }
