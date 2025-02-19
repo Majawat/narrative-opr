@@ -47,24 +47,37 @@ function setRandomQuote() {
   if (document.getElementById("40k-quote")) {
     const quotes = [
       {
-        quote: "Success is measured in blood; yours or your enemy's.",
-        author: "Imperial Guard motto",
+        quote: "Ork technology works basically because they believe it does.",
       },
       {
-        quote: "Trazyn, you fool! You got us front row seats to a coup!",
-        author: "Orikan the Divine",
+        quote:
+          "Early Blizzard developers were HUGE fans of Warhammer. The original Warcraft game was going to be a Warhammer game, but the licensing never really happened.",
       },
       {
-        quote: "Sorry, I prefer blondes.",
-        author:
-          "Commissar Ciaphas Cain<br/><small>shortly before shooting a Slaaneshi Succubus</small>",
+        quote:
+          "The first named inquisitor character was called Obiwan Sherlock Clousseau...",
+      },
+      {
+        quote:
+          "Genestealers are fully capable of infiltrating Ork society just like they do humans. However the resulting hybrid offspring are very quickly found out because they are significantly calmer and less disruptive than normal Orks.",
+      },
+      {
+        quote:
+          "In the 41st Millennium, the ocean seals of today are known as blubber dogs.",
+      },
+      {
+        quote:
+          "You may know about the Litany of Hate and the Unbreakable Litany but do you know of the Litany of Percussive Maintence? Techpriests solve all their problems by chanting this litany while using a sacred repair method!",
+      },
+      {
+        quote:
+          "The Mechnicus dug up Nikoli Tesla's skull to use as a weapon against vehicles they don't like. The skull of Elder Nikolas is a relic that will emit an electric halo when the correct psalm is sung to it, disrupting enemy war machines.",
       },
     ];
 
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
 
     document.getElementById("40k-quote").textContent = randomQuote.quote;
-    document.getElementById("40k-author").innerHTML = randomQuote.author;
   }
 }
 
