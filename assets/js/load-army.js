@@ -2,8 +2,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   const localJsonURL = "assets/json/campaign.json";
   const armyForgeId = document.getElementById("army-forge-id").textContent;
   const localStorageKey = `armyData_${armyForgeId}`;
+  const tabStorageKey = `activeTab_${armyForgeId}`;
   const cacheDuration = 3600000;
   const refreshButton = document.getElementById("refresh-button");
+
+  // Get all tab elements
+  const tabElements = document.querySelectorAll('[data-bs-toggle="tab"]');
+
+  // Initialize tabs with stored value or default to 'nav-units'
+  const storedTab = localStorage.getItem(tabStorageKey);
+  if (storedTab) {
+    // Find the tab button for the stored tab
+    const tabButton = document.querySelector(
+      `[data-bs-target="#${storedTab}"]`
+    );
+    if (tabButton) {
+      // Create a new bootstrap tab instance and show it
+      const tab = new bootstrap.Tab(tabButton);
+      tab.show();
+    }
+  }
+
+  // Add event listener for tab changes
+  tabElements.forEach((tabElement) => {
+    tabElement.addEventListener("shown.bs.tab", (event) => {
+      // Get the ID of the newly activated tab pane
+      const activeTabId = event.target
+        .getAttribute("data-bs-target")
+        .replace("#", "");
+      // Store it in localStorage
+      localStorage.setItem(tabStorageKey, activeTabId);
+    });
+  });
 
   refreshButton.addEventListener("click", handleRefreshData);
 
