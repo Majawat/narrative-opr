@@ -306,243 +306,319 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function createUnitCard(unit, remoteData) {
-    // Create/update single card with unit details
-    // Handle weapons list
-    // Handle special rules
-    // Calculate and show base requirements
-    // return card DOM element
+    // Define your icons
     const icons = {
       quality: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-          <path style="fill: #ad3e25" d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864z"/>
-          <path style="fill: #f9ddb7" d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1z"/>
-      </svg>`,
+            <path style="fill: #ad3e25" d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864z"/>
+            <path style="fill: #f9ddb7" d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1z"/>
+        </svg>`,
       defense: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-          <path style="fill: #005f83" d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
-      </svg>`,
+            <path style="fill: #005f83" d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
+        </svg>`,
       tough: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-          <path style="fill: #dc3545" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
-      </svg>`,
+            <path style="fill: #dc3545" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+        </svg>`,
     };
 
-    const unitCol = document.createElement("div");
-    unitCol.classList.add("col");
-    unitCol.id = "unit-" + unit.id;
+    // Helper for element creation
+    const createEl = (
+      tag,
+      { classes = [], text = "", html = "", id = "" } = {}
+    ) => {
+      const el = document.createElement(tag);
+      if (classes.length) el.classList.add(...classes);
+      if (id) el.id = id;
+      if (text) el.textContent = text;
+      if (html) el.innerHTML = html;
+      return el;
+    };
 
-    // Create card
-    const unitCard = document.createElement("div");
-    unitCard.classList.add("card", "h-100");
+    // Create the outer column container
+    const unitCol = createEl("div", {
+      classes: ["col"],
+      id: "unit-" + unit.id,
+    });
+
+    // Create card container and card body
+    const unitCard = createEl("div", { classes: ["card", "h-100"] });
     unitCol.appendChild(unitCard);
-
-    // Create card body
-    const unitCardBody = document.createElement("div");
-    unitCardBody.classList.add("card-body");
+    const unitCardBody = createEl("div", { classes: ["card-body"] });
     unitCard.appendChild(unitCardBody);
 
-    // Create card header
-    const unitCardHeader = document.createElement("div");
-    unitCardHeader.classList.add(
-      "d-flex",
-      "justify-content-between",
-      "align-items-center",
-      "align-items-start",
-      "mb-3"
-    );
+    // Create card header container
+    const unitCardHeader = createEl("div", {
+      classes: [
+        "d-flex",
+        "justify-content-between",
+        "align-items-center",
+        "align-items-start",
+        "mb-3",
+      ],
+    });
     unitCardBody.appendChild(unitCardHeader);
 
-    // Create card basics div
-    const unitCardBasics = document.createElement("div");
-    const unitCardName = document.createElement("h4");
-    unitCardName.classList.add("mb-1");
+    // Create the basics section (name, XP, type, cost, etc.)
+    const unitCardBasics = createEl("div");
 
-    // Display custom name if exists, else unit name
-    unitCardName.textContent = unit.customName || unit.name;
+    // Unit name and XP badge
+    const unitCardName = createEl("h4", {
+      classes: ["mb-1"],
+      text: unit.customName || unit.name,
+    });
+    const unitCardXP = createEl("span", {
+      classes: ["xp-badge"],
+      html: `<i class="bi bi-star-fill"></i> ${unit.xp} XP`,
+    });
+    unitCardName.appendChild(unitCardXP);
     unitCardBasics.appendChild(unitCardName);
 
-    // Display XP badge
-    const unitCardXP = document.createElement("span");
-    unitCardXP.classList.add("xp-badge");
-    unitCardXP.innerHTML = `<i class="bi bi-star-fill"></i> ${unit.xp} XP`;
-    unitCardName.appendChild(unitCardXP);
-
-    // Display unit type, amount, and cost
-    const unitCardType = document.createElement("p");
-    unitCardType.classList.add("mb-0");
+    // Unit type, amount, and cost
     let unitCount = unit.size;
     if (unit.combined) {
-      unitCount = unitCount * 2;
-      const unitCardCombined = document.createElement("div");
-      unitCardCombined.classList.add("mb-0");
-      unitCardCombined.textContent = "Combined Unit";
+      unitCount *= 2;
+      const unitCardCombined = createEl("div", {
+        classes: ["mb-0"],
+        text: "Combined Unit",
+      });
       unitCardBasics.appendChild(unitCardCombined);
-    } else {
-      unitCount = unit.size;
     }
-    unitCardType.textContent =
-      unit.name + " [" + unitCount + "] - " + unit.cost + "pts";
+    const unitCardType = createEl("p", {
+      classes: ["mb-0"],
+      text: `${unit.name} [${unitCount}] - ${unit.cost}pts`,
+    });
     unitCardBasics.appendChild(unitCardType);
 
-    // Display if unit is joined to another unit
+    // Joined unit (if applicable)
     if (unit.joinToUnit) {
-      const unitCardJoined = document.createElement("p");
-      unitCardJoined.classList.add("mb-0");
-      for (const remoteUnit of remoteData.units) {
-        if (remoteUnit.selectionId === unit.joinToUnit) {
-          let tempName = remoteUnit.customName || remoteUnit.name;
-          unitCardJoined.textContent = "Joined to " + tempName;
-          unitCardBasics.appendChild(unitCardJoined);
-        }
+      const joinedUnit = remoteData.units.find(
+        (remoteUnit) => remoteUnit.selectionId === unit.joinToUnit
+      );
+      if (joinedUnit) {
+        const unitCardJoined = createEl("p", {
+          classes: ["mb-0"],
+          text: "Joined to " + (joinedUnit.customName || joinedUnit.name),
+        });
+        unitCardBasics.appendChild(unitCardJoined);
       }
     }
 
-    // Display base size
-    const unitCardBase = document.createElement("p");
-    unitCardBase.classList.add("mb-0", "text-muted", "small");
-    unitCardBase.innerHTML = `<i class="bi bi-circle-fill"></i> ${unit.bases.round}mm | <i class="bi bi-square-fill"></i> ${unit.bases.square}mm`;
+    // Base size info
+    const unitCardBase = createEl("p", {
+      classes: ["mb-0", "text-muted", "small"],
+      html: `<i class="bi bi-circle-fill"></i> ${unit.bases.round}mm | <i class="bi bi-square-fill"></i> ${unit.bases.square}mm`,
+    });
     unitCardBasics.appendChild(unitCardBase);
 
     unitCardHeader.appendChild(unitCardBasics);
 
     // Create stat container
-    const unitCardStats = document.createElement("div");
-    unitCardStats.classList.add("stat-container");
+    const unitCardStats = createEl("div", { classes: ["stat-container"] });
 
-    // Create stat group for quality
-    const unitQualityGroup = document.createElement("div");
-    unitQualityGroup.classList.add("stat-group");
-    const iconQuality = document.createElement("span");
-    iconQuality.innerHTML = icons.quality;
-    unitQualityGroup.appendChild(iconQuality);
-    const unitQualityLabel = document.createElement("p");
-    unitQualityLabel.classList.add("stat-label");
-    unitQualityLabel.textContent = "Quality";
-    unitQualityGroup.appendChild(unitQualityLabel);
-    const unitQualityValue = document.createElement("p");
-    unitQualityValue.classList.add("stat-value-high");
-    unitQualityValue.textContent = unit.quality + "+";
-    unitQualityGroup.appendChild(unitQualityValue);
+    // Stat group: Quality
+    const unitQualityGroup = createEl("div", { classes: ["stat-group"] });
+    unitQualityGroup.appendChild(createEl("span", { html: icons.quality }));
+    unitQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Quality" })
+    );
+    unitQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-value-high"], text: unit.quality + "+" })
+    );
     unitCardStats.appendChild(unitQualityGroup);
 
-    // Create stat group for defense
-    const unitDefenseGroup = document.createElement("div");
-    unitDefenseGroup.classList.add("stat-group");
-    const iconDefense = document.createElement("span");
-    iconDefense.innerHTML = icons.defense;
-    unitDefenseGroup.appendChild(iconDefense);
-    const unitDefenseLabel = document.createElement("p");
-    unitDefenseLabel.classList.add("stat-label");
-    unitDefenseLabel.textContent = "Defense";
-    unitDefenseGroup.appendChild(unitDefenseLabel);
-    const unitDefenseValue = document.createElement("p");
-    unitDefenseValue.classList.add("stat-value");
-    unitDefenseValue.textContent = unit.defense;
-    unitDefenseGroup.appendChild(unitDefenseValue);
+    // Stat group: Defense
+    const unitDefenseGroup = createEl("div", { classes: ["stat-group"] });
+    unitDefenseGroup.appendChild(createEl("span", { html: icons.defense }));
+    unitDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Defense" })
+    );
+    unitDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-value"], text: unit.defense + "+" })
+    );
     unitCardStats.appendChild(unitDefenseGroup);
 
-    // Create stat group for Tough
-    for (const rule of unit.rules) {
-      if (rule.name === "Tough") {
-        const unitToughGroup = document.createElement("div");
-        unitToughGroup.classList.add("stat-group");
-        const iconTough = document.createElement("span");
-        iconTough.innerHTML = icons.tough;
-        unitToughGroup.appendChild(iconTough);
-        const unitToughLabel = document.createElement("p");
-        unitToughLabel.classList.add("stat-label");
-        unitToughLabel.textContent = "Tough";
-        unitToughGroup.appendChild(unitToughLabel);
-        const unitToughValue = document.createElement("p");
-        unitToughValue.classList.add("stat-value");
-        unitToughValue.textContent = rule.rating;
-        unitToughGroup.appendChild(unitToughValue);
-        unitCardStats.appendChild(unitToughGroup);
-      }
+    // Stat group: Tough (if present)
+    const toughRule = unit.rules.find((rule) => rule.name === "Tough");
+    if (toughRule) {
+      const unitToughGroup = createEl("div", { classes: ["stat-group"] });
+      unitToughGroup.appendChild(createEl("span", { html: icons.tough }));
+      unitToughGroup.appendChild(
+        createEl("p", { classes: ["stat-label"], text: "Tough" })
+      );
+      unitToughGroup.appendChild(
+        createEl("p", { classes: ["stat-value"], text: toughRule.rating })
+      );
+      unitCardStats.appendChild(unitToughGroup);
     }
 
     unitCardHeader.appendChild(unitCardStats);
 
-    // Display traits
-    const unitTraitsContainer = document.createElement("div");
-    unitTraitsContainer.classList.add("mb-3");
-    const unitTraits = document.createElement("div");
-    unitTraits.classList.add("d-flex", "flex-wrap", "gap-1");
-    for (const rule of unit.rules) {
-      const traitSpan = document.createElement("span");
-      traitSpan.classList.add("badge", "bg-secondary");
-      traitSpan.textContent = rule.name;
-      unitTraits.appendChild(traitSpan);
-    }
+    // Create traits container
+    const unitTraitsContainer = createEl("div", { classes: ["mb-3"] });
+    const unitTraits = createEl("div", {
+      classes: ["d-flex", "flex-wrap", "gap-1"],
+    });
+    unit.rules.forEach((rule) => {
+      unitTraits.appendChild(
+        createEl("span", {
+          classes: ["badge", "bg-secondary"],
+          text: rule.name,
+        })
+      );
+    });
     unitTraitsContainer.appendChild(unitTraits);
     unitCardBody.appendChild(unitTraitsContainer);
 
-    // Display weapons
-    const unitWeaponsContainer = document.createElement("div");
-    unitWeaponsContainer.classList.add("p-2", "table-responsive");
-    const unitWeaponsTable = document.createElement("table");
-    unitWeaponsTable.classList.add(
-      "table",
-      "table-sm",
-      "table-hover",
-      "table-striped",
-      "table-body"
-    );
-    const unitWeaponsHeader = document.createElement("thead");
-    const unitWeaponsHeaderRow = document.createElement("tr");
-    unitWeaponsHeaderRow.style.textAlign = "center";
-    const unitWeaponsHeaderName = document.createElement("th");
-    unitWeaponsHeaderName.textContent = "Weapon";
-    unitWeaponsHeaderRow.appendChild(unitWeaponsHeaderName);
-    const unitWeaponsHeaderRange = document.createElement("th");
-    unitWeaponsHeaderRange.textContent = "Range";
-    unitWeaponsHeaderRow.appendChild(unitWeaponsHeaderRange);
-    const unitWeaponsHeaderAttack = document.createElement("th");
-    unitWeaponsHeaderAttack.textContent = "Attack";
-    unitWeaponsHeaderRow.appendChild(unitWeaponsHeaderAttack);
-    const unitWeaponsHeaderAP = document.createElement("th");
-    unitWeaponsHeaderAP.textContent = "AP";
-    unitWeaponsHeaderRow.appendChild(unitWeaponsHeaderAP);
-    const unitWeaponsHeaderSpecial = document.createElement("th");
-    unitWeaponsHeaderSpecial.textContent = "Special";
-    unitWeaponsHeaderRow.appendChild(unitWeaponsHeaderSpecial);
-    unitWeaponsHeader.appendChild(unitWeaponsHeaderRow);
+    // ===== WEAPONS SECTION (inside card-body) =====
+    const weaponsHeader = createEl("h4", { text: "Weapons" });
+    unitCardBody.appendChild(weaponsHeader);
 
-    const unitWeaponsBody = document.createElement("tbody");
-    for (const weapon of unit.weapons) {
-      const unitWeaponsBodyRow = document.createElement("tr");
-      const unitWeaponsBodyName = document.createElement("td");
-      unitWeaponsBodyName.textContent = weapon.name;
-      unitWeaponsBodyRow.appendChild(unitWeaponsBodyName);
-      const unitWeaponsBodyRange = document.createElement("td");
-      unitWeaponsBodyRange.style.textAlign = "center";
-      unitWeaponsBodyRange.textContent = weapon.range || "-";
-      unitWeaponsBodyRow.appendChild(unitWeaponsBodyRange);
-      const unitWeaponsBodyAttack = document.createElement("td");
-      unitWeaponsBodyAttack.style.textAlign = "center";
-      unitWeaponsBodyAttack.textContent = weapon.attacks || "-";
-      unitWeaponsBodyRow.appendChild(unitWeaponsBodyAttack);
-      const unitWeaponsBodyAP = document.createElement("td");
-      unitWeaponsBodyAP.style.textAlign = "center";
-      unitWeaponsBodyAP.textContent = "AP" + weapon.ap || "-";
-      unitWeaponsBodyRow.appendChild(unitWeaponsBodyAP);
-      const unitWeaponsBodySpecial = document.createElement("td");
-      unitWeaponsBodySpecial.style.textAlign = "center";
-      if (weapon.specialRules.length > 0) {
-        for (const special of weapon.specialRules) {
-          if (special.name === "AP") continue;
-          {
-            unitWeaponsBodySpecial.textContent = special.name || "-";
-            unitWeaponsBodyRow.appendChild(unitWeaponsBodySpecial);
+    // Create the weapons table with styling classes
+    const weaponsTable = createEl("table", {
+      classes: [
+        "table",
+        "table-sm",
+        "table-hover",
+        "table-striped",
+        "table-body",
+        "table-responsive",
+      ],
+    });
+
+    // Build the table header for weapons
+    const weaponsThead = createEl("thead");
+    const weaponsHeaderRow = createEl("tr");
+    ["Weapon", "Range", "Attack", "AP", "Special"].forEach((text) => {
+      weaponsHeaderRow.appendChild(createEl("th", { text }));
+    });
+    weaponsThead.appendChild(weaponsHeaderRow);
+    weaponsTable.appendChild(weaponsThead);
+
+    // Build the table body for weapons
+    const weaponsTbody = createEl("tbody");
+
+    // Aggregate weapons from unit.loadout (of type "ArmyBookWeapon")
+    const weaponsData = Object.values(
+      unit.loadout
+        .filter((weapon) => weapon.type === "ArmyBookWeapon")
+        .reduce((acc, weapon) => {
+          const key = weapon.label || weapon.name;
+          if (acc[key]) {
+            acc[key].count += weapon.count;
+          } else {
+            acc[key] = { ...weapon };
           }
-        }
-      } else {
-        unitWeaponsBodySpecial.textContent = "-";
-        unitWeaponsBodyRow.appendChild(unitWeaponsBodySpecial);
-      }
-      unitWeaponsBody.appendChild(unitWeaponsBodyRow);
+          return acc;
+        }, {})
+    );
+
+    // Create a row for each weapon
+    weaponsData.forEach((weapon) => {
+      const row = createEl("tr");
+
+      // Weapon cell (e.g., "2x Bolter")
+      row.appendChild(
+        createEl("td", { text: `${weapon.count}x ${weapon.name}` })
+      );
+
+      // Range cell (centered)
+      const rangeCell = createEl("td", {
+        text: weapon.range ? `${weapon.range}"` : "-",
+      });
+      rangeCell.style.textAlign = "center";
+      row.appendChild(rangeCell);
+
+      // Attack cell (centered, prefixed with "A")
+      const attackCell = createEl("td", {
+        text: weapon.attacks ? `A${weapon.attacks}` : "-",
+      });
+      attackCell.style.textAlign = "center";
+      row.appendChild(attackCell);
+
+      // AP cell (centered)
+      const apCell = createEl("td");
+      apCell.style.textAlign = "center";
+      const apRating =
+        (weapon.specialRules &&
+          weapon.specialRules
+            .filter((rule) => rule.name === "AP")
+            .map((rule) => rule.rating)
+            .join("")) ||
+        "-";
+      apCell.textContent = apRating;
+      row.appendChild(apCell);
+
+      // Special cell (centered, joining special rule names that aren’t AP)
+      const specialCell = createEl("td");
+      specialCell.style.textAlign = "center";
+      const specials =
+        (weapon.specialRules &&
+          weapon.specialRules
+            .filter(
+              (rule) =>
+                rule.type === "ArmyBookRule" && rule.name.toUpperCase() !== "AP"
+            )
+            .map((rule) => rule.name)
+            .join(", ")) ||
+        "-";
+      specialCell.textContent = specials;
+      row.appendChild(specialCell);
+
+      weaponsTbody.appendChild(row);
+    });
+
+    weaponsTable.appendChild(weaponsTbody);
+    unitCardBody.appendChild(weaponsTable);
+
+    // ===== UPGRADES SECTION (if available, inside card-body) =====
+    const upgrades = unit.loadout.filter(
+      (upgrade) => upgrade.type === "ArmyBookItem"
+    );
+    if (upgrades.length > 0) {
+      const upgradesHeader = createEl("h4", { text: "Upgrades" });
+      unitCardBody.appendChild(upgradesHeader);
+
+      // Create the upgrades table with styling classes
+      const upgradesTable = createEl("table", {
+        classes: [
+          "table",
+          "table-sm",
+          "table-hover",
+          "table-striped",
+          "table-body",
+        ],
+      });
+
+      // Build the table header for upgrades
+      const upgradesThead = createEl("thead");
+      const upgradesHeaderRow = createEl("tr");
+      ["Upgrade", "Special"].forEach((text) => {
+        upgradesHeaderRow.appendChild(createEl("th", { text }));
+      });
+      upgradesThead.appendChild(upgradesHeaderRow);
+      upgradesTable.appendChild(upgradesThead);
+
+      // Build the table body for upgrades
+      const upgradesTbody = createEl("tbody");
+      upgrades.forEach((upgrade) => {
+        const row = createEl("tr");
+
+        // Upgrade name cell
+        row.appendChild(createEl("td", { text: upgrade.name }));
+
+        // Special cell: join upgrade content names (if any)
+        const upgradeSpecialCell = createEl("td", {
+          text:
+            Array.isArray(upgrade.content) && upgrade.content.length > 0
+              ? upgrade.content.map((item) => item.name).join(", ")
+              : "-",
+        });
+        row.appendChild(upgradeSpecialCell);
+
+        upgradesTbody.appendChild(row);
+      });
+      upgradesTable.appendChild(upgradesTbody);
+      unitCardBody.appendChild(upgradesTable);
     }
-    unitWeaponsTable.appendChild(unitWeaponsHeader);
-    unitWeaponsTable.appendChild(unitWeaponsBody);
-    unitWeaponsContainer.appendChild(unitWeaponsTable);
-    unitCardBody.appendChild(unitWeaponsContainer);
 
     return unitCol;
   }
