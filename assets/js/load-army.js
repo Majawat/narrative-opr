@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     displayBaseCounts(baseTotals);
 
     displayRules(remoteData.specialRules);
+    addNavLinks(localData);
   }
 
   async function fetchLocalData(localJsonURL) {
@@ -50,6 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("army-tagline").textContent = army.tagline;
         document.getElementById("army-summary").textContent = army.summary;
         document.getElementById("army-backstory").innerHTML = army.backstory;
+        document.title = `${army.armyName} | The Awakening of the Mechanist Nexus`;
       }
     }
   }
@@ -621,6 +623,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     return unitCol;
+  }
+
+  function addNavLinks(localData) {
+    const armyNav = document.getElementById("army-nav-links");
+
+    localData.armies.forEach((army) => {
+      if (army.armyURL) {
+        const navLink = document.createElement("li");
+        navLink.className = "nav-item col-6 col-lg-auto";
+        const link = document.createElement("a");
+        link.className = "nav-link py-2 px-0 px-lg-2";
+        link.href = `${army.armyURL + ".html"}`;
+        link.textContent = army.armyName;
+        navLink.appendChild(link);
+        armyNav.appendChild(navLink);
+      }
+    });
   }
 
   function handleRefreshData() {
