@@ -60,23 +60,6 @@
       "objectives": 0,
       "earnedVP": 0,
       "earnedPts": 0
-    },
-    {
-      "player": "Andrew",
-      "playerTitle": "Starseer",
-      "armyName": "The Andrewen Sunlinns",
-      "tagline": "Celestial Guardians of Balance and Order",
-      "summary": "The Saurian Starhost is a primordial race of reptilian warriors guided by ancient celestial wisdom, striving to bring balance and order to the cosmos through calculated warfare.",
-      "faction": [{ "name": "Saurian Starhost" }],
-      "image": "assets/img/starhost-small.jpg",
-      "imagePosition": "center 40%",
-      "armyURL": null,
-      "armyForgeID": null,
-      "wins": 0,
-      "losses": 0,
-      "objectives": 0,
-      "earnedVP": 0,
-      "earnedPts": 0
     }
   ],
   "missions": [
