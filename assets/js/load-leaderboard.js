@@ -50,7 +50,8 @@ function processLeaderboard(data) {
         army.losses * 300 +
         army.objectives * 75 +
         army.earnedPts,
-      underdogPoints: 0, //placeholder
+      underdogPoints: 0,
+      parallelPoints: 0,
     };
     if (row.availablePoints > highestAP) highestAP = row.availablePoints;
     processedData.push(row);
@@ -58,10 +59,11 @@ function processLeaderboard(data) {
 
   processedData.forEach((row) => {
     row.underdogPoints = Math.floor((highestAP - row.availablePoints) / 50);
+    row.parallelPoints = row.victoryPoints / (row.wins + row.losses);
   });
 
   processedData
-    .sort((a, b) => b.victoryPoints - a.victoryPoints)
+    .sort((a, b) => b.parallelPoints - a.parallelPoints)
     .forEach((row, index) => {
       row.position = index + 1;
     });
