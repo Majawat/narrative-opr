@@ -1,5 +1,5 @@
 {
-  "basePoints": 1000,
+  "basePoints": 1200,
   "armies": [
     {
       "player": "Cody",
@@ -14,7 +14,7 @@
       "armyURL": "the-ashen-pact",
       "armyForgeID": "vMzljLVC6ZGv",
       "wins": 0,
-      "losses": 0,
+      "losses": 1,
       "objectives": 0,
       "earnedVP": 0,
       "earnedPts": 0
@@ -37,7 +37,7 @@
       "imagePosition": "center 40%",
       "armyURL": "roughnecks",
       "armyForgeID": "Xo19MAwQPGbs",
-      "wins": 0,
+      "wins": 1,
       "losses": 0,
       "objectives": 0,
       "earnedVP": 0,
@@ -56,7 +56,7 @@
       "armyURL": "tarvos",
       "armyForgeID": "Un3_pRTu2xBO",
       "wins": 0,
-      "losses": 0,
+      "losses": 1,
       "objectives": 0,
       "earnedVP": 0,
       "earnedPts": 0
