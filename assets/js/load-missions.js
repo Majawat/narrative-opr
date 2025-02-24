@@ -31,6 +31,9 @@ function processMissions(data) {
 function displayMissions(missions) {
   const mission1Date = document.getElementById("mission1-date");
   mission1Date.innerHTML = formatDateHTML(missions[0].datetime);
+
+  const mission2Date = document.getElementById("mission2-date");
+  mission2Date.innerHTML = formatDateHTML(missions[1].datetime);
   missions.forEach((mission) => {});
 }
 

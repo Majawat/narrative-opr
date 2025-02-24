@@ -76,8 +76,7 @@ function displayLeaderboard(processedData) {
   for (const row of processedData) {
     let armyLink = row.army;
     if (row.armyURL) {
-      armyLink =
-        '<a href="armies.html#' + row.armyURL + '">' + row.armyName + "</a>";
+      armyLink = '<a href="' + row.armyURL + '.html">' + row.armyName + "</a>";
       row.army = armyLink;
     } else {
       row.army = row.armyName;
