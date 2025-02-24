@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("army-tagline").textContent = army.tagline;
         document.getElementById("army-summary").textContent = army.summary;
         document.getElementById("army-backstory").innerHTML = army.backstory;
-        document.title = `${army.armyName} | The Awakening of the Mechanist Nexus`;
+        document.title = `${army.armyName} | The Convergence Protocol`;
       }
     }
   }

@@ -1,5 +1,6 @@
 {
   "basePoints": 1200,
+  "campaignName": "The Convergence Protocol",
   "armies": [
     {
       "player": "Cody",
@@ -76,7 +77,7 @@
     {
       "number": 2,
       "points": 1200,
-      "title": "Awakening Threats",
+      "title": "Signal in the Storm",
       "datetime": "2025-03-23T10:00:00-06:00",
       "month": "March",
       "overview": "The Tomb Artifact has been secured, but the action has caused the ancient mechanisms of the tomb to stir to life, triggering environmental chaos. The Nexus is beginning to wake, and dangerous, volatile terrain has begun to affect the battlefield. The factions are forced to confront one another in a skirmish, as the storm of mechanical and environmental chaos grows stronger.",

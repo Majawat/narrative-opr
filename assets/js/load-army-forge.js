@@ -153,7 +153,7 @@ function displayArmy(army) {
           document.getElementById("army-name").textContent = jsonArmy.armyName;
           document.getElementById("army-backstory").innerHTML =
             jsonArmy.backstory;
-          document.title = `${jsonArmy.armyName} | The Awakening of the Mechanist Nexus`;
+          document.title = `${jsonArmy.armyName} | The Convergence Protocol`;
           const armyHeroImage = document.getElementById("army-hero-image");
           armyHeroImage.setAttribute("src", jsonArmy.image);
           armyHeroImage.setAttribute("alt", jsonArmy.armyName);
