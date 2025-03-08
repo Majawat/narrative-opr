@@ -61,6 +61,23 @@
       "objectives": 0,
       "earnedVP": 0,
       "earnedPts": 0
+    },
+    {
+      "player": "Victoria",
+      "playerTitle": "High Priestess",
+      "armyName": "Galdoo'o naahlk wildigitkw",
+      "image": "assets/img/gladoo.jpg",
+      "imagePosition": "center 60%",
+      "tagline": "TBD",
+      "summary": "TBD",
+      "faction": [{ "name": "Wood Elves" }],
+      "armyURL": "gladoo",
+      "armyForgeID": "PzfU8vxUivqn",
+      "wins": 0,
+      "losses": 0,
+      "objectives": 0,
+      "earnedVP": 0,
+      "earnedPts": 0
     }
   ],
   "missions": [
