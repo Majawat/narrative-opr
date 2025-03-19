@@ -13,6 +13,11 @@ th.sortable.sort-desc::after {
   content: " ↑";
 }
 
+.table td:first-child,
+.table th:first-child {
+  white-space: nowrap;
+}
+
 .definition {
   cursor: pointer;
   text-decoration: underline;
