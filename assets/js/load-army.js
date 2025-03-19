@@ -47,9 +47,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       localStorageKey,
       cacheDuration
     );
+
+    
+
     displayAllUnits(remoteData);
     const baseTotals = tallyBaseCounts(remoteData.units);
     displayBaseCounts(baseTotals);
+    displaySpells(remoteData.spells);
 
     displayRules(remoteData.specialRules);
     addNavLinks(localData);
