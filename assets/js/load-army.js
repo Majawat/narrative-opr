@@ -414,10 +414,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const totalBases = [];
 
     for (const unit of remoteData.units) {
-      if (displayedUnitsIds.has(unit.id)) {
+      if (displayedUnitsIds.has(unit.selectionId)) {
         continue;
       }
-      displayedUnitsIds.add(unit.id);
+      displayedUnitsIds.add(unit.selectionId);
       const unitCard = createUnitCard(unit, remoteData);
       unitsContainer.appendChild(unitCard);
     }
