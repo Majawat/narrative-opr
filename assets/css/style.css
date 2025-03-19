@@ -18,6 +18,13 @@ th.sortable.sort-desc::after {
   white-space: nowrap;
 }
 
+@media (max-width: 576px) {
+  .table td:first-child,
+  .table th:first-child {
+    white-space: normal;
+  }
+}
+
 .definition {
   cursor: pointer;
   text-decoration: underline;

@@ -71,8 +71,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function displaySpells(campaignData) {
-    const spellsContainer = document.getElementById("spells-container");
-
     for (const army of campaignData.armies) {
       if (army.armyForgeID === armyForgeId) {
         // Create an object to store spells by faction
@@ -133,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-sm table-hover">
+                <table class="table table-sm table-hover table-striped">
                   <thead>
                     <tr>
                       <th>Spell</th>
