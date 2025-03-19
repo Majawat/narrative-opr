@@ -453,7 +453,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Create the outer column container
     const unitCol = createEl("div", {
-      classes: ["col"],
+      classes: ["col", "nav-scroll-top"],
       id: "unit-" + unit.selectionId,
     });
 
@@ -528,8 +528,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (joinedUnit) {
         const unitCardJoined = createEl("p", {
           classes: ["mb-0"],
-          text: "Joined to " + (joinedUnit.customName || joinedUnit.name),
+          text: "Joined to ",
         });
+        const unitJoinedLink = createEl("a", {
+          classes: ["text-decoration-none"],
+          text: joinedUnit.customName || joinedUnit.name,
+        });
+        unitJoinedLink.href = `#unit-${joinedUnit.selectionId}`;
+        unitCardJoined.appendChild(unitJoinedLink);
         unitCardBasics.appendChild(unitCardJoined);
       }
     }
