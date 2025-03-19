@@ -195,14 +195,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function fetchRemoteData(armyForgeId, localStorageKey, cacheDuration) {
-    // Check local storage first
-    // If exists and fresh enough, return cached data
-    // Otherwise fetch from API
-    // Store in cache with timestamp
-    // Return parsed data
+    // Check local storage first. If exists and fresh enough, return cached data
+    // Otherwise fetch from API, Store in cache with timestamp and return parsed data
 
     const remoteJsonURL = `https://army-forge.onepagerules.com/api/tts?id=${armyForgeId}`;
-    console.log("Fetching remote data from:", remoteJsonURL);
+    console.log("Remote data:", remoteJsonURL);
+    console.log(
+      "Share link: https://army-forge.onepagerules.com/share?id=" + armyForgeId
+    );
     const cachedData = JSON.parse(localStorage.getItem(localStorageKey));
 
     if (cachedData) {
