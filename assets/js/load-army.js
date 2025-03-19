@@ -179,9 +179,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Display army details on page
         document.getElementById("army-name").textContent = army.armyName;
         document.getElementById("army-image").src = army.image;
-        document.getElementById(
-          "army-image"
-        ).style.addProperty = `object-position: ${army.imagePosition}`;
+        document.getElementById("army-image").style.objectPosition =
+          army.imagePosition;
         document.getElementById("player-title").textContent = army.playerTitle;
         document.getElementById("player-name").textContent = army.player;
         document.getElementById("army-tagline").textContent = army.tagline;
