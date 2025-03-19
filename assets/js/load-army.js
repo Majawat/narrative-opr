@@ -48,12 +48,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       cacheDuration
     );
 
-    
-
     displayAllUnits(remoteData);
     const baseTotals = tallyBaseCounts(remoteData.units);
     displayBaseCounts(baseTotals);
-    displaySpells(remoteData.spells);
+    displaySpells(localData);
 
     displayRules(remoteData.specialRules);
     addNavLinks(localData);
@@ -72,9 +70,115 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  async function displaySpells(campaignData) {
+    const spellsContainer = document.getElementById("spells-container");
+
+    for (const army of campaignData.armies) {
+      if (army.armyForgeID === armyForgeId) {
+        // Create an object to store spells by faction
+        const factionSpells = {};
+
+        // Fetch spells for each faction
+        const factionPromises = army.faction.map(async (faction) => {
+          const factionBookURL =
+            "https://army-forge.onepagerules.com/api/army-books/" +
+            faction.id +
+            "?gameSystem=" +
+            faction.gameSystem;
+
+          try {
+            const bookData = await fetchFactionBook(factionBookURL);
+
+            // Store the faction name and its spells
+            if (bookData && bookData.spells && bookData.spells.length > 0) {
+              // Sort the spells by threshold (lowest first)
+              const sortedSpells = bookData.spells.sort((a, b) => {
+                // Extract threshold numbers (e.g., "4+" becomes 4)
+                const thresholdA = a.threshold;
+                const thresholdB = b.threshold;
+                return thresholdA - thresholdB;
+              });
+
+              factionSpells[bookData.name || faction.id] = sortedSpells;
+            }
+
+            return bookData;
+          } catch (error) {
+            console.error("Error fetching faction book:", error);
+            return null;
+          }
+        });
+
+        // Wait for all faction promises to resolve
+        await Promise.all(factionPromises);
+
+        // Now display the spells organized by faction
+        displaySpellsByFaction(factionSpells);
+      }
+    }
+  }
+
+  function displaySpellsByFaction(factionSpells) {
+    const spellsContainer = document.getElementById("spells-container");
+    spellsContainer.innerHTML = "";
+
+    const spellsHtml = `
+        ${Object.entries(factionSpells)
+          .map(
+            ([factionName, spells]) => `
+          <div class="col">
+            <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">${factionName} Spells</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                  <thead>
+                    <tr>
+                      <th>Spell</th>
+                      <th>Effect</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-group-divider">
+                    ${spells
+                      .map(
+                        (spell) => `
+                      <tr>
+                        <td><span class="badge bg-secondary rounded-pill">${spell.threshold}</span> ${spell.name}</td>
+                        <td>${spell.effect}</td>
+                      </tr>
+                    `
+                      )
+                      .join("")}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div></div>
+        `
+          )
+          .join("")}
+    `;
+
+    spellsContainer.innerHTML = spellsHtml;
+  }
+
+  async function fetchFactionBook(factionBookURL) {
+    try {
+      const bookResponse = await fetch(factionBookURL);
+      const bookData = await bookResponse.json();
+      return bookData;
+    } catch (error) {
+      console.error("Error fetching factionbook:", error);
+      return null;
+    }
+  }
+
   function displayArmyDetails(campaignData) {
     for (const army of campaignData.armies) {
       if (army.armyForgeID === armyForgeId) {
+        // Display army details on page
         document.getElementById("army-name").textContent = army.armyName;
         document.getElementById("army-image").src = army.image;
         document.getElementById(
@@ -98,6 +202,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Return parsed data
 
     const remoteJsonURL = `https://army-forge.onepagerules.com/api/tts?id=${armyForgeId}`;
+    console.log("Fetching remote data from:", remoteJsonURL);
     const cachedData = JSON.parse(localStorage.getItem(localStorageKey));
 
     if (cachedData) {
@@ -349,12 +454,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Create the outer column container
     const unitCol = createEl("div", {
       classes: ["col"],
-      id: "unit-" + unit.id,
+      id: "unit-" + unit.selectionId,
     });
 
     // Create card container and card body
     const unitCard = createEl("div", { classes: ["card", "h-100"] });
     unitCol.appendChild(unitCard);
+    const unitCardHead = createEl("div", { classes: ["card-header"] });
+    unitCard.appendChild(unitCardHead);
     const unitCardBody = createEl("div", { classes: ["card-body"] });
     unitCard.appendChild(unitCardBody);
 
@@ -373,17 +480,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Create the basics section (name, XP, type, cost, etc.)
     const unitCardBasics = createEl("div");
 
+    const unitCardNameContainer = createEl("div", {
+      classes: [
+        "d-flex",
+        "align-items-center",
+        "mb-1",
+        "w-100",
+        "justify-content-between",
+      ],
+    });
+
     // Unit name and XP badge
     const unitCardName = createEl("h4", {
-      classes: ["mb-1"],
+      classes: ["mb-0", "me-2"],
       text: unit.customName || unit.name,
     });
     const unitCardXP = createEl("span", {
       classes: ["xp-badge"],
       html: `<i class="bi bi-star-fill"></i> ${unit.xp} XP`,
     });
-    unitCardName.appendChild(unitCardXP);
-    unitCardBasics.appendChild(unitCardName);
+
+    unitCardNameContainer.appendChild(unitCardName);
+    unitCardNameContainer.appendChild(unitCardXP);
+    unitCardHead.appendChild(unitCardNameContainer);
 
     // Unit type, amount, and cost
     let unitCount = unit.size;
@@ -507,7 +626,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     weaponsTable.appendChild(weaponsThead);
 
     // Build the table body for weapons
-    const weaponsTbody = createEl("tbody");
+    const weaponsTbody = createEl("tbody", {
+      classes: ["table-group-divider"],
+    });
 
     // Aggregate weapons from unit.loadout (of type "ArmyBookWeapon")
     const weaponsData = Object.values(
@@ -611,7 +732,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       upgradesTable.appendChild(upgradesThead);
 
       // Build the table body for upgrades
-      const upgradesTbody = createEl("tbody");
+      const upgradesTbody = createEl("tbody", {
+        classes: ["table-group-divider"],
+      });
       upgrades.forEach((upgrade) => {
         const row = createEl("tr");
 

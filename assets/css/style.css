@@ -193,6 +193,8 @@ th.sortable.sort-desc::after {
 }
 
 .xp-badge {
+  display: inline-flex;
+  align-items: center;
   background: linear-gradient(45deg, #ffd700, #ffa500);
   color: black;
   font-size: 0.8rem;
@@ -201,6 +203,10 @@ th.sortable.sort-desc::after {
   white-space: nowrap;
   margin-left: 0.5rem;
 }
+.xp-badge i {
+  margin-right: 5px;
+}
+
 .stat-container {
   display: flex;
   gap: 1.5rem;
