@@ -82,14 +82,14 @@
       "player": "Victoria",
       "playerTitle": "High Priestess",
       "armyName": "Galdoo'o naahlk wildigitkw",
-      "image": "assets/img/gladoo.jpg",
+      "image": "assets/img/galdoo.jpg",
       "imagePosition": "center 60%",
       "tagline": "TBD",
       "summary": "TBD",
       "faction": [
         { "id": "qtuyeoRfXKlNflK0", "gameSystem": "4", "name": "Wood Elves" }
       ],
-      "armyURL": "gladoo",
+      "armyURL": "galdoo",
       "armyForgeID": "PzfU8vxUivqn",
       "wins": 0,
       "losses": 0,
