@@ -685,7 +685,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       apCell.textContent = apRating;
       row.appendChild(apCell);
 
-      // Special cell (centered, joining special rule names that aren’t AP)
+      // Special cell (centered, joining special rule names that aren't AP)
       const specialCell = createEl("td");
       specialCell.style.textAlign = "center";
       const specials =
