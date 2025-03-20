@@ -60,6 +60,7 @@ function processLeaderboard(data) {
   processedData.forEach((row) => {
     row.underdogPoints = Math.floor((highestAP - row.availablePoints) / 50);
     row.parallelPoints = row.victoryPoints / (row.wins + row.losses);
+    row.commandPoints = Math.floor(row.availablePoints / 1000) * 4;
   });
 
   processedData
@@ -93,6 +94,7 @@ function displayLeaderboard(processedData) {
       <td style="text-align: center">${row.objectives}</td>
       <td style="text-align: center">${row.availablePoints}</td>
       <td style="text-align: center">${row.underdogPoints}</td>
+      <td style="text-align: center">${row.commandPoints}</td>
     `;
     tbody.appendChild(tr);
   }
@@ -114,6 +116,7 @@ function sortTable(columnIndex) {
     6: "desc", // Special Objectives Completed
     7: "desc", // Available Points
     8: "desc", // Underdog Points
+    9: "desc", // Command Points
   };
 
   // Determine the sort direction

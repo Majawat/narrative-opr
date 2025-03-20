@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grimdark Future Quick Reference</title>
+    <style>
+      :root {
+        --primary-color: #111;
+        --accent-color: #8a1e1e;
+        --bg-color: #222;
+        --section-bg: #333;
+        --light-bg: #444;
+        --border-color: #555;
+        --text-color: #eee;
+        --highlight-color: #ffd700;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text-color);
+        background-color: var(--bg-color);
+        font-size: 15px;
+        padding: 8px;
+        overflow: hidden;
+        max-height: 100vh;
+        line-height: 1.2;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto 1fr auto;
+        gap: 8px;
+        height: calc(100vh - 16px);
+      }
+
+      header {
+        grid-column: 1 / -1;
+        text-align: center;
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 4px;
+        margin-bottom: 4px;
+      }
+
+      h1 {
+        font-size: 2rem;
+        color: var(--highlight-color);
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      h2 {
+        font-size: 1.2rem;
+        background-color: var(--accent-color);
+        color: var(--highlight-color);
+        padding: 3px 6px;
+        margin-bottom: 6px;
+        border-radius: 4px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      h3 {
+        font-size: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        margin: 6px 0 3px 0;
+        color: var(--highlight-color);
+        padding-bottom: 2px;
+      }
+
+      .section {
+        background-color: var(--section-bg);
+        border-radius: 6px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        padding: 6px 8px;
+        overflow: hidden;
+        font-size: 0.9rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 4px 0;
+        font-size: 0.85rem;
+      }
+
+      th,
+      td {
+        padding: 3px 4px;
+        border: 1px solid var(--border-color);
+        text-align: left;
+      }
+
+      th {
+        background-color: var(--light-bg);
+        font-weight: bold;
+        color: var(--highlight-color);
+      }
+
+      ul,
+      ol {
+        padding-left: 16px;
+        margin: 4px 0;
+      }
+
+      li {
+        margin-bottom: 2px;
+        line-height: 1.2;
+      }
+
+      .column {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .special-rules-container {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: auto;
+      }
+
+      .special-rules-title {
+        margin-bottom: 0;
+      }
+
+      .special-rules {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+        padding: 6px;
+        overflow: hidden;
+      }
+
+      .special-rule {
+        background-color: var(--light-bg);
+        border-radius: 4px;
+        padding: 3px 5px;
+        margin-bottom: 0;
+        font-size: 0.8rem;
+        line-height: 1.15;
+      }
+
+      .special-rule-name {
+        font-weight: bold;
+        color: var(--highlight-color);
+        display: block;
+      }
+
+      .combat-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+
+      .combat-box {
+        background-color: var(--light-bg);
+        border-radius: 4px;
+        padding: 4px;
+      }
+
+      .terrain-types {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+        font-size: 0.85rem;
+      }
+
+      .terrain-type {
+        background-color: var(--light-bg);
+        padding: 3px 4px;
+        border-radius: 4px;
+        line-height: 1.2;
+      }
+
+      .terrain-name {
+        font-weight: bold;
+        color: var(--highlight-color);
+        display: inline;
+      }
+
+      p {
+        margin: 3px 0;
+        line-height: 1.2;
+      }
+
+      strong {
+        color: var(--highlight-color);
+      }
+
+      .compact-list li {
+        margin-bottom: 1px;
+        line-height: 1.1;
+      }
+
+      .stratagem-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+        font-size: 0.85rem;
+      }
+
+      .stratagem {
+        background-color: var(--light-bg);
+        border-radius: 4px;
+        padding: 3px 5px;
+      }
+
+      .stratagem-name {
+        font-weight: bold;
+        color: var(--highlight-color);
+      }
+
+      .strategem-cp {
+        float: right;
+        background-color: var(--accent-color);
+        color: var(--highlight-color);
+        padding: 0 4px;
+        border-radius: 3px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>GRIMDARK FUTURE - QUICK REFERENCE</h1>
+      </header>
+
+      <!-- Column 1 -->
+      <div class="column">
+        <!-- Game Structure -->
+        <div class="section">
+          <h2>ACTIONS & MOVEMENT</h2>
+
+          <table>
+            <tr>
+              <th>Action</th>
+              <th>Move</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td>Hold</td>
+              <td>0"</td>
+              <td>Can shoot</td>
+            </tr>
+            <tr>
+              <td>Advance</td>
+              <td>6"</td>
+              <td>Can shoot after moving</td>
+            </tr>
+            <tr>
+              <td>Rush</td>
+              <td>12"</td>
+              <td>Can't shoot</td>
+            </tr>
+            <tr>
+              <td>Charge</td>
+              <td>12"</td>
+              <td>Moves into melee</td>
+            </tr>
+          </table>
+
+          <h3>UNIT COHERENCY</h3>
+          <ul class="compact-list">
+            <li>Models within 1" of at least one other model</li>
+            <li>Models within 9" of all other models in unit</li>
+            <li>Units only within 1" of other units when charging</li>
+          </ul>
+
+          <h3>QUALITY TESTS</h3>
+          <ul class="compact-list">
+            <li>Roll ≥ Quality value to succeed</li>
+            <li>6 always succeeds, 1 always fails</li>
+          </ul>
+
+          <h3>LINE OF SIGHT</h3>
+          <ul class="compact-list">
+            <li>Models see 360°, can't see through obstacles/units</li>
+            <li>Can see through models from own unit</li>
+          </ul>
+
+          <h3>MISSION & OBJECTIVES</h3>
+          <ul class="compact-list">
+            <li>Place D3+2 objectives outside deployment zones, >9" apart</li>
+            <li>Unit within 3" of objective with no enemies = seized</li>
+            <li>Most objectives after 4 rounds = winner</li>
+          </ul>
+        </div>
+
+        <!-- Universal Stratagems -->
+        <div class="section">
+          <h2>UNIVERSAL STRATAGEMS</h2>
+
+          <div class="stratagem-grid">
+            <div class="stratagem">
+              <span class="strategem-cp">1CP</span>
+              <span class="stratagem-name">Command Re-Roll</span>
+              <p>Re-roll any single die roll</p>
+            </div>
+
+            <div class="stratagem">
+              <span class="strategem-cp">1CP</span>
+              <span class="stratagem-name">Counter-Attack</span>
+              <p>Unit strikes first when charged</p>
+            </div>
+
+            <div class="stratagem">
+              <span class="strategem-cp">1CP</span>
+              <span class="stratagem-name">Heroic Intervention</span>
+              <p>Move hero up to 6" to join melee</p>
+            </div>
+
+            <div class="stratagem">
+              <span class="strategem-cp">2CP</span>
+              <span class="stratagem-name">Desperate Effort</span>
+              <p>+2" move or +1 attack in melee</p>
+            </div>
+
+            <div class="stratagem">
+              <span class="strategem-cp">2CP</span>
+              <span class="stratagem-name">Get Back Up</span>
+              <p>On 4+, shaken unit becomes active</p>
+            </div>
+
+            <div class="stratagem">
+              <span class="strategem-cp">1CP</span>
+              <span class="stratagem-name">Inspiring Presence</span>
+              <p>Auto-pass morale test</p>
+            </div>
+
+            <div class="stratagem">
+              <span class="strategem-cp">2CP</span>
+              <span class="stratagem-name">Go To Ground</span>
+              <p>+2 Defense against shooting</p>
+            </div>
+
+            <div class="stratagem">
+              <span class="strategem-cp">1CP</span>
+              <span class="stratagem-name">Deadly Strike</span>
+              <p>One failed block = D3 wounds</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2 -->
+      <div class="column">
+        <!-- Combat -->
+        <div class="section">
+          <h2>COMBAT</h2>
+
+          <div class="combat-section">
+            <div class="combat-box">
+              <h3>SHOOTING</h3>
+              <ol class="compact-list">
+                <li><strong>Attacks:</strong> Sum Attack value</li>
+                <li><strong>Hit:</strong> Roll ≥ Quality</li>
+                <li><strong>Block:</strong> Roll ≥ Defense</li>
+                <li><strong>Remove:</strong> One model per wound</li>
+              </ol>
+              <ul class="compact-list">
+                <li>+1 Defense in cover</li>
+                <li>Max 2 targets with different weapon types</li>
+              </ul>
+            </div>
+
+            <div class="combat-box">
+              <h3>MELEE</h3>
+              <ol class="compact-list">
+                <li>Chargers move into base contact</li>
+                <li>Defenders move up to 3" into contact</li>
+                <li>Strike if within 2" horiz & 4" vert</li>
+                <li><strong>Hit:</strong> Roll ≥ Quality</li>
+                <li><strong>Block:</strong> Roll ≥ Defense</li>
+                <li>Defenders strike back (optional)</li>
+              </ol>
+            </div>
+          </div>
+
+          <h3>MELEE RESOLUTION</h3>
+          <ul class="compact-list">
+            <li>Compare wounds: most = winner</li>
+            <li>Loser takes morale test</li>
+            <li>If one unit destroyed, winner may move 3"</li>
+            <li>Otherwise, chargers move back 1"</li>
+            <li>
+              <strong>Fatigue:</strong> After charging/striking, only hit on 6s
+              in melee until end of round
+            </li>
+          </ul>
+        </div>
+
+        <!-- Morale -->
+        <div class="section">
+          <h2>MORALE</h2>
+
+          <h3>MORALE TRIGGERS</h3>
+          <ul class="compact-list">
+            <li>Unit at half or less of starting size/tough</li>
+            <li>Unit loses a melee</li>
+          </ul>
+
+          <h3>MORALE TEST RESULTS</h3>
+          <ul class="compact-list">
+            <li><strong>Pass:</strong> No effect</li>
+            <li><strong>Fail:</strong> Shaken</li>
+            <li><strong>Fail at half strength in melee:</strong> Rout</li>
+          </ul>
+
+          <h3>SHAKEN UNITS</h3>
+          <ul class="compact-list">
+            <li>Must stay idle</li>
+            <li>Count as fatigued</li>
+            <li>Always fail morale tests</li>
+            <li>Can't contest/seize objectives</li>
+            <li>Spend one activation idle to recover</li>
+          </ul>
+        </div>
+
+        <!-- Campaign Elements -->
+        <div class="section">
+          <h2>CAMPAIGN ELEMENTS</h2>
+
+          <h3>EARNING XP & LEVELING</h3>
+          <ul class="compact-list">
+            <li>+1 XP: Survived battle</li>
+            <li>+1 XP: Killed a unit</li>
+            <li>+2 XP: Killed a hero</li>
+            <li>+3 XP: Killed hero & unit</li>
+            <li>
+              <strong>Level up at 5 XP:</strong> Regular +25pts, Hero +55pts
+            </li>
+          </ul>
+
+          <h3>CASUALTIES</h3>
+          <ul class="compact-list">
+            <li>Roll 1D6 per casualty:</li>
+            <li>1: Dead/Injured</li>
+            <li>2-5: Recovered</li>
+            <li>6: Natural Talent (+1 XP)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Column 3 -->
+      <div class="column">
+        <!-- Terrain -->
+        <div class="section">
+          <h2>TERRAIN</h2>
+
+          <div class="terrain-types">
+            <div class="terrain-type">
+              <span class="terrain-name">Cover:</span> +1 Defense vs shooting if
+              majority inside/behind
+            </div>
+
+            <div class="terrain-type">
+              <span class="terrain-name">Difficult:</span> Max 6" movement
+              through
+            </div>
+
+            <div class="terrain-type">
+              <span class="terrain-name">Dangerous:</span> Roll Tough dice when
+              moving/activating - 1s = wounds
+            </div>
+
+            <div class="terrain-type">
+              <span class="terrain-name">Blocking:</span> Blocks line of sight
+            </div>
+
+            <div class="terrain-type">
+              <span class="terrain-name">Impassable:</span> Can't move through
+            </div>
+
+            <div class="terrain-type">
+              <span class="terrain-name">Elevated:</span> >3" = impassable; ≤3"
+              = can climb
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Rules -->
+        <div class="section">
+          <h2>ADVANCED RULES</h2>
+
+          <h3>RANDOM EVENTS</h3>
+          <ul class="compact-list">
+            <li>Start of each round: Roll 1D6</li>
+            <li>On 5+: Random event happens</li>
+            <li>Roll 2D6 (read as tens & units) to determine event</li>
+          </ul>
+
+          <h3>CASTING SPELLS</h3>
+          <ul class="compact-list">
+            <li>Caster gets X tokens per round (max 6)</li>
+            <li>Spend tokens = to spell value to cast</li>
+            <li>Roll 4+ to successfully cast</li>
+            <li>
+              Models within 18" can spend tokens to add/subtract from roll
+            </li>
+          </ul>
+
+          <h3>MISSIONS & DEPLOYMENT</h3>
+          <ul class="compact-list">
+            <li>
+              <strong>Special Objectives:</strong> +75 points for completing
+            </li>
+            <li>
+              <strong>Underdog Bonus:</strong> +1 point per 50pts difference.
+              Each point modifies one roll by ±1
+            </li>
+            <li><strong>Scout:</strong> After deployment, move up to 12"</li>
+          </ul>
+        </div>
+
+        <!-- Twists & Gambits -->
+        <div class="section">
+          <h2>TWISTS & GAMBITS</h2>
+
+          <h3>TWISTS</h3>
+          <ul class="compact-list">
+            <li>Before mission: Roll on Twist table</li>
+            <li>Changes affect entire game</li>
+          </ul>
+
+          <h3>GAMBITS</h3>
+          <ul class="compact-list">
+            <li>1/round: Play a Gambit card</li>
+            <li>Effects apply to current activation</li>
+            <li>Can't play multiple with same name</li>
+          </ul>
+
+          <h3>COMMAND POINTS</h3>
+          <ul class="compact-list">
+            <li>Start with D3+3 CP</li>
+            <li>Gain 1 CP at start of each round</li>
+            <li>Max 12 CP at any time</li>
+            <li>Spend CP on stratagems or abilities</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Special Rules (bottom section) -->
+      <div class="special-rules-container">
+        <h2 class="special-rules-title">KEY SPECIAL RULES</h2>
+        <div class="special-rules">
+          <div class="special-rule">
+            <span class="special-rule-name">Aircraft</span>
+            Advance only, +30" move. Ignore terrain. -12" range/-1 hit
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Ambush</span>
+            Deploy >9" from enemies from round 2+
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">AP(X)</span>
+            -X to Defense rolls
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Blast(X)</span>
+            Hits × X (max = models). Ignores cover
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Caster(X)</span>
+            X spell tokens/round. Spend = spell value to cast
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Counter</span>
+            Strikes first when charged. -1 Impact/model
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Deadly(X)</span>
+            Wounds × X to one model. Resolve first
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Entrenched</span>
+            -2 to hit from >9" if hasn't moved
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Fast</span>
+            +2" Advance, +4" Rush/Charge
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Fear(X)</span>
+            +X wounds in melee resolution
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Fearless</span>
+            Failed morale: 4+ = pass anyway
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Flying</span>
+            Move through units/terrain
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Furious</span>
+            6s in melee = +1 hit when charging
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Hero</span>
+            May join unit. Takes morale tests for unit
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Immobile</span>
+            Hold actions only
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Impact(X)</span>
+            X dice on 2+ when charging
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Indirect</span>
+            Target without LoS. -1 to hit after moving
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Lance</span>
+            +1 to hit, AP(+1) when charging
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Lock-On</span>
+            Ignore cover & negative modifiers
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Poison</span>
+            Re-roll Defense 6s. Ignores Regeneration
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Regeneration</span>
+            5+ = ignore wound
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Relentless</span>
+            6s to hit = +1 hit when Hold & shooting
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Reliable</span>
+            Attacks at Quality 2+
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Rending</span>
+            6s to hit get AP(4). Ignores Regeneration
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Scout</span>
+            Move up to 12" after deployment
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Slow</span>
+            -2" Advance, -4" Rush/Charge
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Sniper</span>
+            Quality 2+. Target individual models
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Stealth</span>
+            -1 to hit when shot from >9" away
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Strider</span>
+            Ignore difficult terrain
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Tough(X)</span>
+            Takes X wounds to kill
+          </div>
+
+          <div class="special-rule">
+            <span class="special-rule-name">Transport(X)</span>
+            Carries X models. 6" disembark range
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
