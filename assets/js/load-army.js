@@ -235,21 +235,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     const squareBaseCounts = {};
 
     for (const unit of units) {
-      if (!unit.bases || !unit.size) continue; // Skip if missing required data
+      if (!unit.size) continue; // Skip if missing required data
 
       const quantity = parseInt(unit.size) || 0;
       if (quantity === 0) continue; // Skip if invalid quantity
 
-      // Handle round bases
-      if (unit.bases.round) {
-        const roundSize = unit.bases.round.toString();
+      // Check if unit has any upgrades that modify its base size
+      let finalBases = { ...unit.bases };
+
+      // Look through the loadout for items that might change the base size
+      if (unit.loadout) {
+        for (const item of unit.loadout) {
+          if (item.type === "ArmyBookItem" && item.bases) {
+            // This item modifies the base size
+            finalBases = item.bases;
+            break; // Typically only one upgrade would modify base size
+          }
+        }
+      }
+
+      // Now count with the potentially modified base size
+      if (finalBases.round) {
+        const roundSize = finalBases.round.toString();
         roundBaseCounts[roundSize] =
           (roundBaseCounts[roundSize] || 0) + quantity;
       }
 
-      // Handle square bases
-      if (unit.bases.square) {
-        const squareSize = unit.bases.square.toString();
+      if (finalBases.square) {
+        const squareSize = finalBases.square.toString();
         squareBaseCounts[squareSize] =
           (squareBaseCounts[squareSize] || 0) + quantity;
       }
@@ -263,6 +276,47 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function displayBaseCounts(baseTotals) {
     const basesContainer = document.getElementById("nav-bases");
+
+    // Sort the base sizes for better display
+    const sortedRoundBases = Object.entries(baseTotals.round).sort((a, b) => {
+      // Extract numeric values for proper sorting
+      const getNumbersFromSize = (size) => {
+        const numbers = size.match(/\d+/g);
+        return numbers ? numbers.map((n) => parseInt(n)) : [0];
+      };
+
+      const aValues = getNumbersFromSize(a[0]);
+      const bValues = getNumbersFromSize(b[0]);
+
+      // Compare first number, if equal, compare second number
+      if (
+        aValues[0] === bValues[0] &&
+        aValues.length > 1 &&
+        bValues.length > 1
+      ) {
+        return aValues[1] - bValues[1];
+      }
+      return aValues[0] - bValues[0];
+    });
+
+    const sortedSquareBases = Object.entries(baseTotals.square).sort((a, b) => {
+      const getNumbersFromSize = (size) => {
+        const numbers = size.match(/\d+/g);
+        return numbers ? numbers.map((n) => parseInt(n)) : [0];
+      };
+
+      const aValues = getNumbersFromSize(a[0]);
+      const bValues = getNumbersFromSize(b[0]);
+
+      if (
+        aValues[0] === bValues[0] &&
+        aValues.length > 1 &&
+        bValues.length > 1
+      ) {
+        return aValues[1] - bValues[1];
+      }
+      return aValues[0] - bValues[0];
+    });
 
     const html = `
         <div class="py-3">
@@ -279,7 +333,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </tr>
                   </thead>
                   <tbody class="table-group-divider">
-                    ${Object.entries(baseTotals.round)
+                    ${sortedRoundBases
                       .map(
                         ([size, count]) => `
                         <tr>
@@ -315,7 +369,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </tr>
                   </thead>
                   <tbody class="table-group-divider">
-                    ${Object.entries(baseTotals.square)
+                    ${sortedSquareBases
                       .map(
                         ([size, count]) => `
                         <tr>
@@ -449,6 +503,106 @@ document.addEventListener("DOMContentLoaded", async () => {
       return el;
     };
 
+    // Calculate the total cost of the unit including all upgrades
+    let totalCost = unit.cost;
+    unit.selectedUpgrades.forEach((upgrade) => {
+      if (upgrade.option && upgrade.option.costs) {
+        upgrade.option.costs.forEach((costItem) => {
+          if (costItem.unitId === unit.id) {
+            totalCost += costItem.cost;
+          }
+        });
+      }
+    });
+
+    // Calculate unit size with any modifications from combined
+    let unitCount = unit.size;
+    if (unit.combined) {
+      unitCount *= 2;
+    }
+
+    // Get modified base sizes from upgrades
+    let baseSizes = { ...unit.bases };
+    for (const item of unit.loadout) {
+      if (item.type === "ArmyBookItem" && item.bases) {
+        // Update base sizes if the upgrade provides them
+        baseSizes = item.bases;
+        break; // Typically only one upgrade would modify base size
+      }
+    }
+
+    // Calculate final Defense value
+    let finalDefenseValue = unit.defense;
+    for (const item of unit.loadout) {
+      if (item.type === "ArmyBookItem" && item.content) {
+        for (const contentItem of item.content) {
+          if (contentItem.name === "Defense" && contentItem.rating) {
+            // Defense rule from upgrades is typically a bonus
+            finalDefenseValue -= parseInt(contentItem.rating);
+          }
+        }
+      }
+    }
+
+    // Calculate final Tough value
+    let finalToughValue = 0;
+    // Check base rules for Tough
+    const baseToughRule = unit.rules.find((rule) => rule.name === "Tough");
+    if (baseToughRule && baseToughRule.rating) {
+      finalToughValue = parseInt(baseToughRule.rating);
+    }
+
+    // Add Tough values from upgrades
+    for (const item of unit.loadout) {
+      if (item.type === "ArmyBookItem" && item.content) {
+        for (const contentItem of item.content) {
+          if (contentItem.name === "Tough" && contentItem.rating) {
+            finalToughValue += parseInt(contentItem.rating);
+          }
+        }
+      }
+    }
+
+    // Collect all special rules from base rules and upgrades
+    const specialRules = new Set();
+    // Add base rules
+    unit.rules.forEach((rule) => {
+      specialRules.add(rule.name + (rule.rating ? `(${rule.rating})` : ""));
+    });
+
+    // Add rules from loadout items
+    unit.loadout.forEach((item) => {
+      if (item.content) {
+        item.content.forEach((contentItem) => {
+          if (contentItem.name && contentItem.type === "ArmyBookRule") {
+            specialRules.add(
+              contentItem.name +
+                (contentItem.rating ? `(${contentItem.rating})` : "")
+            );
+          }
+        });
+      }
+    });
+
+    // Collect all weapons (both direct and from items)
+    const allWeapons = [];
+
+    // Add direct weapons from loadout
+    const directWeapons = unit.loadout.filter(
+      (item) => item.type === "ArmyBookWeapon"
+    );
+    allWeapons.push(...directWeapons);
+
+    // Add weapons from item content
+    unit.loadout.forEach((item) => {
+      if (item.type === "ArmyBookItem" && item.content) {
+        const weaponsFromItem = item.content.filter(
+          (content) => content.type === "ArmyBookWeapon"
+        );
+        allWeapons.push(...weaponsFromItem);
+      }
+    });
+
     // Create the outer column container
     const unitCol = createEl("div", {
       classes: ["col", "nav-scroll-top"],
@@ -503,20 +657,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     unitCardHead.appendChild(unitCardNameContainer);
 
     // Unit type, amount, and cost
-    let unitCount = unit.size;
+    const unitCardType = createEl("p", {
+      classes: ["mb-0"],
+      text: `${unit.name} [${unitCount}] - ${totalCost}pts`,
+    });
+    unitCardBasics.appendChild(unitCardType);
+
+    // Combined unit notice (if applicable)
     if (unit.combined) {
-      unitCount *= 2;
       const unitCardCombined = createEl("div", {
         classes: ["mb-0"],
         text: "Combined Unit",
       });
       unitCardBasics.appendChild(unitCardCombined);
     }
-    const unitCardType = createEl("p", {
-      classes: ["mb-0"],
-      text: `${unit.name} [${unitCount}] - ${unit.cost}pts`,
-    });
-    unitCardBasics.appendChild(unitCardType);
 
     // Joined unit (if applicable)
     if (unit.joinToUnit) {
@@ -541,7 +695,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Base size info
     const unitCardBase = createEl("p", {
       classes: ["mb-0", "text-muted", "small"],
-      html: `<i class="bi bi-circle-fill"></i> ${unit.bases.round}mm | <i class="bi bi-square-fill"></i> ${unit.bases.square}mm`,
+      html: `<i class="bi bi-circle-fill"></i> ${baseSizes.round}mm | <i class="bi bi-square-fill"></i> ${baseSizes.square}mm`,
     });
     unitCardBasics.appendChild(unitCardBase);
 
@@ -561,46 +715,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     unitCardStats.appendChild(unitQualityGroup);
 
-    // Stat group: Defense
+    // Stat group: Defense (adjusted for any Defense upgrades)
     const unitDefenseGroup = createEl("div", { classes: ["stat-group"] });
     unitDefenseGroup.appendChild(createEl("span", { html: icons.defense }));
     unitDefenseGroup.appendChild(
       createEl("p", { classes: ["stat-label"], text: "Defense" })
     );
     unitDefenseGroup.appendChild(
-      createEl("p", { classes: ["stat-value"], text: unit.defense + "+" })
+      createEl("p", { classes: ["stat-value"], text: finalDefenseValue + "+" })
     );
     unitCardStats.appendChild(unitDefenseGroup);
 
-    // Stat group: Tough (if present)
-    const toughRule = unit.rules.find((rule) => rule.name === "Tough");
-    if (toughRule) {
+    // Stat group: Tough (if present, with combined value from all sources)
+    if (finalToughValue > 0) {
       const unitToughGroup = createEl("div", { classes: ["stat-group"] });
       unitToughGroup.appendChild(createEl("span", { html: icons.tough }));
       unitToughGroup.appendChild(
         createEl("p", { classes: ["stat-label"], text: "Tough" })
       );
       unitToughGroup.appendChild(
-        createEl("p", { classes: ["stat-value"], text: toughRule.rating })
+        createEl("p", { classes: ["stat-value"], text: finalToughValue })
       );
       unitCardStats.appendChild(unitToughGroup);
     }
 
     unitCardHeader.appendChild(unitCardStats);
 
-    // Create traits container
+    // Create traits container with all special rules
     const unitTraitsContainer = createEl("div", { classes: ["mb-3"] });
     const unitTraits = createEl("div", {
       classes: ["d-flex", "flex-wrap", "gap-1"],
     });
-    unit.rules.forEach((rule) => {
-      unitTraits.appendChild(
-        createEl("span", {
-          classes: ["badge", "bg-secondary"],
-          text: rule.name,
-        })
-      );
-    });
+    Array.from(specialRules)
+      .sort()
+      .forEach((rule) => {
+        unitTraits.appendChild(
+          createEl("span", {
+            classes: ["badge", "bg-secondary"],
+            text: rule,
+          })
+        );
+      });
     unitTraitsContainer.appendChild(unitTraits);
     unitCardBody.appendChild(unitTraitsContainer);
 
@@ -634,29 +789,32 @@ document.addEventListener("DOMContentLoaded", async () => {
       classes: ["table-group-divider"],
     });
 
-    // Aggregate weapons from unit.loadout (of type "ArmyBookWeapon")
-    const weaponsData = Object.values(
-      unit.loadout
-        .filter((weapon) => weapon.type === "ArmyBookWeapon")
-        .reduce((acc, weapon) => {
-          const key = weapon.label || weapon.name;
-          if (acc[key]) {
-            acc[key].count += weapon.count;
-          } else {
-            acc[key] = { ...weapon };
-          }
-          return acc;
-        }, {})
-    );
+    // Function to format weapon special rules
+    const formatSpecialRules = (specialRules) => {
+      if (!specialRules || !specialRules.length) return "-";
 
-    // Create a row for each weapon
-    weaponsData.forEach((weapon) => {
+      return (
+        specialRules
+          .filter((rule) => rule.name.toUpperCase() !== "AP")
+          .map((rule) => rule.name + (rule.rating ? `(${rule.rating})` : ""))
+          .join(", ") || "-"
+      );
+    };
+
+    // Function to get AP value from special rules
+    const getAPValue = (specialRules) => {
+      if (!specialRules || !specialRules.length) return "-";
+
+      const apRule = specialRules.find((rule) => rule.name === "AP");
+      return apRule ? apRule.rating : "-";
+    };
+
+    // Collect and format all weapons for display
+    allWeapons.forEach((weapon) => {
       const row = createEl("tr");
 
-      // Weapon cell (e.g., "2x Bolter")
-      row.appendChild(
-        createEl("td", { text: `${weapon.count}x ${weapon.name}` })
-      );
+      // Weapon cell (e.g., "Heavy Spear")
+      row.appendChild(createEl("td", { text: weapon.name }));
 
       // Range cell (centered)
       const rangeCell = createEl("td", {
@@ -675,30 +833,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       // AP cell (centered)
       const apCell = createEl("td");
       apCell.style.textAlign = "center";
-      const apRating =
-        (weapon.specialRules &&
-          weapon.specialRules
-            .filter((rule) => rule.name === "AP")
-            .map((rule) => rule.rating)
-            .join("")) ||
-        "-";
-      apCell.textContent = apRating;
+      apCell.textContent = getAPValue(weapon.specialRules);
       row.appendChild(apCell);
 
       // Special cell (centered, joining special rule names that aren't AP)
       const specialCell = createEl("td");
       specialCell.style.textAlign = "center";
-      const specials =
-        (weapon.specialRules &&
-          weapon.specialRules
-            .filter(
-              (rule) =>
-                rule.type === "ArmyBookRule" && rule.name.toUpperCase() !== "AP"
-            )
-            .map((rule) => rule.name)
-            .join(", ")) ||
-        "-";
-      specialCell.textContent = specials;
+      specialCell.textContent = formatSpecialRules(weapon.specialRules);
       row.appendChild(specialCell);
 
       weaponsTbody.appendChild(row);
@@ -746,12 +887,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         row.appendChild(createEl("td", { text: upgrade.name }));
 
         // Special cell: join upgrade content names (if any)
-        const upgradeSpecialCell = createEl("td", {
-          text:
-            Array.isArray(upgrade.content) && upgrade.content.length > 0
-              ? upgrade.content.map((item) => item.name).join(", ")
-              : "-",
-        });
+        let specialText = "-";
+        if (Array.isArray(upgrade.content) && upgrade.content.length > 0) {
+          // Filter out weapons as they're shown in the weapons table
+          const specialRules = upgrade.content.filter(
+            (item) => item.type === "ArmyBookRule"
+          );
+          if (specialRules.length > 0) {
+            specialText = specialRules
+              .map(
+                (rule) => rule.name + (rule.rating ? `(${rule.rating})` : "")
+              )
+              .join(", ");
+          }
+        }
+
+        const upgradeSpecialCell = createEl("td", { text: specialText });
         row.appendChild(upgradeSpecialCell);
 
         upgradesTbody.appendChild(row);
