@@ -462,7 +462,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shareButton = document.getElementById("share-link-container");
     unitsContainer.innerHTML = "";
 
-    shareButton.innerHTML = `<a class=" btn btn-outline-primary w-100 mb-3" href="https://army-forge.onepagerules.com/share?id=${armyForgeId}" id="share-button" type="button">Army Forge link</a>`;
+    shareButton.innerHTML = `<a class=" btn btn-outline-primary w-100 mb-3" href="https://army-forge.onepagerules.com/share?id=${armyForgeId}" target="_blank"id="share-button" type="button"><i class="bi bi-box-arrow-up-right me-1 opacity-75" role="img" aria-label="external link icon"></i>Army Forge link</a>`;
     const displayedUnitsIds = new Set();
 
     for (const unit of remoteData.units) {
