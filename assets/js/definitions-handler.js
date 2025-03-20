@@ -572,7 +572,7 @@ async function initializeDefinitions() {
 
       // Set button text with count
       if (key === "spells") {
-        tabButton.textContent = `${category.title} (${totalSpellCount})`;
+        tabButton.textContent = `${category.title}`;
       } else {
         tabButton.textContent = `${category.title} (${category.items.length})`;
       }
@@ -627,7 +627,7 @@ async function initializeDefinitions() {
             "aria-selected",
             isFirstSpellTab ? "true" : "false"
           );
-          factionTabButton.textContent = `${faction} (${spells.length})`;
+          factionTabButton.textContent = `${faction}`;
 
           // Add event listener to save spells tab state
           factionTabButton.addEventListener("shown.bs.tab", function () {
