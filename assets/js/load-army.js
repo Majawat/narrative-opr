@@ -475,6 +475,212 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+/**
+ * Collects and processes all weapons from a unit, combining duplicates
+ * @param {Object} unit - The unit object from the Army Forge data
+ * @returns {Array} - Array of processed weapon objects with proper counts
+ */
+function collectAndProcessWeapons(unit) {
+  // Collect all weapons from all sources
+  const allWeapons = [];
+  
+  // Step 1: Add direct weapons from loadout
+  if (unit.loadout) {
+    const directWeapons = unit.loadout.filter(item => item.type === "ArmyBookWeapon");
+    allWeapons.push(...directWeapons);
+    
+    // Step 2: Add weapons from item content (like Forest Dragon's weapons)
+    unit.loadout.forEach(item => {
+      if (item.type === "ArmyBookItem" && item.content) {
+        const weaponsFromItem = item.content.filter(content => 
+          content.type === "ArmyBookWeapon"
+        );
+        allWeapons.push(...weaponsFromItem);
+      }
+    });
+  }
+  
+  // Step 3: Create a map to combine identical weapons
+  const weaponMap = {};
+  
+  allWeapons.forEach(weapon => {
+    // Create a unique key for each weapon type
+    // This key combines all relevant properties that would make weapons distinct
+    const weaponKey = [
+      weapon.name,
+      weapon.range || 0,
+      weapon.attacks || 1,
+      getAPValueString(weapon.specialRules),
+      formatSpecialRulesString(weapon.specialRules)
+    ].join('|');
+    
+    if (!weaponMap[weaponKey]) {
+      // First time seeing this weapon - create entry with count
+      weaponMap[weaponKey] = {
+        ...weapon,
+        count: weapon.count || 1
+      };
+    } else {
+      // This is a duplicate - add to the count
+      weaponMap[weaponKey].count += (weapon.count || 1);
+    }
+  });
+  
+  // Step 4: Convert the map back to an array and sort by weapon name
+  return Object.values(weaponMap).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Gets the AP value string from weapon special rules
+ * @param {Array} specialRules - Special rules array from a weapon
+ * @returns {string} - AP value or empty string if none
+ */
+function getAPValueString(specialRules) {
+  if (!specialRules || !specialRules.length) return "";
+  
+  const apRule = specialRules.find(rule => rule.name === "AP");
+  return apRule ? apRule.rating : "";
+}
+
+/**
+ * Formats special rules into a string (excluding AP)
+ * @param {Array} specialRules - Special rules array from a weapon
+ * @returns {string} - Formatted special rules string or empty string if none
+ */
+function formatSpecialRulesString(specialRules) {
+  if (!specialRules || !specialRules.length) return "";
+  
+  return specialRules
+    .filter(rule => rule.name.toUpperCase() !== "AP")
+    .map(rule => rule.name + (rule.rating ? `(${rule.rating})` : ''))
+    .join(",");
+}
+
+/**
+ * Creates the weapons table HTML for display in the unit card
+ * @param {Array} processedWeapons - Array of processed weapon objects
+ * @returns {HTMLElement} - The weapons table element
+ */
+function createWeaponsTable(processedWeapons) {
+  // Helper for element creation
+  const createEl = (
+    tag,
+    { classes = [], text = "", html = "", id = "" } = {}
+  ) => {
+    const el = document.createElement(tag);
+    if (classes.length) el.classList.add(...classes);
+    if (id) el.id = id;
+    if (text) el.textContent = text;
+    if (html) el.innerHTML = html;
+    return el;
+  };
+
+  // Create the weapons table with styling classes
+  const weaponsTable = createEl("table", {
+    classes: [
+      "table",
+      "table-sm",
+      "table-hover",
+      "table-striped",
+      "table-body",
+      "table-responsive",
+    ],
+  });
+
+  // Build the table header
+  const weaponsThead = createEl("thead");
+  const weaponsHeaderRow = createEl("tr");
+  ["Weapon", "Range", "Attack", "AP", "Special"].forEach((text) => {
+    weaponsHeaderRow.appendChild(createEl("th", { text }));
+  });
+  weaponsThead.appendChild(weaponsHeaderRow);
+  weaponsTable.appendChild(weaponsThead);
+
+  // Build the table body
+  const weaponsTbody = createEl("tbody", {
+    classes: ["table-group-divider"],
+  });
+
+  // Add rows for each processed weapon
+  processedWeapons.forEach(weapon => {
+    const row = createEl("tr");
+
+    // Weapon cell (e.g., "4x Shotgun")
+    const weaponCount = weapon.count > 1 ? `${weapon.count}× ` : '';
+    row.appendChild(
+      createEl("td", { text: `${weaponCount}${weapon.name}` })
+    );
+
+    // Range cell (centered)
+    const rangeCell = createEl("td", {
+      text: weapon.range ? `${weapon.range}"` : "-",
+    });
+    rangeCell.style.textAlign = "center";
+    row.appendChild(rangeCell);
+
+    // Attack cell (centered, prefixed with "A")
+    const attackCell = createEl("td", {
+      text: weapon.attacks ? `A${weapon.attacks}` : "-",
+    });
+    attackCell.style.textAlign = "center";
+    row.appendChild(attackCell);
+
+    // AP cell (centered)
+    const apCell = createEl("td");
+    apCell.style.textAlign = "center";
+    apCell.textContent = getAPValue(weapon.specialRules);
+    row.appendChild(apCell);
+
+    // Special cell (centered, joining special rule names that aren't AP)
+    const specialCell = createEl("td");
+    specialCell.style.textAlign = "center";
+    specialCell.textContent = formatSpecialRules(weapon.specialRules);
+    row.appendChild(specialCell);
+
+    weaponsTbody.appendChild(row);
+  });
+
+  weaponsTable.appendChild(weaponsTbody);
+  return weaponsTable;
+}
+
+/**
+ * Gets the AP value from weapon special rules for display
+ * @param {Array} specialRules - Special rules array from a weapon
+ * @returns {string} - AP value or "-" if none
+ */
+function getAPValue(specialRules) {
+  if (!specialRules || !specialRules.length) return "-";
+  
+  const apRule = specialRules.find(rule => rule.name === "AP");
+  return apRule ? apRule.rating : "-";
+}
+
+/**
+ * Formats special rules for display, excluding AP
+ * @param {Array} specialRules - Special rules array from a weapon
+ * @returns {string} - Formatted special rules or "-" if none
+ */
+function formatSpecialRules(specialRules) {
+  if (!specialRules || !specialRules.length) return "-";
+  
+  return specialRules
+    .filter(rule => rule.name.toUpperCase() !== "AP")
+    .map(rule => rule.name + (rule.rating ? `(${rule.rating})` : ''))
+    .join(", ") || "-";
+}
+
+/**
+ * How to use these functions in the createUnitCard function:
+ * 
+ * 1. Replace the weapon processing with:
+ *    const processedWeapons = collectAndProcessWeapons(unit);
+ * 
+ * 2. Replace the weapon table creation with:
+ *    const weaponsTable = createWeaponsTable(processedWeapons);
+ *    unitCardBody.appendChild(weaponsTable);
+ */
+
   function createUnitCard(unit, remoteData) {
     // Define your icons
     const icons = {
@@ -503,6 +709,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       return el;
     };
 
+    // Calculate the actual unit count based on whether it's combined
+    const isCombined = unit.combined === true;
+    const baseUnitCount = parseInt(unit.size) || 0;
+    const actualUnitCount = isCombined ? baseUnitCount * 2 : baseUnitCount;
+
     // Calculate the total cost of the unit including all upgrades
     let totalCost = unit.cost;
     unit.selectedUpgrades.forEach((upgrade) => {
@@ -514,12 +725,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
       }
     });
-
-    // Calculate unit size with any modifications from combined
-    let unitCount = unit.size;
-    if (unit.combined) {
-      unitCount *= 2;
-    }
 
     // Get modified base sizes from upgrades
     let baseSizes = { ...unit.bases };
@@ -584,24 +789,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-    // Collect all weapons (both direct and from items)
-    const allWeapons = [];
-
-    // Add direct weapons from loadout
-    const directWeapons = unit.loadout.filter(
-      (item) => item.type === "ArmyBookWeapon"
-    );
-    allWeapons.push(...directWeapons);
-
-    // Add weapons from item content
-    unit.loadout.forEach((item) => {
-      if (item.type === "ArmyBookItem" && item.content) {
-        const weaponsFromItem = item.content.filter(
-          (content) => content.type === "ArmyBookWeapon"
-        );
-        allWeapons.push(...weaponsFromItem);
-      }
-    });
+    // Process weapons with the new function
+    const processedWeapons = collectAndProcessWeapons(unit);
 
     // Create the outer column container
     const unitCol = createEl("div", {
@@ -659,15 +848,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Unit type, amount, and cost
     const unitCardType = createEl("p", {
       classes: ["mb-0"],
-      text: `${unit.name} [${unitCount}] - ${totalCost}pts`,
+      text: `${unit.name} [${actualUnitCount}] - ${totalCost}pts`,
     });
     unitCardBasics.appendChild(unitCardType);
 
     // Combined unit notice (if applicable)
-    if (unit.combined) {
+    if (isCombined) {
       const unitCardCombined = createEl("div", {
-        classes: ["mb-0"],
-        text: "Combined Unit",
+        classes: ["mb-0", "text-warning"],
+        text: "Combined Unit (2× Basic Units)",
       });
       unitCardBasics.appendChild(unitCardCombined);
     }
@@ -763,95 +952,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const weaponsHeader = createEl("h4", { text: "Weapons" });
     unitCardBody.appendChild(weaponsHeader);
 
-    // Create the weapons table with styling classes
-    const weaponsTable = createEl("table", {
-      classes: [
-        "table",
-        "table-sm",
-        "table-hover",
-        "table-striped",
-        "table-body",
-        "table-responsive",
-      ],
-    });
-
-    // Build the table header for weapons
-    const weaponsThead = createEl("thead");
-    const weaponsHeaderRow = createEl("tr");
-    ["Weapon", "Range", "Attack", "AP", "Special"].forEach((text) => {
-      weaponsHeaderRow.appendChild(createEl("th", { text }));
-    });
-    weaponsThead.appendChild(weaponsHeaderRow);
-    weaponsTable.appendChild(weaponsThead);
-
-    // Build the table body for weapons
-    const weaponsTbody = createEl("tbody", {
-      classes: ["table-group-divider"],
-    });
-
-    // Function to format weapon special rules
-    const formatSpecialRules = (specialRules) => {
-      if (!specialRules || !specialRules.length) return "-";
-
-      return (
-        specialRules
-          .filter((rule) => rule.name.toUpperCase() !== "AP")
-          .map((rule) => rule.name + (rule.rating ? `(${rule.rating})` : ""))
-          .join(", ") || "-"
-      );
-    };
-
-    // Function to get AP value from special rules
-    const getAPValue = (specialRules) => {
-      if (!specialRules || !specialRules.length) return "-";
-
-      const apRule = specialRules.find((rule) => rule.name === "AP");
-      return apRule ? apRule.rating : "-";
-    };
-
-    // Collect and format all weapons for display
-    allWeapons.forEach((weapon) => {
-      const row = createEl("tr");
-
-      // Weapon cell (e.g., "Heavy Spear")
-      row.appendChild(createEl("td", { text: weapon.name }));
-
-      // Range cell (centered)
-      const rangeCell = createEl("td", {
-        text: weapon.range ? `${weapon.range}"` : "-",
-      });
-      rangeCell.style.textAlign = "center";
-      row.appendChild(rangeCell);
-
-      // Attack cell (centered, prefixed with "A")
-      const attackCell = createEl("td", {
-        text: weapon.attacks ? `A${weapon.attacks}` : "-",
-      });
-      attackCell.style.textAlign = "center";
-      row.appendChild(attackCell);
-
-      // AP cell (centered)
-      const apCell = createEl("td");
-      apCell.style.textAlign = "center";
-      apCell.textContent = getAPValue(weapon.specialRules);
-      row.appendChild(apCell);
-
-      // Special cell (centered, joining special rule names that aren't AP)
-      const specialCell = createEl("td");
-      specialCell.style.textAlign = "center";
-      specialCell.textContent = formatSpecialRules(weapon.specialRules);
-      row.appendChild(specialCell);
-
-      weaponsTbody.appendChild(row);
-    });
-
-    weaponsTable.appendChild(weaponsTbody);
+    // Use the new function to create the weapons table
+    const weaponsTable = createWeaponsTable(processedWeapons);
     unitCardBody.appendChild(weaponsTable);
 
     // ===== UPGRADES SECTION (if available, inside card-body) =====
     const upgrades = unit.loadout.filter(
       (upgrade) => upgrade.type === "ArmyBookItem"
     );
+
     if (upgrades.length > 0) {
       const upgradesHeader = createEl("h4", { text: "Upgrades" });
       unitCardBody.appendChild(upgradesHeader);
@@ -880,11 +989,30 @@ document.addEventListener("DOMContentLoaded", async () => {
       const upgradesTbody = createEl("tbody", {
         classes: ["table-group-divider"],
       });
+
+      // Process upgrades for display, combining duplicates
+      const processedUpgrades = {};
       upgrades.forEach((upgrade) => {
+        const upgradeKey = upgrade.name;
+
+        if (!processedUpgrades[upgradeKey]) {
+          processedUpgrades[upgradeKey] = { ...upgrade };
+        } else {
+          // For duplicates, combine counts
+          processedUpgrades[upgradeKey].count =
+            (processedUpgrades[upgradeKey].count || 1) + (upgrade.count || 1);
+        }
+      });
+
+      Object.values(processedUpgrades).forEach((upgrade) => {
         const row = createEl("tr");
 
-        // Upgrade name cell
-        row.appendChild(createEl("td", { text: upgrade.name }));
+        // Upgrade name cell with count if needed
+        const upgradeName =
+          upgrade.count > 1
+            ? `${upgrade.count}× ${upgrade.name}`
+            : upgrade.name;
+        row.appendChild(createEl("td", { text: upgradeName }));
 
         // Special cell: join upgrade content names (if any)
         let specialText = "-";
@@ -907,6 +1035,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         upgradesTbody.appendChild(row);
       });
+
       upgradesTable.appendChild(upgradesTbody);
       unitCardBody.appendChild(upgradesTable);
     }
