@@ -304,6 +304,10 @@
         class="nav-scroll-top mt-4 px-md-4 px-sm-3 px-1"
       >
         <h1>Campaign Rules</h1>
+        <p class="allow-definitions">
+          Test definitions: Tough(3), tough Tough Tough, Agile, Hero, hero Hero.
+          Hero
+        </p>
         <ul>
           <li>
             <strong>Battle Ready:</strong> All miniatures must meet a minimum
@@ -503,44 +507,9 @@
           their units in battle.
         </p>
         <p>
-          Before the game begins, pick one of the following playstyles, or roll
-          a <button type="button" class="btn dice-notation">D6</button> to
-          randomly get one:
+          We are using Fixed Command Points: At the start of the game, players
+          get X CP, where X is 4 for every 1000pts in their army.
         </p>
-        <ol>
-          <li>
-            <strong>Fixed</strong> - At the start of the game, players get X CP,
-            where X is 4 for every 1000pts in their army.
-          </li>
-          <li>
-            <strong>Growing</strong> - At the start of each round, players get X
-            CP, where X is 1 for every 1000pts in their army.
-          </li>
-          <li>
-            <strong>Temporary</strong> - At the start of each round, players get
-            X CP, where X is 1 for every 1000pts in their army, and unspent CP
-            are discarded at the end of the round.
-          </li>
-          <li>
-            <strong>Fixed Random</strong> - At the start of the game, players
-            get <button type="button" class="btn dice-notation">D3</button>×X
-            CP, where X is 2 for every 1000pts in their army.
-          </li>
-          <li>
-            <strong>Growing Random</strong> - At the start of each round,
-            players get
-            <button type="button" class="btn dice-notation">D3</button>×X CP,
-            where X is 0.5 (rounding up the total) for every 1000pts in their
-            army.
-          </li>
-          <li>
-            <strong>Temporary Random</strong> - At the start of each round,
-            players get
-            <button type="button" class="btn dice-notation">D3</button>×X CP,
-            where X is 0.5 (rounding up the total) for every 1000pts in their
-            army, and unspent CP are discarded at the end of the round.
-          </li>
-        </ol>
         <h2>Strategems</h2>
         <p>
           At any point during the game, players may then spend their CP in order
@@ -1145,10 +1114,13 @@
         <div id="special-rules-container" class="row"></div>
       </section>
     </main>
-    <p>Test definitions: Tough(3), Agile, Hero, hero Hero. Hero</p>
+    <p class="allow-definitions">
+      Test definitions: Tough(3), tough Tough Tough, Agile, Hero, hero Hero.
+      Hero
+    </p>
 
     <script src="assets/js/color-modes.js" defer></script>
-    <script src="assets/js/definitions.js" defer></script>
+    <script src="assets/js/definitions-handler.js" defer></script>
     <script src="assets/js/dice.js" defer></script>
     <script src="assets/js/index.js" defer></script>
     <script src="assets/js/rules.js" defer></script>
