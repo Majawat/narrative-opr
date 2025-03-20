@@ -405,10 +405,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Clear existing unit display
     // Loop through units and call displayUnitCard
     const unitsContainer = document.getElementById("units-container");
+    const shareButton = document.getElementById("share-link-container");
     unitsContainer.innerHTML = "";
 
+    shareButton.innerHTML = `<a class="text-sm-center btn btn-outline-primary btn-sm" href="https://army-forge.onepagerules.com/share?id=${armyForgeId}" id="share-button" type="button"> Share link</a>`;
     const displayedUnitsIds = new Set();
-    const totalBases = [];
 
     for (const unit of remoteData.units) {
       if (displayedUnitsIds.has(unit.selectionId)) {
