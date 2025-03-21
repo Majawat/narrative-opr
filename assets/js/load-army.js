@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     displayBaseCounts(baseTotals);
     displaySpells(localData);
 
-    addResetSpellTokensButton();
+    addResetHitPointsButton();
 
     displayRules(remoteData.specialRules);
     addNavLinks(localData);
@@ -66,9 +66,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       resetAllActivations(armyForgeId);
     });
 
+    addResetSpellTokensButton();
+
     // Add it next to the share button
     document.getElementById("share-link-container").appendChild(resetButton);
   }
+
   // Check if a unit has the Caster special rule
   function hasCasterRule(unit) {
     // Check for Caster in unit's own rules
@@ -615,6 +618,273 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const apRule = specialRules.find((rule) => rule.name === "AP");
     return apRule ? apRule.rating : "";
+  }
+
+  function getToughValue(unit) {
+    // Check base rules for Tough
+    const baseToughRule = unit.rules.find((rule) => rule.name === "Tough");
+    let toughValue =
+      baseToughRule && baseToughRule.rating
+        ? parseInt(baseToughRule.rating)
+        : 0;
+
+    // Check loadout items for additional Tough values
+    if (unit.loadout) {
+      for (const item of unit.loadout) {
+        if (item.content) {
+          for (const contentItem of item.content) {
+            if (contentItem.name === "Tough" && contentItem.rating) {
+              toughValue += parseInt(contentItem.rating);
+            }
+          }
+        }
+      }
+    }
+
+    return toughValue;
+  }
+
+  function calculateTotalHitPoints(unit) {
+    const modelCount = parseInt(unit.size) || 1;
+    const toughValue = getToughValue(unit);
+
+    if (toughValue > 0) {
+      // Units with Tough: modelCount * toughValue
+      return modelCount * toughValue;
+    } else {
+      // Units without Tough: 1 HP per model
+      return modelCount;
+    }
+  }
+
+  // Store current hit points for a unit
+  function saveHitPoints(unitId, armyId, currentHP, maxHP) {
+    const key = `hit_points_${armyId}_${unitId}`;
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        current: currentHP,
+        max: maxHP,
+      })
+    );
+  }
+
+  // Get current hit points for a unit
+  function getHitPoints(unitId, armyId) {
+    const key = `hit_points_${armyId}_${unitId}`;
+    const storedHP = localStorage.getItem(key);
+
+    if (storedHP) {
+      return JSON.parse(storedHP);
+    }
+    return null;
+  }
+
+  // Initialize hit points for a unit
+  function initializeHitPoints(unit, armyId) {
+    const unitId = unit.selectionId;
+    const maxHP = calculateTotalHitPoints(unit);
+
+    // Check if we already have hit points stored
+    const storedHP = getHitPoints(unitId, armyId);
+
+    if (!storedHP) {
+      // Initialize at full health
+      saveHitPoints(unitId, armyId, maxHP, maxHP);
+      return { current: maxHP, max: maxHP };
+    }
+
+    // If max HP has changed (unit was upgraded/downgraded),
+    // reset current HP to new max
+    if (storedHP.max !== maxHP) {
+      saveHitPoints(unitId, armyId, maxHP, maxHP);
+      return { current: maxHP, max: maxHP };
+    }
+
+    return storedHP;
+  }
+
+  // Reset all units' hit points to full
+  // Update the resetAllHitPoints function to remove the border-danger class
+
+  function resetAllHitPoints(armyId) {
+    const unitCards = document.querySelectorAll("[id^='unit-']");
+
+    unitCards.forEach((card) => {
+      const unitId = card.id.replace("unit-", "");
+      const hpData = getHitPoints(unitId, armyId);
+
+      if (hpData) {
+        // Reset to max HP
+        saveHitPoints(unitId, armyId, hpData.max, hpData.max);
+
+        // Update UI
+        const hpDisplay = card.querySelector(".hp-current");
+        if (hpDisplay) {
+          hpDisplay.textContent = hpData.max;
+        }
+
+        // Update progress bar
+        const progressBar = card.querySelector(".hp-progress-bar");
+        if (progressBar) {
+          progressBar.style.width = "100%";
+          progressBar.classList.remove("bg-danger", "bg-warning");
+          progressBar.classList.add("bg-success");
+        }
+
+        // Remove the red border from the card
+        const cardElement = card.querySelector(".card");
+        if (cardElement) {
+          cardElement.classList.remove("border-danger");
+        }
+      }
+    });
+  }
+
+  // Add hit points UI to unit card
+  function addHitPointsUI(unitCard, unit, armyForgeId) {
+    // Initialize hit points
+    const hpData = initializeHitPoints(unit, armyForgeId);
+    const modelCount = parseInt(unit.size) || 1;
+    const toughValue = getToughValue(unit);
+    const unitId = unit.selectionId;
+
+    // Create hit points container
+    const hpContainer = document.createElement("div");
+    hpContainer.className =
+      "hit-points-container d-flex justify-content-between align-items-center mb-2";
+
+    // Create HP label
+    let hpLabel = document.createElement("span");
+    if (toughValue > 0) {
+      hpLabel.innerHTML = `<i class="bi bi-heart-fill text-danger"></i> HP (${modelCount} models, Tough ${toughValue})`;
+    } else {
+      hpLabel.innerHTML = `<i class="bi bi-heart-fill text-danger"></i> HP (${modelCount} models)`;
+    }
+    hpContainer.appendChild(hpLabel);
+
+    // Create HP controls
+    const hpControls = document.createElement("div");
+    hpControls.className = "d-flex align-items-center";
+
+    // Decrease HP button
+    const decreaseBtn = document.createElement("button");
+    decreaseBtn.className = "btn btn-sm btn-danger me-2";
+    decreaseBtn.innerHTML = "<i class='bi bi-dash'></i>";
+    decreaseBtn.addEventListener("click", function () {
+      if (hpData.current > 0) {
+        hpData.current--;
+        saveHitPoints(unitId, armyForgeId, hpData.current, hpData.max);
+        updateHPDisplay();
+      }
+    });
+    hpControls.appendChild(decreaseBtn);
+
+    // HP display
+    const hpDisplay = document.createElement("div");
+    hpDisplay.className = "d-flex flex-column align-items-center me-2";
+
+    const hpText = document.createElement("div");
+    hpText.className = "hp-text";
+    hpText.innerHTML = `<span class="hp-current">${hpData.current}</span>/<span class="hp-max">${hpData.max}</span>`;
+    hpDisplay.appendChild(hpText);
+
+    // Progress bar
+    const progressContainer = document.createElement("div");
+    progressContainer.className = "progress";
+    progressContainer.style.width = "60px";
+    progressContainer.style.height = "6px";
+
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar hp-progress-bar";
+    progressBar.style.width = `${(hpData.current / hpData.max) * 100}%`;
+
+    // Set color based on health percentage
+    const healthPercent = (hpData.current / hpData.max) * 100;
+    if (healthPercent <= 25) {
+      progressBar.classList.add("bg-danger");
+    } else if (healthPercent <= 60) {
+      progressBar.classList.add("bg-warning");
+    } else {
+      progressBar.classList.add("bg-success");
+    }
+
+    progressContainer.appendChild(progressBar);
+    hpDisplay.appendChild(progressContainer);
+    hpControls.appendChild(hpDisplay);
+
+    // Increase HP button
+    const increaseBtn = document.createElement("button");
+    increaseBtn.className = "btn btn-sm btn-success";
+    increaseBtn.innerHTML = "<i class='bi bi-plus'></i>";
+    increaseBtn.addEventListener("click", function () {
+      if (hpData.current < hpData.max) {
+        hpData.current++;
+        saveHitPoints(unitId, armyForgeId, hpData.current, hpData.max);
+        updateHPDisplay();
+      }
+    });
+    hpControls.appendChild(increaseBtn);
+
+    hpContainer.appendChild(hpControls);
+
+    // Function to update HP display
+    function updateHPDisplay() {
+      const currentHP = hpContainer.querySelector(".hp-current");
+      currentHP.textContent = hpData.current;
+
+      // Update progress bar
+      const progressBar = hpContainer.querySelector(".hp-progress-bar");
+      progressBar.style.width = `${(hpData.current / hpData.max) * 100}%`;
+
+      // Update progress bar color
+      progressBar.classList.remove("bg-danger", "bg-warning", "bg-success");
+      const healthPercent = (hpData.current / hpData.max) * 100;
+      if (healthPercent <= 25) {
+        progressBar.classList.add("bg-danger");
+      } else if (healthPercent <= 60) {
+        progressBar.classList.add("bg-warning");
+      } else {
+        progressBar.classList.add("bg-success");
+      }
+
+      // Update unit card appearance based on health
+      if (hpData.current === 0) {
+        unitCard.classList.add("border-danger");
+      } else {
+        unitCard.classList.remove("border-danger");
+      }
+    }
+
+    // Find or create card footer
+    let unitCardFooter = unitCard.querySelector(".card-footer");
+    if (!unitCardFooter) {
+      unitCardFooter = document.createElement("div");
+      unitCardFooter.className = "card-footer";
+      unitCard.appendChild(unitCardFooter);
+    }
+
+    // Add hit points container to footer
+    unitCardFooter.appendChild(hpContainer);
+  }
+
+  // Add reset hit points button
+  function addResetHitPointsButton() {
+    const armyForgeId = document.getElementById("army-forge-id").textContent;
+    const container = document.getElementById("share-link-container");
+
+    if (!container) return;
+
+    // Create reset hit points button
+    const resetHPBtn = document.createElement("button");
+    resetHPBtn.className = "btn btn-sm btn-danger mb-3 ms-2";
+    resetHPBtn.innerHTML = "<i class='bi bi-heart-fill'></i> Reset All HP";
+    resetHPBtn.addEventListener("click", function () {
+      resetAllHitPoints(armyForgeId);
+    });
+
+    // Add button to container
+    container.appendChild(resetHPBtn);
   }
 
   /**
@@ -1221,7 +1491,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Create spell token container
       const tokenContainer = document.createElement("div");
       tokenContainer.className =
-        "spell-token-container d-flex justify-content-between align-items-center";
+        "spell-token-container d-flex justify-content-between align-items-center mb-2";
       tokenContainer.dataset.unitId = unit.selectionId;
 
       // Create spell token label
@@ -1286,6 +1556,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // The addSpellTokenUI call will now add to this same footer
     addSpellTokenUI(unitCard, unit, armyForgeId);
+
+    addHitPointsUI(unitCard, unit, armyForgeId);
 
     return unitCol;
   }
