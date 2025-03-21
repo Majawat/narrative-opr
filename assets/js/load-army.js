@@ -1206,7 +1206,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
       <div class="toast-body">
         <p><i class="bi bi-exclamation-triangle me-1"></i> <strong>${unitName}</strong> ${reason}.</p>
-        <p class="mb-2">Take a Quality test. Did the unit pass?</p>
+        <p class="mb-2">Take a Quality test for Morale. Did the unit pass?</p>
         <div class="d-flex justify-content-between">
           <button class="btn btn-success morale-passed-btn">Passed</button>
           <button class="btn btn-danger morale-failed-btn">Failed</button>
