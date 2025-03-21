@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add reset button to the share-link-container
     const resetButton = document.createElement("button");
-    resetButton.className = "btn btn-warning mb-3 ms-2";
+    resetButton.className = "btn btn-sm btn-warning mb-3 ms-2";
     resetButton.innerHTML = `<i class="bi bi-arrow-repeat"></i> Reset All Activations`;
     resetButton.addEventListener("click", function () {
       resetAllActivations(armyForgeId);
@@ -1299,7 +1299,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Create reset tokens button
     const resetTokensBtn = document.createElement("button");
-    resetTokensBtn.className = "btn btn-info mb-3 ms-2";
+    resetTokensBtn.className = "btn btn-sm btn-info mb-3 ms-2";
     resetTokensBtn.innerHTML = "<i class='bi bi-stars'></i> Reset Spell Tokens";
     resetTokensBtn.addEventListener("click", function () {
       resetAllSpellTokens(armyForgeId, 0);
