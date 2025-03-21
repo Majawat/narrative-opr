@@ -1546,7 +1546,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       showDetailedToast("Spell Tokens Added", toastMessage, "success");
     } else {
-      showToast(
+      showDetailedToast(
         "No Casters Found",
         "No units with the Caster special rule were found",
         "warning"
@@ -1572,7 +1572,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     toast.innerHTML = `
       <div class="d-flex flex-column">
-        <div class="toast-header bg-${type}">
+        <div class="toast-header bg-${type} text-bg-${type}">
           <strong class="me-auto">${title}</strong>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
