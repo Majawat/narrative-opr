@@ -1346,7 +1346,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Create action container in footer
     const actionContainer = document.createElement("div");
     actionContainer.className =
-      "d-flex justify-content-between align-items-center";
+      "d-flex justify-content-between align-items-center mb-2";
 
     // Create action label
     const actionLabel = document.createElement("span");
