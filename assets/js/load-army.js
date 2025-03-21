@@ -1404,8 +1404,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const toughValue = getToughValue(unit);
     const moraleThreshold =
       modelCount === 1 && toughValue > 0
-        ? Math.ceil(toughValue / 2)
-        : Math.ceil(modelCount / 2);
+        ? Math.floor(toughValue / 2)
+        : Math.floor(modelCount / 2);
 
     const moraleInfo = document.createElement("div");
     moraleInfo.className = "alert alert-secondary mt-2 mb-0 py-2";
