@@ -115,17 +115,77 @@ document.addEventListener("DOMContentLoaded", async () => {
    * @param {Object} unit - The unit object
    * @returns {number} - Total hit points
    */
+  /**
+   * Calculates total hit points for a unit
+   * @param {Object} unit - The unit object
+   * @returns {number} - Total hit points
+   */
   function calculateTotalHitPoints(unit) {
     const modelCount = parseInt(unit.size) || 1;
-    const toughValue = getToughValue(unit);
 
-    if (toughValue > 0) {
-      // Units with Tough: modelCount * toughValue
-      return modelCount * toughValue;
-    } else {
-      // Units without Tough: 1 HP per model
-      return modelCount;
+    // Check if there are upgrades that modify Tough values for specific models
+    let totalHP = 0;
+
+    // Track replacements from upgrades
+    let replacedModelCount = 0;
+
+    // Check for upgrades that replace models with ones having Tough
+    if (unit.selectedUpgrades) {
+      unit.selectedUpgrades.forEach((upgrade) => {
+        // Only process replacements
+        if (upgrade.upgrade && upgrade.upgrade.variant === "replace") {
+          // Get the number of affected models (default to 1 if not specified)
+          const affectedModels =
+            upgrade.upgrade.affects &&
+            upgrade.upgrade.affects.type === "exactly" &&
+            upgrade.upgrade.affects.value
+              ? parseInt(upgrade.upgrade.affects.value)
+              : 1;
+
+          // Check if replacement adds Tough
+          let replacementTough = 0;
+          if (upgrade.option && upgrade.option.gains) {
+            upgrade.option.gains.forEach((gain) => {
+              if (gain.content) {
+                gain.content.forEach((content) => {
+                  if (content.name === "Tough" && content.rating) {
+                    replacementTough = parseInt(content.rating);
+                  }
+                });
+              }
+            });
+          }
+
+          // Add replacement HP to total and track replaced models
+          if (replacementTough > 0) {
+            totalHP += affectedModels * replacementTough;
+            replacedModelCount += affectedModels;
+          }
+        }
+      });
     }
+
+    // Get base Tough value for remaining models
+    const baseToughRule = unit.rules.find((rule) => rule.name === "Tough");
+    const baseTough =
+      baseToughRule && baseToughRule.rating
+        ? parseInt(baseToughRule.rating)
+        : 0;
+
+    // Calculate HP for non-replaced models
+    const remainingModels = modelCount - replacedModelCount;
+
+    if (remainingModels > 0) {
+      if (baseTough > 0) {
+        // Units with base Tough: remainingModels * baseTough
+        totalHP += remainingModels * baseTough;
+      } else {
+        // Units without Tough: 1 HP per model
+        totalHP += remainingModels;
+      }
+    }
+
+    return Math.max(totalHP, 1); // Ensure unit has at least 1 HP
   }
 
   /**
