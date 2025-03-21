@@ -7,3 +7,4 @@
 - only allow unshake button if unit is shaken, hide other buttons
 - figure out fatigued status, show what that means
 - fix "morale test required" message to show correct number (is one too high with odd numbers)
+- if multiple things give tough, combine badges
