@@ -687,7 +687,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Token counter
     const tokenCounter = document.createElement("span");
-    tokenCounter.className = "btn btn-sm btn-info token-count";
+    tokenCounter.className = "btn btn-sm btn-outline-info token-count";
     tokenCounter.style.pointerEvents = "none";
     tokenCounter.textContent = tokens;
     tokenControls.appendChild(tokenCounter);
@@ -846,101 +846,130 @@ document.addEventListener("DOMContentLoaded", async () => {
   function updateActivationUI(unitCard, action, isActivated) {
     // Find the activation container
     const activationContainer = unitCard.querySelector(".activation-container");
-    if (!activationContainer) return;
+    if (!activationContainer) {
+      // Create the activation container if it doesn't exist
+      const activationContainer = document.createElement("div");
+      activationContainer.className = "activation-container";
 
-    // Get action button container
+      // Create action button container
+      const actionButtonContainer = document.createElement("div");
+      actionButtonContainer.className =
+        "action-button-container d-flex flex-wrap gap-1";
+
+      // Create completed action button
+      const completedAction = document.createElement("button");
+      completedAction.className =
+        "completed-action btn btn-sm btn-outline-secondary w-100";
+      completedAction.style.display = "none";
+
+      activationContainer.appendChild(actionButtonContainer);
+      activationContainer.appendChild(completedAction);
+
+      // Find the card footer or create one
+      let unitCardFooter = unitCard.querySelector(".card-footer");
+      if (!unitCardFooter) {
+        unitCardFooter = document.createElement("div");
+        unitCardFooter.className = "card-footer";
+        unitCard.appendChild(unitCardFooter);
+      }
+
+      unitCardFooter.appendChild(activationContainer);
+    }
+
     const actionButtonContainer = activationContainer.querySelector(
       ".action-button-container"
     );
+    const completedAction =
+      activationContainer.querySelector(".completed-action");
 
     if (isActivated) {
       // Unit is activated - hide action buttons and show completed action
-      actionButtonContainer.style.display = "none";
-
-      const completedAction =
-        activationContainer.querySelector(".completed-action");
-      completedAction.style.display = "block";
-
-      // Set appropriate action text and icon
-      let actionText, actionIcon;
-      switch (action) {
-        case ACTIONS.HOLD:
-          actionText = "Hold";
-          actionIcon = "bi-shield-fill";
-          completedAction.className =
-            "completed-action btn btn-sm btn-outline-primary w-100";
-          break;
-        case ACTIONS.ADVANCE:
-          actionText = "Advance";
-          actionIcon = "bi-arrow-right-circle-fill";
-          completedAction.className =
-            "completed-action btn btn-sm btn-outline-success w-100";
-          break;
-        case ACTIONS.RUSH:
-          actionText = "Rush";
-          actionIcon = "bi-lightning-fill";
-          completedAction.className =
-            "completed-action btn btn-sm btn-outline-warning w-100";
-          break;
-        case ACTIONS.CHARGE:
-          actionText = "Charge";
-          actionIcon = "bi-flag-fill";
-          completedAction.className =
-            "completed-action btn btn-sm btn-outline-danger w-100";
-          break;
-        case ACTIONS.UNSHAKEN:
-          actionText = "Unshaken";
-          actionIcon = "bi-emoji-smile-fill";
-          completedAction.className =
-            "completed-action btn btn-sm btn-outline-info w-100";
-          break;
-        default:
-          actionText = "Activated";
-          actionIcon = "bi-check-circle-fill";
-          completedAction.className =
-            "completed-action btn btn-sm btn-outline-secondary w-100";
+      if (actionButtonContainer) {
+        actionButtonContainer.style.display = "none";
       }
 
-      completedAction.innerHTML = `<i class="bi ${actionIcon}"></i> ${actionText}`;
+      if (completedAction) {
+        completedAction.style.display = "block";
+
+        // Set appropriate action text and icon
+        let actionText, actionIcon, actionClass;
+        switch (action) {
+          case ACTIONS.HOLD:
+            actionText = "Hold";
+            actionIcon = "bi-shield-fill";
+            actionClass = "btn-outline-primary";
+            break;
+          case ACTIONS.ADVANCE:
+            actionText = "Advance";
+            actionIcon = "bi-arrow-right-circle-fill";
+            actionClass = "btn-outline-success";
+            break;
+          case ACTIONS.RUSH:
+            actionText = "Rush";
+            actionIcon = "bi-lightning-fill";
+            actionClass = "btn-outline-warning";
+            break;
+          case ACTIONS.CHARGE:
+            actionText = "Charge";
+            actionIcon = "bi-flag-fill";
+            actionClass = "btn-outline-danger";
+            break;
+          case ACTIONS.UNSHAKEN:
+            actionText = "Unshaken";
+            actionIcon = "bi-emoji-smile-fill";
+            actionClass = "btn-outline-info";
+            break;
+          default:
+            actionText = "Activated";
+            actionIcon = "bi-check-circle-fill";
+            actionClass = "btn-outline-secondary";
+        }
+
+        completedAction.innerHTML = `<i class="bi ${actionIcon}"></i> ${actionText}`;
+        completedAction.className = `completed-action btn btn-sm ${actionClass} w-100`;
+      }
     } else {
       // Unit is not activated - show action buttons
-      actionButtonContainer.style.display = "flex";
+      if (actionButtonContainer) {
+        actionButtonContainer.style.display = "flex";
+      }
 
-      const completedAction =
-        activationContainer.querySelector(".completed-action");
-      completedAction.style.display = "none";
+      if (completedAction) {
+        completedAction.style.display = "none";
+      }
     }
   }
 
   /**
-   * Update the morale status UI
+   * Update morale status UI
    * @param {HTMLElement} unitCard - The unit card element
    * @param {string} moraleStatus - Morale status (from MORALE_STATUS object)
    */
   function updateMoraleStatusUI(unitCard, moraleStatus) {
-    const moraleContainer = unitCard.querySelector(".morale-status-container");
+    const moraleContainer = unitCard.querySelector(
+      ".activation-container .morale-status-label"
+    );
     if (!moraleContainer) return;
-
-    const moraleLabel = moraleContainer.querySelector(".morale-status-label");
 
     // Update based on morale status
     switch (moraleStatus) {
       case MORALE_STATUS.SHAKEN:
-        moraleLabel.className =
+        moraleContainer.className =
           "morale-status-label btn btn-sm btn-danger w-100";
-        moraleLabel.innerHTML =
+        moraleContainer.innerHTML =
           '<i class="bi bi-exclamation-triangle"></i> Shaken';
         break;
       case MORALE_STATUS.ROUTED:
-        moraleLabel.className = "morale-status-label btn btn-sm btn-dark w-100";
-        moraleLabel.innerHTML = '<i class="bi bi-x-circle"></i> Routed';
+        moraleContainer.className =
+          "morale-status-label btn btn-sm btn-dark w-100";
+        moraleContainer.innerHTML = '<i class="bi bi-x-circle"></i> Routed';
         // Apply additional styling to the whole card to indicate routed
         unitCard.classList.add("border-dark", "opacity-50");
         break;
       default: // READY
-        moraleLabel.className =
+        moraleContainer.className =
           "morale-status-label btn btn-sm btn-success w-100";
-        moraleLabel.innerHTML = '<i class="bi bi-shield-fill"></i> Ready';
+        moraleContainer.innerHTML = '<i class="bi bi-shield-fill"></i> Ready';
         // Remove any routed styling
         unitCard.classList.remove("border-dark", "opacity-50");
     }
@@ -981,12 +1010,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (currentMoraleStatus === MORALE_STATUS.SHAKEN) {
         // Unit is no longer shaken
         saveUnitMoraleStatus(unitId, armyId, MORALE_STATUS.READY);
-        updateMoraleStatusUI(unitCard, MORALE_STATUS.READY);
       }
 
       // Save activation with UNSHAKEN action
       saveUnitActivation(unitId, armyId, action, true);
-      updateActivationUI(unitCard, action, true);
+
+      // Rebuild the UI
+      addMoraleAndActionUI(unitCard, unit, armyId);
       return;
     }
 
@@ -1007,42 +1037,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (action === ACTIONS.CHARGE) {
       // Save activation first
       saveUnitActivation(unitId, armyId, action, true);
-      updateActivationUI(unitCard, action, true);
+
+      // Rebuild the UI
+      addMoraleAndActionUI(unitCard, unit, armyId);
 
       // Show melee result prompt
       showMeleeResultPrompt(
         unitId,
         armyId,
-        unit.name || unit.customName || "Unit"
+        unit.customName || unit.Name || "Unit"
       );
       return;
     }
 
     // For other actions, mark as activated and save the action
     saveUnitActivation(unitId, armyId, action, true);
-    updateActivationUI(unitCard, action, true);
 
-    console.log("Unit activated with action:", action);
+    // Rebuild the UI
+    addMoraleAndActionUI(unitCard, unit, armyId);
 
     // Check if morale test is needed (unit at half strength)
     if (shouldTakeMoraleTest(unit, hpData.current, hpData.max)) {
       showMoraleTestPrompt(
         unitId,
         armyId,
-        unit.name || unit.customName || "Unit",
+        unit.customName || unit.Name || "Unit",
         false
       );
     }
-
-    const actionButtonContainer = unitCard.querySelector(
-      ".action-button-container"
-    );
-    const completedAction = unitCard.querySelector(".completed-action");
-    console.log(
-      "Action buttons container display:",
-      actionButtonContainer?.style.display
-    );
-    console.log("Completed action display:", completedAction?.style.display);
   }
 
   /**
@@ -1071,7 +1093,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       showMoraleTestPrompt(
         unitId,
         armyId,
-        unit.name || unit.customName || "Unit",
+        unit.customName || unit.Name || "Unit",
         true
       );
     }
@@ -1103,7 +1125,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Passed morale test, no effects
       showToast(
         "Morale Test Passed",
-        `${unit.name || unit.customName || "Unit"} passed the morale test!`,
+        `${unit.customName || unit.Name || "Unit"} passed the morale test!`,
         "success"
       );
       return;
@@ -1123,7 +1145,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       showToast(
         "Unit Routed",
         `${
-          unit.name || unit.customName || "Unit"
+          unit.customName || unit.name || "Unit"
         } has routed and is removed from play!`,
         "danger"
       );
@@ -1133,7 +1155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       updateMoraleStatusUI(unitCard, MORALE_STATUS.SHAKEN);
       showToast(
         "Unit Shaken",
-        `${unit.name || unit.customName || "Unit"} is now shaken!`,
+        `${unit.customName || unit.name || "Unit"} is now shaken!`,
         "warning"
       );
     }
@@ -1151,27 +1173,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const toast = document.createElement("div");
     toast.className =
-      "toast melee-result-toast align-items-center text-bg-primary border-0";
+      "toast melee-result-toast align-items-center bg-body border-0";
     toast.role = "alert";
     toast.ariaLive = "assertive";
     toast.ariaAtomic = "true";
     toast.style.marginBottom = "10px";
 
     toast.innerHTML = `
-    <div class="d-flex flex-column">
-      <div class="toast-header">
-        <strong class="me-auto">Melee Result</strong>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div class="toast-body">
-        <p>${unitName} charged into melee. What was the result?</p>
-        <div class="d-flex justify-content-between">
-          <button class="btn btn-success melee-won-btn">Won Melee</button>
-          <button class="btn btn-danger melee-lost-btn">Lost Melee</button>
+      <div class="d-flex flex-column">
+        <div class="toast-header">
+          <strong class="me-auto">Melee Result</strong>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          <p><strong>${unitName}</strong> charged into melee. What was the result?</p>
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-success melee-won-btn">Won Melee</button>
+            <button class="btn btn-danger melee-lost-btn">Lost Melee</button>
+          </div>
         </div>
       </div>
-    </div>
-  `;
+    `;
 
     toastContainer.appendChild(toast);
     const bsToast = new bootstrap.Toast(toast, { autohide: false });
@@ -1201,29 +1223,30 @@ document.addEventListener("DOMContentLoaded", async () => {
    * @param {string} unitName - Name of the unit
    * @param {boolean} fromMelee - Whether the test is from losing a melee
    */
+
   function showMoraleTestPrompt(unitId, armyId, unitName, fromMelee = false) {
     const toastContainer = document.getElementById("toast-container");
     if (!toastContainer) return;
 
     const toast = document.createElement("div");
     toast.className =
-      "toast morale-test-toast align-items-center text-bg-warning border-0";
+      "toast morale-test-toast align-items-center bg-body text-bg-warningborder-0";
     toast.role = "alert";
     toast.ariaLive = "assertive";
     toast.ariaAtomic = "true";
     toast.style.marginBottom = "10px";
 
-    let reason = fromMelee ? "lost a melee" : "is at half strength or less";
+    let reason = fromMelee ? "lost in melee" : "is at half strength or less";
 
     toast.innerHTML = `
     <div class="d-flex flex-column">
-      <div class="toast-header">
+      <div class="toast-header bg-warning text-dark">
         <strong class="me-auto">Morale Test Required</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
       <div class="toast-body">
-        <p><i class="bi bi-exclamation-triangle me-1"></i> ${unitName} ${reason}.</p>
-        <p class="mb-2">Take a Quality test. Did the unit pass?</p>
+        <p><i class="bi bi-exclamation-triangle me-1"></i><strong> ${unitName}</strong> ${reason}.</p>
+        <p class="mb-2">Take a Quality test for Morale. Did the unit pass?</p>
         <div class="d-flex justify-content-between">
           <button class="btn btn-success morale-passed-btn">Passed</button>
           <button class="btn btn-danger morale-failed-btn">Failed</button>
@@ -1296,7 +1319,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    * @param {string} armyForgeId - Army ID
    */
   function addMoraleAndActionUI(unitCard, unit, armyForgeId) {
-    // Get the card footer or create one if it doesn't exist
+    // Get or create the card footer
     let unitCardFooter = unitCard.querySelector(".card-footer");
     if (!unitCardFooter) {
       unitCardFooter = document.createElement("div");
@@ -1304,41 +1327,169 @@ document.addEventListener("DOMContentLoaded", async () => {
       unitCard.appendChild(unitCardFooter);
     }
 
-    // Get current morale status and activation
-    const moraleStatus = getUnitMoraleStatus(unit.selectionId, armyForgeId);
-    const activation = getUnitActivation(unit.selectionId, armyForgeId);
+    // Get or create the card body for morale info
+    const unitCardBody = unitCard.querySelector(".card-body");
 
-    // Create combined activation/morale row
+    // Remove any existing morale info panel to prevent duplication
+    const existingMoraleInfo = unitCardBody.querySelector(".morale-info-panel");
+    if (existingMoraleInfo) {
+      existingMoraleInfo.remove();
+    }
+
+    // Clear existing footer content
+    unitCardFooter.innerHTML = "";
+
+    // Get current activation and morale status
+    const activation = getUnitActivation(unit.selectionId, armyForgeId);
+    const moraleStatus = getUnitMoraleStatus(unit.selectionId, armyForgeId);
+
+    // Create action container in footer
     const actionContainer = document.createElement("div");
     actionContainer.className =
-      "d-flex justify-content-between align-items-center mb-2";
+      "d-flex justify-content-between align-items-center";
 
-    // Add activation label
-    const activationLabel = document.createElement("span");
-    activationLabel.innerHTML =
+    // Create action label
+    const actionLabel = document.createElement("span");
+    actionLabel.innerHTML =
       "<i class='bi bi-lightning'></i> Action / <i class='bi bi-shield-fill'></i> Morale";
-    actionContainer.appendChild(activationLabel);
+    actionContainer.appendChild(actionLabel);
 
-    // Create status container (holds both morale badge and action buttons)
+    // Create status container
     const statusContainer = document.createElement("div");
-    statusContainer.className = "d-flex";
+    statusContainer.className = "d-flex align-items-center";
 
-    // Create morale status badge (smaller)
-    const moraleStatusLabel = document.createElement("button");
-    moraleStatusLabel.className =
-      "morale-status-label btn btn-sm btn-success me-2";
-    moraleStatusLabel.style.minWidth = "85px"; // Set a minimum width
-    moraleStatusLabel.disabled = true; // This is just for display
+    if (activation.activated) {
+      // Activated state - show completed action
+      const completedAction = document.createElement("button");
+      completedAction.className = "btn btn-sm w-100";
 
-    statusContainer.appendChild(moraleStatusLabel);
+      // Determine styling based on action
+      let actionText = "Activated",
+        actionIcon = "bi-check-circle-fill",
+        actionClass = "btn-outline-secondary";
+      switch (activation.action) {
+        case ACTIONS.HOLD:
+          actionText = "Hold";
+          actionIcon = "bi-shield-fill";
+          actionClass = "btn-outline-primary";
+          break;
+        case ACTIONS.ADVANCE:
+          actionText = "Advance";
+          actionIcon = "bi-arrow-right-circle-fill";
+          actionClass = "btn-outline-success";
+          break;
+        case ACTIONS.RUSH:
+          actionText = "Rush";
+          actionIcon = "bi-lightning-fill";
+          actionClass = "btn-outline-warning";
+          break;
+        case ACTIONS.CHARGE:
+          actionText = "Charge";
+          actionIcon = "bi-flag-fill";
+          actionClass = "btn-outline-danger";
+          break;
+        case ACTIONS.UNSHAKEN:
+          actionText = "Unshaken";
+          actionIcon = "bi-emoji-smile-fill";
+          actionClass = "btn-outline-info";
+          break;
+      }
 
-    // Create action buttons container
-    const actionButtonContainer = document.createElement("div");
-    actionButtonContainer.className =
-      "action-button-container d-flex flex-wrap gap-1";
+      completedAction.className = `completed-action btn btn-sm ${actionClass} w-100`;
+      completedAction.innerHTML = `<i class="bi ${actionIcon}"></i> ${actionText}`;
+      completedAction.addEventListener("click", function () {
+        // Reset activation when clicked
+        saveUnitActivation(unit.selectionId, armyForgeId);
+        addMoraleAndActionUI(unitCard, unit, armyForgeId);
+      });
 
-    // Add action buttons (more compact)
-    [
+      statusContainer.appendChild(completedAction);
+    } else {
+      // Non-activated state - show action buttons
+      const actionButtonContainer = document.createElement("div");
+      actionButtonContainer.className = "btn-group btn-group-sm";
+      actionButtonContainer.role = "group";
+
+      // Predefined action button configurations
+      const actionConfigs = [
+        {
+          action: ACTIONS.HOLD,
+          icon: "bi-shield-fill",
+          color: "primary",
+          label: "Hold",
+        },
+        {
+          action: ACTIONS.ADVANCE,
+          icon: "bi-arrow-right-circle-fill",
+          color: "success",
+          label: "Advance",
+        },
+        {
+          action: ACTIONS.RUSH,
+          icon: "bi-lightning-fill",
+          color: "warning",
+          label: "Rush",
+        },
+        {
+          action: ACTIONS.CHARGE,
+          icon: "bi-flag-fill",
+          color: "danger",
+          label: "Charge",
+        },
+        {
+          action: ACTIONS.UNSHAKEN,
+          icon: "bi-emoji-smile-fill",
+          color: "info",
+          label: "Unshaken",
+        },
+      ];
+
+      actionConfigs.forEach((btnInfo) => {
+        const button = document.createElement("button");
+        button.className = `btn btn-sm btn-outline-${btnInfo.color}`;
+        button.innerHTML = `<i class="bi ${btnInfo.icon} me-1"></i>${btnInfo.label}`;
+        button.addEventListener("click", function () {
+          processUnitAction(unit.selectionId, armyForgeId, btnInfo.action);
+        });
+        actionButtonContainer.appendChild(button);
+      });
+
+      statusContainer.appendChild(actionButtonContainer);
+    }
+
+    actionContainer.appendChild(statusContainer);
+    unitCardFooter.appendChild(actionContainer);
+
+    // Add morale info panel to card body
+    addMoraleInfoToUnitCard(unitCard, unit);
+  }
+
+  // Helper function to get action label
+  function getActionLabel(action) {
+    switch (action) {
+      case ACTIONS.HOLD:
+        return "Hold";
+      case ACTIONS.ADVANCE:
+        return "Advance";
+      case ACTIONS.RUSH:
+        return "Rush";
+      case ACTIONS.CHARGE:
+        return "Charge";
+      case ACTIONS.UNSHAKEN:
+        return "Unshaken";
+      default:
+        return "Activated";
+    }
+  }
+
+  // Create compact action buttons
+  function createActionButtons(unit, armyForgeId) {
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "btn-group btn-group-sm";
+    buttonContainer.role = "group";
+
+    // Predefined action button configurations
+    const actionConfigs = [
       {
         action: ACTIONS.HOLD,
         icon: "bi-shield-fill",
@@ -1369,42 +1520,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         color: "info",
         label: "Unshaken",
       },
-    ].forEach((btnInfo) => {
+    ];
+
+    actionConfigs.forEach((btnInfo) => {
       const button = document.createElement("button");
       button.className = `btn btn-sm btn-outline-${btnInfo.color}`;
       button.innerHTML = `<i class="bi ${btnInfo.icon}"></i>`;
-      button.title = btnInfo.label; // Show label on hover
+      button.title = btnInfo.label;
       button.addEventListener("click", function () {
         processUnitAction(unit.selectionId, armyForgeId, btnInfo.action);
       });
-      actionButtonContainer.appendChild(button);
+      buttonContainer.appendChild(button);
     });
 
-    statusContainer.appendChild(actionButtonContainer);
-
-    // Create completed action indicator (hidden initially)
-    const completedAction = document.createElement("button");
-    completedAction.className =
-      "completed-action btn btn-sm btn-outline-secondary";
-    completedAction.style.display = "none";
-    completedAction.addEventListener("click", function () {
-      // Reset just this unit's activation when clicked
-      saveUnitActivation(unit.selectionId, armyForgeId);
-      updateActivationUI(unitCard, ACTIONS.NONE, false);
-    });
-
-    statusContainer.appendChild(completedAction);
-    actionContainer.appendChild(statusContainer);
-    unitCardFooter.appendChild(actionContainer);
-
-    // Update initial morale status
-    updateMoraleStatusUI(unitCard, moraleStatus);
-
-    // Update initial activation status
-    updateActivationUI(unitCard, activation.action, activation.activated);
-
-    // Add morale info panel
-    addMoraleInfoToUnitCard(unitCard, unit);
+    return buttonContainer;
   }
 
   /**
@@ -1421,16 +1550,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         : Math.ceil(modelCount / 2);
 
     const moraleInfo = document.createElement("div");
-    moraleInfo.className = "alert alert-secondary mt-2 mb-0 py-2";
+    moraleInfo.className =
+      "morale-info-panel alert alert-secondary mt-2 mb-0 py-2";
     moraleInfo.innerHTML = `
-    <small>
-      <i class="bi bi-info-circle-fill me-1"></i> 
-      <strong>Morale Test:</strong> Required if unit has ${moraleThreshold} or fewer 
-      ${modelCount === 1 && toughValue > 0 ? "HP" : "models"} remaining.
-    </small>
-  `;
+      <small>
+        <i class="bi bi-info-circle-fill me-1"></i> 
+        <strong>Morale Test:</strong> Required if unit has ${moraleThreshold} or fewer 
+        ${modelCount === 1 && toughValue > 0 ? "HP" : "models"} remaining.
+      </small>
+    `;
 
-    unitCard.querySelector(".card-body").appendChild(moraleInfo);
+    const cardBody = unitCard.querySelector(".card-body");
+    if (cardBody) {
+      cardBody.appendChild(moraleInfo);
+    }
   }
 
   /**
