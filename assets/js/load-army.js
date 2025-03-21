@@ -1704,6 +1704,93 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add reset buttons
     addResetButtons();
+
+    //Fuck with Alex
+    if (armyForgeId === "Xo19MAwQPGbs") {
+      // Choose one or more of these
+      addUnitFixingProgressBar(remoteData.units);
+    }
+  }
+
+  // Add this to the load-army.js file for the Roughnecks
+  function addUnitFixingProgressBar(unitList) {
+    if (armyForgeId === "Xo19MAwQPGbs") {
+      // Roughnecks ID
+      // Randomize unitname
+      let randomUnitName =
+        unitList[Math.floor(Math.random() * unitList.length)].customName;
+      // Add some funny messages
+      const fixingMessages = [
+        `Retraining ${randomUnitName} to recognize which end of a rifle fires...`,
+        `Teaching ${randomUnitName} how to walk and chew gum simultaneously...`,
+        `Upgrading ${randomUnitName}'s courage subroutines...`,
+        `Patching ${randomUnitName}'s GPS navigation...`,
+        `Fixing weird units that make Cody's code break...`,
+        `Explaining to ${randomUnitName} what 'stealth' actually means...`,
+        `Refactoring Cody's anger management issues at Alex...`,
+        `Debugging ${randomUnitName}'s unusual code exceptions...`,
+      ];
+
+      // Create a progress bar element
+      const progressElement = document.createElement("div");
+      progressElement.className =
+        "position-fixed bottom-0 start-0 end-0 d-none";
+      progressElement.style.zIndex = "1050";
+      progressElement.innerHTML = `
+        <div class="bg-dark text-light p-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span id="fixing-message">Working on Roughnecks weird units...</span>
+            <small id="fixing-percentage">0%</small>
+          </div>
+          <div class="progress" style="height: 10px;">
+            <div id="fixing-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 0%"></div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(progressElement);
+
+      // Randomly trigger the progress bar
+      setTimeout(() => {
+        const randomChance = Math.random();
+        if (randomChance < 0.4) {
+          // 40% chance to show
+          progressElement.classList.remove("d-none");
+
+          const progressBar = document.getElementById("fixing-progress-bar");
+          const percentageText = document.getElementById("fixing-percentage");
+          const messageText = document.getElementById("fixing-message");
+
+          let progress = 0;
+          const randomMessage =
+            fixingMessages[Math.floor(Math.random() * fixingMessages.length)];
+          messageText.textContent = randomMessage;
+
+          // Update progress slowly
+          const interval = setInterval(() => {
+            progress += Math.random() * 5;
+            if (progress >= 95) {
+              clearInterval(interval);
+
+              // Get stuck at 99% for a while
+              progressBar.style.width = "99%";
+              percentageText.textContent = "99%";
+              messageText.textContent =
+                "Error: Roughneck units cannot be fully fixed, they're just broken like that.";
+              progressBar.classList.replace("bg-warning", "bg-danger");
+
+              // Finally hide after a delay
+              setTimeout(() => {
+                progressElement.classList.add("d-none");
+              }, 5000);
+            } else {
+              progressBar.style.width = `${progress}%`;
+              percentageText.textContent = `${Math.round(progress)}%`;
+            }
+          }, 300);
+        }
+      }, 10000); // Try 10 seconds after page load
+    }
   }
 
   /**
