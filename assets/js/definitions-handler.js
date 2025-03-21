@@ -380,8 +380,14 @@ async function initializeDefinitions() {
   }
 
   // Restore the saved tab state
+  // Restore the saved tab state - MODIFIED to only work on rules.html page
   function restoreTabState() {
     try {
+      // Only run this function on the rules.html page
+      if (!window.location.pathname.includes("rules.html")) {
+        return; // Exit early for other pages
+      }
+
       // First try to restore the main tab
       const savedMainTabId = localStorage.getItem(MAIN_TAB_KEY);
       if (savedMainTabId) {

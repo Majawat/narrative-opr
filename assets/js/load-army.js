@@ -53,8 +53,79 @@ document.addEventListener("DOMContentLoaded", async () => {
     displayBaseCounts(baseTotals);
     displaySpells(localData);
 
+    addResetSpellTokensButton();
+
     displayRules(remoteData.specialRules);
     addNavLinks(localData);
+
+    // Add reset button to the share-link-container
+    const resetButton = document.createElement("button");
+    resetButton.className = "btn btn-warning mb-3 ms-2";
+    resetButton.innerHTML = `<i class="bi bi-arrow-repeat"></i> Reset All Activations`;
+    resetButton.addEventListener("click", function () {
+      resetAllActivations(armyForgeId);
+    });
+
+    // Add it next to the share button
+    document.getElementById("share-link-container").appendChild(resetButton);
+  }
+  // Check if a unit has the Caster special rule
+  function hasCasterRule(unit) {
+    // Check for Caster in unit's own rules
+    if (unit.rules && unit.rules.some((rule) => rule.name === "Caster")) {
+      return true;
+    }
+
+    // Check for Caster in upgrade content
+    if (unit.loadout) {
+      for (const item of unit.loadout) {
+        if (item.content) {
+          for (const contentItem of item.content) {
+            if (
+              contentItem.type === "ArmyBookRule" &&
+              contentItem.name === "Caster"
+            ) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // Get spell token count for a unit
+  function getSpellTokens(unitId, armyId) {
+    const key = `spell_tokens_${armyId}_${unitId}`;
+    const tokens = localStorage.getItem(key);
+    return tokens !== null ? parseInt(tokens) : 0;
+  }
+
+  // Save spell token count for a unit
+  function saveSpellTokens(unitId, armyId, tokens) {
+    const key = `spell_tokens_${armyId}_${unitId}`;
+    localStorage.setItem(key, tokens);
+  }
+
+  // Update spell token display
+  function updateSpellTokenDisplay(counterElement, tokens) {
+    counterElement.textContent = tokens;
+  }
+
+  // Reset spell tokens for all casters
+  function resetAllSpellTokens(armyId, defaultTokens = 3) {
+    // Get all spell token containers
+    const tokenContainers = document.querySelectorAll(".spell-token-container");
+
+    tokenContainers.forEach((container) => {
+      const unitId = container.dataset.unitId;
+      const counterElement = container.querySelector(".token-count");
+
+      // Reset to default token count
+      saveSpellTokens(unitId, armyId, defaultTokens);
+      updateSpellTokenDisplay(counterElement, defaultTokens);
+    });
   }
 
   async function fetchLocalData(localJsonURL) {
@@ -675,6 +746,61 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
   }
 
+  // Store the unit activation status
+  function saveActivationStatus(unitId, armyId, isActivated) {
+    const key = `activation_${armyId}_${unitId}`;
+    localStorage.setItem(key, isActivated);
+  }
+
+  // Get the unit activation status
+  function getActivationStatus(unitId, armyId) {
+    const key = `activation_${armyId}_${unitId}`;
+    const status = localStorage.getItem(key);
+    return status === "true"; // Convert to boolean
+  }
+
+  // Reset all unit activations for the current army
+  function resetAllActivations(armyId) {
+    // Get all units on the page
+    const unitCards = document.querySelectorAll("[id^='unit-']");
+
+    unitCards.forEach((card) => {
+      const unitId = card.id.replace("unit-", "");
+      // Set to not activated
+      saveActivationStatus(unitId, armyId, false);
+
+      // Update the UI
+      const activationBadge = card.querySelector(".activation-badge");
+      if (activationBadge) {
+        activationBadge.classList.remove("bg-danger");
+        activationBadge.classList.add("bg-success");
+        activationBadge.innerHTML = `<i class="bi bi-check"></i> Ready`;
+      }
+    });
+  }
+
+  // Toggle activation status for a specific unit
+  function toggleActivation(unitId, armyId, badgeElement) {
+    const currentStatus = getActivationStatus(unitId, armyId);
+    const newStatus = !currentStatus;
+
+    // Update localStorage
+    saveActivationStatus(unitId, armyId, newStatus);
+
+    // Update the UI
+    if (newStatus) {
+      // Unit is now activated
+      badgeElement.classList.remove("bg-success");
+      badgeElement.classList.add("bg-danger");
+      badgeElement.innerHTML = `<i class="bi bi-hourglass-split"></i> Activated`;
+    } else {
+      // Unit is now deactivated
+      badgeElement.classList.remove("bg-danger");
+      badgeElement.classList.add("bg-success");
+      badgeElement.innerHTML = `<i class="bi bi-check"></i> Ready`;
+    }
+  }
+
   /**
    * How to use these functions in the createUnitCard function:
    *
@@ -1046,7 +1172,141 @@ document.addEventListener("DOMContentLoaded", async () => {
       unitCardBody.appendChild(upgradesTable);
     }
 
+    const unitCardFooter = createEl("div", { classes: ["card-footer"] });
+
+    // Get the saved activation status
+    const isActivated = getActivationStatus(unit.selectionId, armyForgeId);
+    const activationContainer = createEl("div", {
+      classes: [
+        "d-flex",
+        "justify-content-between",
+        "align-items-center",
+        "mb-2",
+      ],
+    });
+
+    // Add label
+    const activationLabel = createEl("span", {
+      html: "<i class='bi bi-lightning'></i> Activation Status",
+    });
+    activationContainer.appendChild(activationLabel);
+
+    // Create the activation badge
+    const activationBadge = createEl("button", {
+      classes: [
+        "btn",
+        "btn-sm",
+        isActivated ? "btn-danger" : "btn-success",
+        "activation-badge",
+      ],
+      html: isActivated
+        ? `<i class="bi bi-hourglass-split"></i> Activated`
+        : `<i class="bi bi-check"></i> Ready`,
+    });
+
+    // Add toggle functionality
+    activationBadge.addEventListener("click", function () {
+      toggleActivation(unit.selectionId, armyForgeId, this);
+    });
+
+    function addSpellTokenUI(unitCard, unit, armyForgeId) {
+      // Only add for caster units
+      if (!hasCasterRule(unit)) {
+        return;
+      }
+
+      // Get current token count
+      const tokens = getSpellTokens(unit.selectionId, armyForgeId);
+
+      // Create spell token container
+      const tokenContainer = document.createElement("div");
+      tokenContainer.className =
+        "spell-token-container d-flex justify-content-between align-items-center";
+      tokenContainer.dataset.unitId = unit.selectionId;
+
+      // Create spell token label
+      const tokenLabel = document.createElement("span");
+      tokenLabel.innerHTML = "<i class='bi bi-stars'></i> Spell Tokens";
+      tokenContainer.appendChild(tokenLabel);
+
+      // Create token counter with buttons
+      const tokenControls = document.createElement("div");
+      tokenControls.className = "btn-group btn-group-sm";
+
+      // Decrease button
+      const decreaseBtn = document.createElement("button");
+      decreaseBtn.className = "btn btn-info btn-sm";
+      decreaseBtn.innerHTML = "<i class='bi bi-dash'></i>";
+      decreaseBtn.addEventListener("click", function () {
+        const currentTokens = getSpellTokens(unit.selectionId, armyForgeId);
+        if (currentTokens > 0) {
+          const newTokens = currentTokens - 1;
+          saveSpellTokens(unit.selectionId, armyForgeId, newTokens);
+          updateSpellTokenDisplay(tokenCounter, newTokens);
+        }
+      });
+      tokenControls.appendChild(decreaseBtn);
+
+      // Token counter
+      const tokenCounter = document.createElement("span");
+      tokenCounter.className = "btn btn-sm btn-info token-count";
+      tokenCounter.style.pointerEvents = "none";
+      tokenCounter.textContent = tokens;
+      tokenControls.appendChild(tokenCounter);
+
+      // Increase button
+      const increaseBtn = document.createElement("button");
+      increaseBtn.className = "btn btn-sm btn-info";
+      increaseBtn.innerHTML = "<i class='bi bi-plus'></i>";
+      increaseBtn.addEventListener("click", function () {
+        const currentTokens = getSpellTokens(unit.selectionId, armyForgeId);
+        const newTokens = currentTokens + 1;
+        saveSpellTokens(unit.selectionId, armyForgeId, newTokens);
+        updateSpellTokenDisplay(tokenCounter, newTokens);
+      });
+      tokenControls.appendChild(increaseBtn);
+
+      tokenContainer.appendChild(tokenControls);
+
+      // Find the footer or create one if it doesn't exist
+      let unitCardFooter = unitCard.querySelector(".card-footer");
+      if (!unitCardFooter) {
+        unitCardFooter = document.createElement("div");
+        unitCardFooter.className = "card-footer";
+        unitCard.appendChild(unitCardFooter);
+      }
+
+      // Add the token container to the footer
+      unitCardFooter.appendChild(tokenContainer);
+    }
+
+    activationContainer.appendChild(activationBadge);
+    unitCardFooter.appendChild(activationContainer);
+    unitCard.appendChild(unitCardFooter);
+
+    // The addSpellTokenUI call will now add to this same footer
+    addSpellTokenUI(unitCard, unit, armyForgeId);
+
     return unitCol;
+  }
+
+  // Add "Reset Spell Tokens" button to UI
+  function addResetSpellTokensButton() {
+    const armyForgeId = document.getElementById("army-forge-id").textContent;
+    const container = document.getElementById("share-link-container");
+
+    if (!container) return;
+
+    // Create reset tokens button
+    const resetTokensBtn = document.createElement("button");
+    resetTokensBtn.className = "btn btn-info mb-3 ms-2";
+    resetTokensBtn.innerHTML = "<i class='bi bi-stars'></i> Reset Spell Tokens";
+    resetTokensBtn.addEventListener("click", function () {
+      resetAllSpellTokens(armyForgeId, 0);
+    });
+
+    // Add button to container
+    container.appendChild(resetTokensBtn);
   }
 
   function addNavLinks(localData) {
