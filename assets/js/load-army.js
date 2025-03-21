@@ -1469,8 +1469,157 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     resetButtonsContainer.appendChild(resetTokensBtn);
 
+    // Create new button for adding caster tokens
+    const addCasterTokensBtn = document.createElement("button");
+    addCasterTokensBtn.className = "btn btn-sm btn-success";
+    addCasterTokensBtn.innerHTML =
+      "<i class='bi bi-plus-circle'></i> Add Spell Tokens";
+    addCasterTokensBtn.addEventListener("click", function () {
+      addAllCasterTokens(armyForgeId);
+    });
+    resetButtonsContainer.appendChild(addCasterTokensBtn);
+
     // Add buttons container
     container.appendChild(resetButtonsContainer);
+  }
+
+  /**
+   * Add Caster(X) tokens to all casters in the army
+   * @param {string} armyId - Army ID
+   */
+  /**
+   * Add Caster(X) tokens to all casters in the army
+   * @param {string} armyId - Army ID
+   */
+  function addAllCasterTokens(armyId) {
+    // Get cached army data
+    const cacheKey = `armyData_${armyId}`;
+    const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+    if (!cachedData || !cachedData.data) {
+      showToast("Data Error", "Could not find army data", "danger");
+      return;
+    }
+
+    // Get all spell token containers
+    const tokenContainers = document.querySelectorAll(".spell-token-container");
+
+    // Keep track of which units received tokens
+    const updatedUnits = [];
+
+    // Loop through each caster unit
+    tokenContainers.forEach((container) => {
+      const unitId = container.dataset.unitId;
+      const counterElement = container.querySelector(".token-count");
+
+      // Find the unit in the cached data
+      const unit = cachedData.data.units.find((u) => u.selectionId === unitId);
+      if (!unit) return;
+
+      // Find the Caster(X) rule to determine how many tokens to add
+      let casterLevel = getCasterLevel(unit);
+
+      if (casterLevel > 0) {
+        // Get current tokens and add caster level
+        const currentTokens = getSpellTokens(unitId, armyId);
+        const newTokens = currentTokens + casterLevel;
+
+        // Update tokens
+        saveSpellTokens(unitId, armyId, newTokens);
+        updateSpellTokenDisplay(counterElement, newTokens);
+
+        // Add to updated units list
+        updatedUnits.push({
+          name: unit.customName || unit.name,
+          casterLevel: casterLevel,
+          oldTokens: currentTokens,
+          newTokens: newTokens,
+        });
+      }
+    });
+
+    // Create detailed toast message
+    if (updatedUnits.length > 0) {
+      let toastMessage = "Added tokens to:<br>";
+      updatedUnits.forEach((unit) => {
+        toastMessage += `<strong>${unit.name}</strong>: +${unit.casterLevel} tokens (${unit.oldTokens} → ${unit.newTokens})<br>`;
+      });
+
+      showDetailedToast("Spell Tokens Added", toastMessage, "success");
+    } else {
+      showToast(
+        "No Casters Found",
+        "No units with the Caster special rule were found",
+        "warning"
+      );
+    }
+  }
+  /**
+   * Show a detailed toast notification with HTML content
+   * @param {string} title - Toast title
+   * @param {string} htmlMessage - Toast message (HTML)
+   * @param {string} type - Toast type (primary, success, danger, etc.)
+   */
+  function showDetailedToast(title, htmlMessage, type = "primary") {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast align-items-center border-0`;
+    toast.role = "alert";
+    toast.ariaLive = "assertive";
+    toast.ariaAtomic = "true";
+    toast.style.marginBottom = "10px";
+
+    toast.innerHTML = `
+      <div class="d-flex flex-column">
+        <div class="toast-header bg-${type}">
+          <strong class="me-auto">${title}</strong>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+        ${htmlMessage}
+        </div>
+      </div>
+    `;
+
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { delay: 7000 }); // Longer delay for more text
+    bsToast.show();
+
+    // Auto-remove after hiding
+    toast.addEventListener("hidden.bs.toast", function () {
+      toastContainer.removeChild(toast);
+    });
+  }
+
+  /**
+   * Get the Caster level (X) from a unit
+   * @param {Object} unit - The unit object
+   * @returns {number} - Caster level, or 0 if not a caster
+   */
+  function getCasterLevel(unit) {
+    // Check unit's own rules for Caster(X)
+    if (unit.rules) {
+      const casterRule = unit.rules.find((rule) => rule.name === "Caster");
+      if (casterRule && casterRule.rating) {
+        return parseInt(casterRule.rating);
+      }
+    }
+
+    // Check loadout items for Caster(X)
+    if (unit.loadout) {
+      for (const item of unit.loadout) {
+        if (item.content) {
+          for (const contentItem of item.content) {
+            if (contentItem.name === "Caster" && contentItem.rating) {
+              return parseInt(contentItem.rating);
+            }
+          }
+        }
+      }
+    }
+
+    return 0;
   }
 
   /**
