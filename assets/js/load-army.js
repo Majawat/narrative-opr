@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     addResetSpellTokensButton();
+    addResetShakenStatusButton();
 
     // Add it next to the share button
     document.getElementById("share-link-container").appendChild(resetButton);
@@ -129,6 +130,180 @@ document.addEventListener("DOMContentLoaded", async () => {
       saveSpellTokens(unitId, armyId, defaultTokens);
       updateSpellTokenDisplay(counterElement, defaultTokens);
     });
+  }
+
+  // Store whether a unit is shaken
+  function saveUnitShakenStatus(unitId, armyId, isShaken) {
+    const key = `shaken_${armyId}_${unitId}`;
+    localStorage.setItem(key, isShaken);
+  }
+
+  // Get whether a unit is shaken
+  function getUnitShakenStatus(unitId, armyId) {
+    const key = `shaken_${armyId}_${unitId}`;
+    const status = localStorage.getItem(key);
+    return status === "true"; // Convert to boolean
+  }
+
+  // Determine if a unit should take a morale test (at half strength or less)
+  function shouldTakeMoraleTest(unit, currentHP, maxHP) {
+    // For single model units with tough, check if HP is at half or less of tough value
+    if (parseInt(unit.size) === 1 && getToughValue(unit) > 0) {
+      return currentHP <= maxHP / 2;
+    }
+
+    // For multi-model units, check if model count is at half or less
+    return currentHP <= maxHP / 2;
+  }
+
+  // Reset all units' shaken status
+  function resetAllShakenStatus(armyId) {
+    const unitCards = document.querySelectorAll("[id^='unit-']");
+
+    unitCards.forEach((card) => {
+      const unitId = card.id.replace("unit-", "");
+      // Set to not shaken
+      saveUnitShakenStatus(unitId, armyId, false);
+
+      // Update UI
+      const shakenBadge = card.querySelector(".shaken-badge");
+      if (shakenBadge) {
+        shakenBadge.classList.remove("bg-danger");
+        shakenBadge.classList.add("bg-success");
+        shakenBadge.innerHTML = `<i class="bi bi-shield-fill"></i> Ready`;
+      }
+    });
+  }
+
+  // Toggle shaken status for a specific unit
+  function toggleShakenStatus(unitId, armyId, badgeElement) {
+    const currentStatus = getUnitShakenStatus(unitId, armyId);
+    const newStatus = !currentStatus;
+
+    // Update localStorage
+    saveUnitShakenStatus(unitId, armyId, newStatus);
+
+    // Update the UI
+    if (newStatus) {
+      // Unit is now shaken
+      badgeElement.classList.remove("bg-success");
+      badgeElement.classList.add("bg-danger");
+      badgeElement.innerHTML = `<i class="bi bi-exclamation-triangle"></i> Shaken`;
+    } else {
+      // Unit is no longer shaken
+      badgeElement.classList.remove("bg-danger");
+      badgeElement.classList.add("bg-success");
+      badgeElement.innerHTML = `<i class="bi bi-shield-fill"></i> Ready`;
+    }
+  }
+
+  // Show a toast message for morale test
+  function showMoraleTestPrompt(unitName) {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className = "toast align-items-center text-bg-warning border-0";
+    toast.role = "alert";
+    toast.ariaLive = "assertive";
+    toast.ariaAtomic = "true";
+    toast.style.marginBottom = "10px";
+    toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <strong>Morale Test Required!</strong> ${unitName} is at half strength or less.
+        <p class="mb-0 small">Take a Quality test - if failed, mark the unit as Shaken.</p>
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  `;
+
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { delay: 7000 });
+    bsToast.show();
+  }
+
+  // Add morale info panel to the unit card
+  function addMoraleInfoToUnitCard(unitCard, unit) {
+    const modelCount = parseInt(unit.size) || 1;
+    const toughValue = getToughValue(unit);
+    const moraleThreshold =
+      modelCount === 1 && toughValue > 0
+        ? Math.ceil(toughValue / 2)
+        : Math.ceil(modelCount / 2);
+
+    const moraleInfo = document.createElement("div");
+    moraleInfo.className = "alert alert-secondary mt-2 mb-0 py-2";
+    moraleInfo.innerHTML = `
+    <small>
+      <i class="bi bi-info-circle-fill me-1"></i> 
+      <strong>Morale Test:</strong> Required if unit has ${moraleThreshold} or fewer 
+      ${modelCount === 1 && toughValue > 0 ? "HP" : "models"} remaining.
+    </small>
+  `;
+
+    unitCard.querySelector(".card-body").appendChild(moraleInfo);
+  }
+
+  // Add Shaken Status UI to the unit card
+  function addShakenStatusUI(unitCard, unit, armyForgeId) {
+    // Get the card footer or create one if it doesn't exist
+    let unitCardFooter = unitCard.querySelector(".card-footer");
+    if (!unitCardFooter) {
+      unitCardFooter = document.createElement("div");
+      unitCardFooter.className = "card-footer";
+      unitCard.appendChild(unitCardFooter);
+    }
+
+    // Get the saved shaken status
+    const isShaken = getUnitShakenStatus(unit.selectionId, armyForgeId);
+
+    // Create container for shaken status
+    const shakenContainer = document.createElement("div");
+    shakenContainer.className =
+      "d-flex justify-content-between align-items-center mb-2";
+
+    // Add label
+    const shakenLabel = document.createElement("span");
+    shakenLabel.innerHTML = "<i class='bi bi-shield-fill'></i> Morale Status";
+    shakenContainer.appendChild(shakenLabel);
+
+    // Create shaken badge/button
+    const shakenBadge = document.createElement("button");
+    shakenBadge.className = `btn btn-sm ${
+      isShaken ? "btn-danger" : "btn-success"
+    } shaken-badge`;
+    shakenBadge.innerHTML = isShaken
+      ? `<i class="bi bi-exclamation-triangle"></i> Shaken`
+      : `<i class="bi bi-shield-fill"></i> Ready`;
+
+    // Add toggle functionality
+    shakenBadge.addEventListener("click", function () {
+      toggleShakenStatus(unit.selectionId, armyForgeId, this);
+    });
+
+    shakenContainer.appendChild(shakenBadge);
+    unitCardFooter.appendChild(shakenContainer);
+  }
+
+  // Add reset shaken status button
+  function addResetShakenStatusButton() {
+    const armyForgeId = document.getElementById("army-forge-id").textContent;
+    const container = document.getElementById("share-link-container");
+
+    if (!container) return;
+
+    // Create reset button
+    const resetShakenBtn = document.createElement("button");
+    resetShakenBtn.className = "btn btn-sm btn-secondary mb-3 ms-2";
+    resetShakenBtn.innerHTML = `<i class="bi bi-shield-fill"></i> Reset Morale Status`;
+    resetShakenBtn.addEventListener("click", function () {
+      resetAllShakenStatus(armyForgeId);
+    });
+
+    // Add button to container
+    container.appendChild(resetShakenBtn);
   }
 
   async function fetchLocalData(localJsonURL) {
@@ -1029,23 +1204,400 @@ document.addEventListener("DOMContentLoaded", async () => {
     return status === "true"; // Convert to boolean
   }
 
+  // Constants for action types
+  const ACTIONS = {
+    NONE: "none",
+    HOLD: "hold",
+    ADVANCE: "advance",
+    RUSH: "rush",
+    CHARGE: "charge",
+    UNSHAKEN: "unshaken",
+  };
+
+  // Morale status constants
+  const MORALE_STATUS = {
+    READY: "ready",
+    SHAKEN: "shaken",
+    ROUTED: "routed",
+  };
+
+  // Store unit activation details
+  function saveUnitActivation(
+    unitId,
+    armyId,
+    action = ACTIONS.NONE,
+    isActivated = false
+  ) {
+    const key = `activation_${armyId}_${unitId}`;
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        activated: isActivated,
+        action: action,
+        timestamp: Date.now(),
+      })
+    );
+  }
+
+  // Get unit activation details
+  function getUnitActivation(unitId, armyId) {
+    const key = `activation_${armyId}_${unitId}`;
+    const status = localStorage.getItem(key);
+
+    if (!status) {
+      return {
+        activated: false,
+        action: ACTIONS.NONE,
+        timestamp: null,
+      };
+    }
+
+    return JSON.parse(status);
+  }
+
+  // Store unit morale status
+  function saveUnitMoraleStatus(unitId, armyId, status = MORALE_STATUS.READY) {
+    const key = `morale_${armyId}_${unitId}`;
+    localStorage.setItem(key, status);
+  }
+
+  // Get unit morale status
+  function getUnitMoraleStatus(unitId, armyId) {
+    const key = `morale_${armyId}_${unitId}`;
+    const status = localStorage.getItem(key) || MORALE_STATUS.READY;
+    return status;
+  }
+
+  // Determine if a unit should take a morale test (at half strength or less)
+  function shouldTakeMoraleTest(unit, currentHP, maxHP) {
+    // For single model units with tough, check if HP is at half or less of tough value
+    if (parseInt(unit.size) === 1 && getToughValue(unit) > 0) {
+      return currentHP <= maxHP / 2;
+    }
+
+    // For multi-model units, check if model count is at half or less
+    return currentHP <= maxHP / 2;
+  }
+
   // Reset all unit activations for the current army
   function resetAllActivations(armyId) {
-    // Get all units on the page
     const unitCards = document.querySelectorAll("[id^='unit-']");
 
     unitCards.forEach((card) => {
       const unitId = card.id.replace("unit-", "");
-      // Set to not activated
-      saveActivationStatus(unitId, armyId, false);
+      // Reset activation status
+      saveUnitActivation(unitId, armyId);
 
-      // Update the UI
-      const activationBadge = card.querySelector(".activation-badge");
-      if (activationBadge) {
-        activationBadge.classList.remove("bg-danger");
-        activationBadge.classList.add("bg-success");
-        activationBadge.innerHTML = `<i class="bi bi-check"></i> Ready`;
+      // Update UI
+      updateActivationUI(card, ACTIONS.NONE, false);
+    });
+  }
+
+  function updateActivationUI(unitCard, action, isActivated) {
+    const activationContainer = unitCard.querySelector(".activation-container");
+    if (!activationContainer) return;
+
+    // Get action button container
+    const actionButtonContainer = activationContainer.querySelector(
+      ".action-button-container"
+    );
+
+    if (isActivated) {
+      // Unit is activated - show completed action
+      actionButtonContainer.style.display = "none";
+
+      const completedAction =
+        activationContainer.querySelector(".completed-action");
+      completedAction.style.display = "block";
+
+      // Set appropriate action text and icon
+      let actionText, actionIcon;
+      switch (action) {
+        case ACTIONS.HOLD:
+          actionText = "Hold";
+          actionIcon = "bi-shield-fill";
+          completedAction.className =
+            "completed-action btn btn-sm btn-outline-primary w-100";
+          break;
+        case ACTIONS.ADVANCE:
+          actionText = "Advance";
+          actionIcon = "bi-arrow-right-circle-fill";
+          completedAction.className =
+            "completed-action btn btn-sm btn-outline-success w-100";
+          break;
+        case ACTIONS.RUSH:
+          actionText = "Rush";
+          actionIcon = "bi-lightning-fill";
+          completedAction.className =
+            "completed-action btn btn-sm btn-outline-warning w-100";
+          break;
+        case ACTIONS.CHARGE:
+          actionText = "Charge";
+          actionIcon = "bi-flag-fill";
+          completedAction.className =
+            "completed-action btn btn-sm btn-outline-danger w-100";
+          break;
+        case ACTIONS.UNSHAKEN:
+          actionText = "Unshaken";
+          actionIcon = "bi-emoji-smile-fill";
+          completedAction.className =
+            "completed-action btn btn-sm btn-outline-info w-100";
+          break;
+        default:
+          actionText = "Activated";
+          actionIcon = "bi-check-circle-fill";
+          completedAction.className =
+            "completed-action btn btn-sm btn-outline-secondary w-100";
       }
+
+      completedAction.innerHTML = `<i class="bi ${actionIcon}"></i> ${actionText}`;
+    } else {
+      // Unit is not activated - show action buttons
+      actionButtonContainer.style.display = "flex";
+
+      const completedAction =
+        activationContainer.querySelector(".completed-action");
+      completedAction.style.display = "none";
+    }
+  }
+
+  // Update the morale status UI
+  function updateMoraleStatusUI(unitCard, moraleStatus) {
+    const moraleContainer = unitCard.querySelector(".morale-status-container");
+    if (!moraleContainer) return;
+
+    const moraleLabel = moraleContainer.querySelector(".morale-status-label");
+
+    // Update based on morale status
+    switch (moraleStatus) {
+      case MORALE_STATUS.SHAKEN:
+        moraleLabel.className =
+          "morale-status-label btn btn-sm btn-danger w-100";
+        moraleLabel.innerHTML =
+          '<i class="bi bi-exclamation-triangle"></i> Shaken';
+        break;
+      case MORALE_STATUS.ROUTED:
+        moraleLabel.className = "morale-status-label btn btn-sm btn-dark w-100";
+        moraleLabel.innerHTML = '<i class="bi bi-x-circle"></i> Routed';
+        // Apply additional styling to the whole card to indicate routed
+        unitCard.classList.add("border-dark", "opacity-50");
+        break;
+      default: // READY
+        moraleLabel.className =
+          "morale-status-label btn btn-sm btn-success w-100";
+        moraleLabel.innerHTML = '<i class="bi bi-shield-fill"></i> Ready';
+        // Remove any routed styling
+        unitCard.classList.remove("border-dark", "opacity-50");
+    }
+  }
+
+  // Process unit action selection
+  function processUnitAction(unitId, armyId, action) {
+    // Get the unit card
+    const unitCard = document.getElementById(`unit-${unitId}`);
+    if (!unitCard) return;
+
+    // Get unit and hit point data
+    const cacheKey = `armyData_${armyId}`;
+    const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+    if (!cachedData || !cachedData.data) return;
+
+    const unit = cachedData.data.units.find((u) => u.selectionId === unitId);
+    if (!unit) return;
+
+    const hpData = getHitPoints(unitId, armyId);
+    if (!hpData) return;
+
+    // Get current morale status
+    const currentMoraleStatus = getUnitMoraleStatus(unitId, armyId);
+
+    // Special case for UNSHAKEN action
+    if (action === ACTIONS.UNSHAKEN) {
+      if (currentMoraleStatus === MORALE_STATUS.SHAKEN) {
+        // Unit is no longer shaken
+        saveUnitMoraleStatus(unitId, armyId, MORALE_STATUS.READY);
+        updateMoraleStatusUI(unitCard, MORALE_STATUS.READY);
+      }
+
+      // Save activation with UNSHAKEN action
+      saveUnitActivation(unitId, armyId, action, true);
+      updateActivationUI(unitCard, action, true);
+      return;
+    }
+
+    // Check if unit is shaken (can only do UNSHAKEN action)
+    if (
+      currentMoraleStatus === MORALE_STATUS.SHAKEN &&
+      action !== ACTIONS.UNSHAKEN
+    ) {
+      showToast(
+        "Shaken Unit",
+        "This unit is shaken and can only perform the Unshaken action.",
+        "warning"
+      );
+      return;
+    }
+
+    // Check if it's a CHARGE action (show melee result prompt)
+    if (action === ACTIONS.CHARGE) {
+      // Save activation first
+      saveUnitActivation(unitId, armyId, action, true);
+      updateActivationUI(unitCard, action, true);
+
+      // Show melee result prompt
+      showMeleeResultPrompt(
+        unitId,
+        armyId,
+        unit.name || unit.customName || "Unit"
+      );
+      return;
+    }
+
+    // For other actions, mark as activated and save the action
+    saveUnitActivation(unitId, armyId, action, true);
+    updateActivationUI(unitCard, action, true);
+
+    // Check if morale test is needed (unit at half strength)
+    if (shouldTakeMoraleTest(unit, hpData.current, hpData.max)) {
+      showMoraleTestPrompt(
+        unitId,
+        armyId,
+        unit.name || unit.customName || "Unit",
+        false
+      );
+    }
+  }
+
+  // Process melee result
+  function processMeleeResult(unitId, armyId, won) {
+    // Get the unit card and data
+    const unitCard = document.getElementById(`unit-${unitId}`);
+    if (!unitCard) return;
+
+    const cacheKey = `armyData_${armyId}`;
+    const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+    if (!cachedData || !cachedData.data) return;
+
+    const unit = cachedData.data.units.find((u) => u.selectionId === unitId);
+    if (!unit) return;
+
+    const hpData = getHitPoints(unitId, armyId);
+    if (!hpData) return;
+
+    if (!won) {
+      // Lost melee - need morale test
+      showMoraleTestPrompt(
+        unitId,
+        armyId,
+        unit.name || unit.customName || "Unit",
+        true
+      );
+    }
+  }
+
+  // Process morale test result
+  function processMoraleTestResult(unitId, armyId, passed, fromMelee = false) {
+    // Get the unit card and data
+    const unitCard = document.getElementById(`unit-${unitId}`);
+    if (!unitCard) return;
+
+    const cacheKey = `armyData_${armyId}`;
+    const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+    if (!cachedData || !cachedData.data) return;
+
+    const unit = cachedData.data.units.find((u) => u.selectionId === unitId);
+    if (!unit) return;
+
+    const hpData = getHitPoints(unitId, armyId);
+    if (!hpData) return;
+
+    if (passed) {
+      // Passed morale test, no effects
+      showToast(
+        "Morale Test Passed",
+        `${unit.name || unit.customName || "Unit"} passed the morale test!`,
+        "success"
+      );
+      return;
+    }
+
+    // Failed morale test
+    const atHalfStrength = shouldTakeMoraleTest(
+      unit,
+      hpData.current,
+      hpData.max
+    );
+
+    if (fromMelee && atHalfStrength) {
+      // Unit lost melee and is at half strength - it routs
+      saveUnitMoraleStatus(unitId, armyId, MORALE_STATUS.ROUTED);
+      updateMoraleStatusUI(unitCard, MORALE_STATUS.ROUTED);
+      showToast(
+        "Unit Routed",
+        `${
+          unit.name || unit.customName || "Unit"
+        } has routed and is removed from play!`,
+        "danger"
+      );
+    } else {
+      // Unit becomes shaken
+      saveUnitMoraleStatus(unitId, armyId, MORALE_STATUS.SHAKEN);
+      updateMoraleStatusUI(unitCard, MORALE_STATUS.SHAKEN);
+      showToast(
+        "Unit Shaken",
+        `${unit.name || unit.customName || "Unit"} is now shaken!`,
+        "warning"
+      );
+    }
+  }
+
+  // Show melee result prompt
+  function showMeleeResultPrompt(unitId, armyId, unitName) {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className =
+      "toast melee-result-toast align-items-center text-bg-primary border-0";
+    toast.role = "alert";
+    toast.ariaLive = "assertive";
+    toast.ariaAtomic = "true";
+    toast.style.marginBottom = "10px";
+
+    toast.innerHTML = `
+    <div class="d-flex flex-column">
+      <div class="toast-header">
+        <strong class="me-auto">Melee Result</strong>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <p>${unitName} charged into melee. What was the result?</p>
+        <div class="d-flex justify-content-between">
+          <button class="btn btn-success melee-won-btn">Won Melee</button>
+          <button class="btn btn-danger melee-lost-btn">Lost Melee</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { autohide: false });
+    bsToast.show();
+
+    // Add event listeners for buttons
+    const wonButton = toast.querySelector(".melee-won-btn");
+    const lostButton = toast.querySelector(".melee-lost-btn");
+
+    wonButton.addEventListener("click", function () {
+      processMeleeResult(unitId, armyId, true);
+      bsToast.hide();
+      setTimeout(() => toastContainer.removeChild(toast), 500);
+    });
+
+    lostButton.addEventListener("click", function () {
+      processMeleeResult(unitId, armyId, false);
+      bsToast.hide();
+      setTimeout(() => toastContainer.removeChild(toast), 500);
     });
   }
 
@@ -1063,6 +1615,28 @@ document.addEventListener("DOMContentLoaded", async () => {
       badgeElement.classList.remove("bg-success");
       badgeElement.classList.add("bg-danger");
       badgeElement.innerHTML = `<i class="bi bi-hourglass-split"></i> Activated`;
+
+      // Check if morale test is needed
+      const unitCard = document.getElementById(`unit-${unitId}`);
+      if (unitCard) {
+        // Find the corresponding unit in the remoteData
+        const cacheKey = `armyData_${armyId}`;
+        const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+        if (cachedData && cachedData.data) {
+          const unit = cachedData.data.units.find(
+            (u) => u.selectionId === unitId
+          );
+          if (unit) {
+            const hpData = getHitPoints(unitId, armyId);
+            if (
+              hpData &&
+              shouldTakeMoraleTest(unit, hpData.current, hpData.max)
+            ) {
+              showMoraleTestPrompt(unit.name || unit.customName || "Unit");
+            }
+          }
+        }
+      }
     } else {
       // Unit is now deactivated
       badgeElement.classList.remove("bg-danger");
@@ -1556,8 +2130,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // The addSpellTokenUI call will now add to this same footer
     addSpellTokenUI(unitCard, unit, armyForgeId);
-
     addHitPointsUI(unitCard, unit, armyForgeId);
+
+    // Add Shaken Status UI to the card
+    addShakenStatusUI(unitCard, unit, armyForgeId);
+
+    // Add Morale Info to the card
+    addMoraleInfoToUnitCard(unitCard, unit);
 
     return unitCol;
   }
@@ -1579,6 +2158,104 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add button to container
     container.appendChild(resetTokensBtn);
+  }
+
+  // Reset all unit morale statuses
+  function resetAllMoraleStatuses(armyId) {
+    const unitCards = document.querySelectorAll("[id^='unit-']");
+
+    unitCards.forEach((card) => {
+      const unitId = card.id.replace("unit-", "");
+      // Reset morale status
+      saveUnitMoraleStatus(unitId, armyId, MORALE_STATUS.READY);
+
+      // Update UI
+      updateMoraleStatusUI(card, MORALE_STATUS.READY);
+    });
+  }
+
+  // Show morale test prompt
+  function showMoraleTestPrompt(unitId, armyId, unitName, fromMelee = false) {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className =
+      "toast morale-test-toast align-items-center text-bg-warning border-0";
+    toast.role = "alert";
+    toast.ariaLive = "assertive";
+    toast.ariaAtomic = "true";
+    toast.style.marginBottom = "10px";
+
+    let reason = fromMelee ? "lost a melee" : "is at half strength or less";
+
+    toast.innerHTML = `
+    <div class="d-flex flex-column">
+      <div class="toast-header">
+        <strong class="me-auto">Morale Test Required</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <p><i class="bi bi-exclamation-triangle me-1"></i> ${unitName} ${reason}.</p>
+        <p class="mb-2">Take a Quality test. Did the unit pass?</p>
+        <div class="d-flex justify-content-between">
+          <button class="btn btn-success morale-passed-btn">Passed</button>
+          <button class="btn btn-danger morale-failed-btn">Failed</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { autohide: false });
+    bsToast.show();
+
+    // Add event listeners for buttons
+    const passedButton = toast.querySelector(".morale-passed-btn");
+    const failedButton = toast.querySelector(".morale-failed-btn");
+
+    passedButton.addEventListener("click", function () {
+      processMoraleTestResult(unitId, armyId, true, fromMelee);
+      bsToast.hide();
+      setTimeout(() => toastContainer.removeChild(toast), 500);
+    });
+
+    failedButton.addEventListener("click", function () {
+      processMoraleTestResult(unitId, armyId, false, fromMelee);
+      bsToast.hide();
+      setTimeout(() => toastContainer.removeChild(toast), 500);
+    });
+  }
+
+  // Add generic toast helper
+  function showToast(title, message, type = "primary") {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast align-items-center text-bg-${type} border-0`;
+    toast.role = "alert";
+    toast.ariaLive = "assertive";
+    toast.ariaAtomic = "true";
+    toast.style.marginBottom = "10px";
+
+    toast.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">
+        <strong>${title}:</strong> ${message}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  `;
+
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
+    bsToast.show();
+
+    // Auto-remove after hiding
+    toast.addEventListener("hidden.bs.toast", function () {
+      toastContainer.removeChild(toast);
+    });
   }
 
   function addNavLinks(localData) {
