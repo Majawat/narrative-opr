@@ -12,7 +12,7 @@ async function loadEvents() {
   if (eventsLoaded) return eventsData;
 
   try {
-    const response = await fetch("/assets/json/random-events.json");
+    const response = await fetch("assets/json/random-events.json");
     eventsData = await response.json();
     eventsLoaded = true;
 
