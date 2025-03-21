@@ -30,7 +30,10 @@ async function initializeDefinitions() {
       restoreTabState();
     }, 500);
 
-    console.log(`Processed ${Object.keys(terms).length} unique terms`);
+    // Only log the total number of terms processed
+    if (Object.keys(terms).length > 0) {
+      console.log(`Processed ${Object.keys(terms).length} unique terms`);
+    }
   } catch (error) {
     console.error("Error in definition initialization:", error);
   }
@@ -83,7 +86,10 @@ async function initializeDefinitions() {
         });
       }
 
-      console.log(`Loaded ${count} primary definitions`);
+      // Only log if debugging needed
+      if (count > 0) {
+        console.debug(`Loaded ${count} primary definitions`);
+      }
     } catch (error) {
       console.error("Error loading primary definitions:", error);
     }
@@ -113,7 +119,7 @@ async function initializeDefinitions() {
       // Add custom traits
       if (data.traits) {
         data.traits.forEach((trait) => {
-          if (trait.name && trait.description) {
+          if (trait.name && rule.description) {
             terms[trait.name] = {
               description: trait.description,
               type: "traits",
@@ -124,9 +130,13 @@ async function initializeDefinitions() {
         });
       }
 
-      console.log(`Loaded ${count} custom definitions`);
+      // Only log if definitions were found
+      if (count > 0) {
+        console.debug(`Loaded ${count} custom definitions`);
+      }
     } catch (error) {
-      console.log("Error loading custom definitions (might not exist):", error);
+      // Quieter error for custom definitions since they might not exist
+      console.debug("No custom definitions found");
     }
   }
 
@@ -137,7 +147,7 @@ async function initializeDefinitions() {
       const campaignData = await response.json();
 
       if (!campaignData.armies || !Array.isArray(campaignData.armies)) {
-        console.log("No armies found in campaign data");
+        console.debug("No armies found in campaign data");
         return;
       }
 
@@ -148,9 +158,7 @@ async function initializeDefinitions() {
         if (army.faction && Array.isArray(army.faction)) {
           army.faction.forEach((faction) => {
             if (faction.id && faction.gameSystem) {
-              console.log(
-                `Fetching faction rules for: ${faction.name || faction.id}`
-              );
+              // Remove redundant logging of each faction fetch
               factionPromises.push(fetchFactionRules(faction));
             }
           });
@@ -223,7 +231,10 @@ async function initializeDefinitions() {
         });
       }
 
-      console.log(`Added ${count} terms from faction ${factionName}`);
+      // Only log if terms were added
+      if (count > 0) {
+        console.debug(`Added ${count} terms from faction ${factionName}`);
+      }
     } catch (error) {
       console.error(
         `Error fetching faction ${faction.id || "unknown"}:`,
@@ -237,9 +248,7 @@ async function initializeDefinitions() {
     // Get all elements with the allow-definitions class
     const elements = document.querySelectorAll(".allow-definitions");
 
-    console.log(
-      `Processing ${elements.length} elements with .allow-definitions class`
-    );
+    if (elements.length === 0) return;
 
     elements.forEach((element) => {
       // Skip if already processed
@@ -343,9 +352,7 @@ async function initializeDefinitions() {
     // Find all term definitions in the glossary
     const definitionElements = document.querySelectorAll(".term-definition");
 
-    console.log(
-      `Processing ${definitionElements.length} glossary definitions for nested terms`
-    );
+    if (definitionElements.length === 0) return;
 
     // Process each definition
     definitionElements.forEach((element) => {
@@ -374,12 +381,8 @@ async function initializeDefinitions() {
   function saveTabState(tabId, isSpellsSubTab = false) {
     const storageKey = isSpellsSubTab ? SPELLS_TAB_KEY : MAIN_TAB_KEY;
     localStorage.setItem(storageKey, tabId);
-    console.log(
-      `Saved ${isSpellsSubTab ? "spells sub-tab" : "main tab"} state: ${tabId}`
-    );
   }
 
-  // Restore the saved tab state
   // Restore the saved tab state - MODIFIED to only work on rules.html page
   function restoreTabState() {
     try {
@@ -444,7 +447,7 @@ async function initializeDefinitions() {
   function displayGlossary() {
     const container = document.getElementById("special-rules-container");
     if (!container) {
-      console.log("Glossary container not found");
+      console.debug("Glossary container not found");
       return;
     }
 
@@ -877,9 +880,10 @@ async function initializeDefinitions() {
         }
       });
 
-      console.log(
-        `Initialized tooltips for ${tooltipTriggerList.length} elements`
-      );
+      // Only log if a significant number of tooltips were initialized
+      if (tooltipTriggerList.length > 20) {
+        console.debug(`Initialized ${tooltipTriggerList.length} tooltips`);
+      }
     } catch (error) {
       console.error("Error initializing tooltips:", error);
     }
