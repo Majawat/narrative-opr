@@ -1656,8 +1656,19 @@ document.addEventListener("DOMContentLoaded", async () => {
    * @param {Object} unit - The unit object
    */
   function addMoraleInfoToUnitCard(unitCard, unit) {
-    const modelCount = parseInt(unit.size) || 1;
+    let modelCount = parseInt(unit.size) || 1;
     const toughValue = getToughValue(unit);
+
+    // Check if this is a joined unit by looking for hero-hit-points-container
+    const isJoinedUnit =
+      unitCard.querySelector(".hero-hit-points-container") !== null;
+
+    // For joined units, add +1 to model count to account for the hero
+    if (isJoinedUnit) {
+      modelCount += 1;
+    }
+
+    // Calculate morale threshold based on model count or tough value
     const moraleThreshold =
       modelCount === 1 && toughValue > 0
         ? Math.floor(toughValue / 2)
@@ -1666,12 +1677,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const moraleInfo = document.createElement("div");
     moraleInfo.className = "alert alert-secondary mt-2 mb-0 py-2";
     moraleInfo.innerHTML = `
-    <small>
-      <i class="bi bi-info-circle-fill me-1"></i> 
-      <strong>Morale Test:</strong> Required if unit has ${moraleThreshold} or fewer 
-      ${modelCount === 1 && toughValue > 0 ? "HP" : "models"} remaining.
-    </small>
-  `;
+      <small>
+        <i class="bi bi-info-circle-fill me-1"></i> 
+        <strong>Morale Test:</strong> Required if unit has ${moraleThreshold} or fewer 
+        ${modelCount === 1 && toughValue > 0 ? "HP" : "models"} remaining.
+      </small>
+    `;
 
     unitCard.querySelector(".card-body").appendChild(moraleInfo);
   }
@@ -2979,10 +2990,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       return el;
     };
 
+    // Calculate the total cost of the unit including all upgrades
+    let unitTotalCost = unit.cost;
+    if (unit.selectedUpgrades) {
+      unit.selectedUpgrades.forEach((upgrade) => {
+        if (upgrade.option && upgrade.option.costs) {
+          upgrade.option.costs.forEach((costItem) => {
+            if (costItem.unitId === unit.id) {
+              unitTotalCost += costItem.cost;
+            }
+          });
+        }
+      });
+    }
+
+    // Calculate the total cost of the hero including all upgrades
+    let heroTotalCost = hero.cost;
+    if (hero.selectedUpgrades) {
+      hero.selectedUpgrades.forEach((upgrade) => {
+        if (upgrade.option && upgrade.option.costs) {
+          upgrade.option.costs.forEach((costItem) => {
+            if (costItem.unitId === hero.id) {
+              heroTotalCost += costItem.cost;
+            }
+          });
+        }
+      });
+    }
+
     // Calculate total stats
     const totalModelCount = parseInt(unit.size) + 1; // Unit models + Hero
-    const totalCost = unit.cost + hero.cost;
-    const moraleThreshold = Math.floor(totalModelCount / 2);
+    const totalCost = unitTotalCost + heroTotalCost;
 
     // Create the outer column container
     const unitCol = createEl("div", {
@@ -3015,25 +3053,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       text: `${hero.customName || hero.name} & ${unit.customName || unit.name}`,
     });
 
-    // Show both XP badges
-    const xpBadgesContainer = createEl("div", { classes: ["d-flex"] });
-
-    // Hero XP Badge
-    const heroXPBadge = createEl("span", {
-      classes: ["xp-badge", "me-1"],
-      html: `<i class="bi bi-star-fill"></i> ${hero.xp} XP`,
-    });
-    xpBadgesContainer.appendChild(heroXPBadge);
-
-    // Unit XP Badge
-    const unitXPBadge = createEl("span", {
-      classes: ["xp-badge"],
-      html: `<i class="bi bi-star-fill"></i> ${unit.xp} XP`,
-    });
-    xpBadgesContainer.appendChild(unitXPBadge);
-
     unitCardNameContainer.appendChild(unitCardName);
-    unitCardNameContainer.appendChild(xpBadgesContainer);
     unitCardHead.appendChild(unitCardNameContainer);
 
     // Add the model count and total points
@@ -3047,10 +3067,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const unitCardBody = createEl("div", { classes: ["card-body"] });
     unitCard.appendChild(unitCardBody);
 
-    // Joined unit reminder (simplified)
+    // Joined unit reminder (improved wording)
     const joinedUnitReminder = createEl("div", {
       classes: ["alert", "alert-info", "py-2", "mb-3"],
-      html: `<i class="bi bi-info-circle"></i> <strong>Joined Unit</strong>: Hero uses unit's Defense (${unit.defense}+) until unit models are removed. Morale test if unit has ${moraleThreshold} or fewer models.`,
+      html: `<i class="bi bi-info-circle"></i> <strong>Joined Unit:</strong> Hero uses unit's Defense (${unit.defense}+) until unit models are removed. Unit may use Hero's Quality (${hero.quality}+) for Morale tests.`,
     });
     unitCardBody.appendChild(joinedUnitReminder);
 
@@ -3072,17 +3092,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Hero basics
     const heroBasics = createEl("div");
 
-    // Hero name
+    // Hero name with XP badge
+    const heroNameContainer = createEl("div", {
+      classes: ["d-flex", "align-items-center", "mb-1"],
+    });
+
     const heroName = createEl("h5", {
-      classes: ["mb-0"],
+      classes: ["mb-0", "me-2"],
       text: hero.customName || hero.name,
     });
-    heroBasics.appendChild(heroName);
+    heroNameContainer.appendChild(heroName);
+
+    // Hero XP Badge next to name
+    const heroXPBadge = createEl("span", {
+      classes: ["xp-badge"],
+      html: `<i class="bi bi-star-fill"></i> ${hero.xp} XP`,
+    });
+    heroNameContainer.appendChild(heroXPBadge);
+
+    heroBasics.appendChild(heroNameContainer);
 
     // Hero type and points
     const heroTypePoints = createEl("p", {
       classes: ["mb-0"],
-      text: `${hero.name} - ${hero.cost}pts`,
+      text: `${hero.name} - ${heroTotalCost}pts`,
     });
     heroBasics.appendChild(heroTypePoints);
 
@@ -3269,17 +3302,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Unit basics
     const unitBasics = createEl("div");
 
-    // Unit name
+    // Unit name with XP badge
+    const unitNameContainer = createEl("div", {
+      classes: ["d-flex", "align-items-center", "mb-1"],
+    });
+
     const unitName = createEl("h5", {
-      classes: ["mb-0"],
+      classes: ["mb-0", "me-2"],
       text: unit.customName || unit.name,
     });
-    unitBasics.appendChild(unitName);
+    unitNameContainer.appendChild(unitName);
+
+    // Unit XP Badge next to name
+    const unitXPBadge = createEl("span", {
+      classes: ["xp-badge"],
+      html: `<i class="bi bi-star-fill"></i> ${unit.xp} XP`,
+    });
+    unitNameContainer.appendChild(unitXPBadge);
+
+    unitBasics.appendChild(unitNameContainer);
 
     // Unit type and points
     const unitTypePoints = createEl("p", {
       classes: ["mb-0"],
-      text: `${unit.name} [${unit.size}] - ${unit.cost}pts`,
+      text: `${unit.name} [${unit.size}] - ${unitTotalCost}pts`,
     });
     unitBasics.appendChild(unitTypePoints);
 
@@ -3317,20 +3363,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       createEl("p", { classes: ["stat-value"], text: unit.defense + "+" })
     );
     unitStatsContainer.appendChild(unitDefenseGroup);
-
-    // Tough stat (if present)
-    const unitToughRule = unit.rules.find((rule) => rule.name === "Tough");
-    if (unitToughRule) {
-      const unitToughGroup = createEl("div", { classes: ["stat-group"] });
-      unitToughGroup.appendChild(createEl("span", { html: icons.tough }));
-      unitToughGroup.appendChild(
-        createEl("p", { classes: ["stat-label"], text: "Tough" })
-      );
-      unitToughGroup.appendChild(
-        createEl("p", { classes: ["stat-value"], text: unitToughRule.rating })
-      );
-      unitStatsContainer.appendChild(unitToughGroup);
-    }
 
     // Add unit stats to header
     unitCardHeader.appendChild(unitStatsContainer);
