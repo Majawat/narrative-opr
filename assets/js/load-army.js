@@ -631,6 +631,196 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Add hit points container to footer
     unitCardFooter.appendChild(hpContainer);
   }
+
+  /**
+   * Add hit points UI for a hero that's joined to a unit
+   * @param {HTMLElement} unitCard - The unit card element
+   * @param {Object} hero - The hero object
+   * @param {Object} unit - The unit object the hero is joined to
+   * @param {string} armyForgeId - Army ID
+   */
+  function addHeroHitPointsUI(unitCard, hero, unit, armyForgeId) {
+    // Initialize hit points
+    const hpData = initializeHitPoints(hero, armyForgeId);
+    const toughValue = getToughValue(hero);
+    const heroId = hero.selectionId;
+    const unitHpData = getHitPoints(unit.selectionId, armyForgeId);
+
+    // Create hit points container
+    const hpContainer = document.createElement("div");
+    hpContainer.className =
+      "hero-hit-points-container d-flex justify-content-between align-items-center mb-2";
+
+    // Create HP label
+    let hpLabel = document.createElement("span");
+    hpLabel.innerHTML = `<i class="bi bi-heart-fill text-danger"></i> ${
+      hero.customName || hero.name
+    } HP (Tough ${toughValue})`;
+    hpContainer.appendChild(hpLabel);
+
+    // Create HP controls
+    const hpControls = document.createElement("div");
+    hpControls.className = "d-flex align-items-center";
+
+    // Decrease HP button
+    const decreaseBtn = document.createElement("button");
+    decreaseBtn.className = "btn btn-sm btn-danger me-2";
+    decreaseBtn.innerHTML = "<i class='bi bi-dash'></i>";
+    decreaseBtn.disabled = unitHpData.current > 0; // Disable if unit still has HP
+    decreaseBtn.addEventListener("click", function () {
+      if (hpData.current > 0) {
+        hpData.current--;
+        saveHitPoints(heroId, armyForgeId, hpData.current, hpData.max);
+        updateHPDisplay();
+
+        // Update the card border color based on both unit and hero HP
+        updateCardBorder();
+      }
+    });
+    hpControls.appendChild(decreaseBtn);
+
+    // HP display
+    const hpDisplay = document.createElement("div");
+    hpDisplay.className = "d-flex flex-column align-items-center me-2";
+
+    const hpText = document.createElement("div");
+    hpText.className = "hp-text";
+    hpText.innerHTML = `<span class="hp-current">${hpData.current}</span>/<span class="hp-max">${hpData.max}</span>`;
+    hpDisplay.appendChild(hpText);
+
+    // Progress bar
+    const progressContainer = document.createElement("div");
+    progressContainer.className = "progress";
+    progressContainer.style.width = "60px";
+    progressContainer.style.height = "6px";
+
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar hp-progress-bar";
+    progressBar.style.width = `${(hpData.current / hpData.max) * 100}%`;
+
+    // Set color based on health percentage
+    const healthPercent = (hpData.current / hpData.max) * 100;
+    if (healthPercent <= 25) {
+      progressBar.classList.add("bg-danger");
+    } else if (healthPercent <= 60) {
+      progressBar.classList.add("bg-warning");
+    } else {
+      progressBar.classList.add("bg-success");
+    }
+
+    progressContainer.appendChild(progressBar);
+    hpDisplay.appendChild(progressContainer);
+    hpControls.appendChild(hpDisplay);
+
+    // Increase HP button
+    const increaseBtn = document.createElement("button");
+    increaseBtn.className = "btn btn-sm btn-success";
+    increaseBtn.innerHTML = "<i class='bi bi-plus'></i>";
+    increaseBtn.disabled = unitHpData.current > 0; // Disable if unit still has HP
+    increaseBtn.addEventListener("click", function () {
+      if (hpData.current < hpData.max) {
+        hpData.current++;
+        saveHitPoints(heroId, armyForgeId, hpData.current, hpData.max);
+        updateHPDisplay();
+
+        // Update the card border color based on both unit and hero HP
+        updateCardBorder();
+      }
+    });
+    hpControls.appendChild(increaseBtn);
+
+    hpContainer.appendChild(hpControls);
+
+    // Function to update HP display
+    function updateHPDisplay() {
+      const currentHP = hpContainer.querySelector(".hp-current");
+      currentHP.textContent = hpData.current;
+
+      // Update progress bar
+      const progressBar = hpContainer.querySelector(".hp-progress-bar");
+      progressBar.style.width = `${(hpData.current / hpData.max) * 100}%`;
+
+      // Update progress bar color
+      progressBar.classList.remove("bg-danger", "bg-warning", "bg-success");
+      const healthPercent = (hpData.current / hpData.max) * 100;
+      if (healthPercent <= 25) {
+        progressBar.classList.add("bg-danger");
+      } else if (healthPercent <= 60) {
+        progressBar.classList.add("bg-warning");
+      } else {
+        progressBar.classList.add("bg-success");
+      }
+    }
+
+    // Function to update card border based on both unit and hero HP
+    function updateCardBorder() {
+      const cardElement = unitCard.querySelector(".card");
+      const unitHpCurrent = getHitPoints(unit.selectionId, armyForgeId).current;
+      const heroHpCurrent = getHitPoints(heroId, armyForgeId).current;
+
+      // Only show red border if both unit and hero HP are 0
+      if (unitHpCurrent === 0 && heroHpCurrent === 0) {
+        unitCard.classList.add("border-danger");
+      } else {
+        unitCard.classList.remove("border-danger");
+      }
+    }
+
+    // Find or create card footer
+    let unitCardFooter = unitCard.querySelector(".card-footer");
+    if (!unitCardFooter) {
+      unitCardFooter = document.createElement("div");
+      unitCardFooter.className = "card-footer";
+      unitCard.appendChild(unitCardFooter);
+    }
+
+    // Add hit points container to footer
+    unitCardFooter.appendChild(hpContainer);
+
+    // Add an event listener to the unit's HP to enable/disable hero HP controls
+    const unitHpContainer = unitCard.querySelector(".hit-points-container");
+    if (unitHpContainer) {
+      // Initial check for unit HP
+      checkUnitHP();
+
+      // Add listeners to unit HP buttons
+      const unitDecreaseBtn = unitHpContainer.querySelector(".btn-danger");
+      if (unitDecreaseBtn) {
+        unitDecreaseBtn.addEventListener("click", function () {
+          checkUnitHP();
+          updateCardBorder();
+        });
+      }
+
+      const unitIncreaseBtn = unitHpContainer.querySelector(".btn-success");
+      if (unitIncreaseBtn) {
+        unitIncreaseBtn.addEventListener("click", function () {
+          checkUnitHP();
+          updateCardBorder();
+        });
+      }
+    }
+
+    // Function to check unit HP and enable/disable hero HP controls
+    function checkUnitHP() {
+      setTimeout(() => {
+        const unitHpData = getHitPoints(unit.selectionId, armyForgeId);
+        const heroButtons = hpContainer.querySelectorAll("button");
+
+        if (unitHpData.current === 0) {
+          // Enable hero HP buttons
+          heroButtons.forEach((btn) => (btn.disabled = false));
+        } else {
+          // Disable hero HP buttons
+          heroButtons.forEach((btn) => (btn.disabled = true));
+        }
+      }, 100); // Small delay to ensure HP data is updated
+    }
+
+    // Initial border update
+    updateCardBorder();
+  }
+
   /**
    * Check if a unit has the Caster special rule
    * @param {Object} unit - The unit object
@@ -2012,11 +2202,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     shareButton.innerHTML = `<a class="btn btn-outline-primary w-100 mb-3" href="https://army-forge.onepagerules.com/share?id=${armyForgeId}" target="_blank"id="share-button" type="button"><i class="bi bi-box-arrow-up-right me-1 opacity-75" role="img" aria-label="external link icon"></i>Army Forge link</a>`;
 
-    // Track units by selectionId to handle combined units
+    // Track units by selectionId to handle combined units and joined heroes
     const displayedUnitsIds = new Set();
     const combinedUnits = new Map();
+    const joinedHeroes = new Map();
 
-    // First pass: Identify combined units and their partners
+    // First pass: Identify combined units and joined heroes
     for (const unit of remoteData.units) {
       if (unit.combined && unit.joinToUnit) {
         // This is a secondary unit in a combined pair
@@ -2024,53 +2215,77 @@ document.addEventListener("DOMContentLoaded", async () => {
           combinedUnits.set(unit.joinToUnit, []);
         }
         combinedUnits.get(unit.joinToUnit).push(unit);
+      } else if (unit.joinToUnit) {
+        // This is a hero joined to a unit
+        if (!joinedHeroes.has(unit.joinToUnit)) {
+          joinedHeroes.set(unit.joinToUnit, []);
+        }
+        joinedHeroes.get(unit.joinToUnit).push(unit);
       }
     }
 
-    // Second pass: Create unit cards, handling combined units properly
+    // Second pass: Create unit cards
     for (const unit of remoteData.units) {
       // Skip if already processed
       if (displayedUnitsIds.has(unit.selectionId)) {
         continue;
       }
 
-      displayedUnitsIds.add(unit.selectionId);
-
-      // If this unit is part of a combined unit
-      if (unit.combined) {
-        // For primary units in combined pairs
-        if (!unit.joinToUnit) {
-          // Check if this unit has secondary units joined to it
-          const secondaryUnits = combinedUnits.get(unit.selectionId) || [];
-
-          // Mark all secondaries as displayed
-          secondaryUnits.forEach((secondary) => {
-            displayedUnitsIds.add(secondary.selectionId);
-          });
-
-          // Create a merged unit object for display
-          const mergedUnit = {
-            ...unit,
-            // Double the size for combined units
-            size: (
-              parseInt(unit.size) *
-              (secondaryUnits.length + 1)
-            ).toString(),
-            // Multiply the cost
-            cost: unit.cost * (secondaryUnits.length + 1),
-            // Mark as combined for UI display
-            isCombinedUnit: true,
-            combinedCount: secondaryUnits.length + 1,
-            // Keep the XP value the same
-            xp: unit.xp,
-          };
-
-          const unitCard = createUnitCard(mergedUnit, remoteData);
-          unitsContainer.appendChild(unitCard);
+      // Is this unit a hero joined to another unit?
+      let isJoinedHero = false;
+      for (const [hostId, heroes] of joinedHeroes.entries()) {
+        if (heroes.some((hero) => hero.selectionId === unit.selectionId)) {
+          isJoinedHero = true;
+          break;
         }
-        // Skip secondary units (they're merged with primaries)
-      } else {
-        // Regular unit or hero with joining
+      }
+
+      // Skip heroes that join other units - they'll be shown in joined cards
+      if (isJoinedHero) {
+        displayedUnitsIds.add(unit.selectionId);
+        continue;
+      }
+
+      // Handle combined units
+      if (unit.combined && !unit.joinToUnit) {
+        const secondaryUnits = combinedUnits.get(unit.selectionId) || [];
+
+        // Mark all secondaries as displayed
+        secondaryUnits.forEach((secondary) => {
+          displayedUnitsIds.add(secondary.selectionId);
+        });
+
+        // Create merged unit
+        const mergedUnit = {
+          ...unit,
+          size: (parseInt(unit.size) * (secondaryUnits.length + 1)).toString(),
+          cost: unit.cost * (secondaryUnits.length + 1),
+          isCombinedUnit: true,
+          combinedCount: secondaryUnits.length + 1,
+          xp: unit.xp,
+        };
+
+        displayedUnitsIds.add(unit.selectionId);
+        const unitCard = createUnitCard(mergedUnit, remoteData);
+        unitsContainer.appendChild(unitCard);
+      }
+      // Handle units with joined heroes
+      else if (joinedHeroes.has(unit.selectionId)) {
+        const heroes = joinedHeroes.get(unit.selectionId);
+
+        // Mark this unit and all its heroes as displayed
+        displayedUnitsIds.add(unit.selectionId);
+        heroes.forEach((hero) => {
+          displayedUnitsIds.add(hero.selectionId);
+        });
+
+        // Create joined unit card
+        const joinedCard = createJoinedUnitCard(unit, heroes, remoteData);
+        unitsContainer.appendChild(joinedCard);
+      }
+      // Handle regular units
+      else {
+        displayedUnitsIds.add(unit.selectionId);
         const unitCard = createUnitCard(unit, remoteData);
         unitsContainer.appendChild(unitCard);
       }
@@ -2721,6 +2936,528 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Add Spell Token UI for casters
     if (hasCasterRule(unit)) {
       addSpellTokenUI(unitCard, unit, armyForgeId);
+    }
+
+    return unitCol;
+  }
+
+  /**
+   * Create a unified card for a unit with joined heroes
+   * @param {Object} unit - The base unit object
+   * @param {Array} heroes - Array of hero objects joined to this unit
+   * @param {Object} remoteData - The complete army data
+   * @returns {HTMLElement} - The unified unit card element
+   */
+  function createJoinedUnitCard(unit, heroes, remoteData) {
+    // We'll focus on the first hero for simplicity
+    const hero = heroes[0];
+
+    // Define icons
+    const icons = {
+      quality: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path style="fill: #ad3e25" d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864z"/>
+        <path style="fill: #f9ddb7" d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1z"/>
+    </svg>`,
+      defense: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path style="fill: #005f83" d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
+    </svg>`,
+      tough: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path style="fill: #dc3545" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+    </svg>`,
+    };
+
+    // Helper for creating elements
+    const createEl = (
+      tag,
+      { classes = [], text = "", html = "", id = "" } = {}
+    ) => {
+      const el = document.createElement(tag);
+      if (classes.length) el.classList.add(...classes);
+      if (id) el.id = id;
+      if (text) el.textContent = text;
+      if (html) el.innerHTML = html;
+      return el;
+    };
+
+    // Calculate total stats
+    const totalModelCount = parseInt(unit.size) + 1; // Unit models + Hero
+    const totalCost = unit.cost + hero.cost;
+    const moraleThreshold = Math.floor(totalModelCount / 2);
+
+    // Create the outer column container
+    const unitCol = createEl("div", {
+      classes: ["col", "nav-scroll-top"],
+      id: "unit-" + unit.selectionId,
+    });
+
+    // Create card container
+    const unitCard = createEl("div", { classes: ["card", "h-100"] });
+    unitCol.appendChild(unitCard);
+
+    // Create card header
+    const unitCardHead = createEl("div", { classes: ["card-header"] });
+    unitCard.appendChild(unitCardHead);
+
+    // Create simplified header - just combined names and total count/points
+    const unitCardNameContainer = createEl("div", {
+      classes: [
+        "d-flex",
+        "align-items-center",
+        "mb-1",
+        "w-100",
+        "justify-content-between",
+      ],
+    });
+
+    // Combined unit name
+    const unitCardName = createEl("h4", {
+      classes: ["mb-0", "me-2"],
+      text: `${hero.customName || hero.name} & ${unit.customName || unit.name}`,
+    });
+
+    // Show both XP badges
+    const xpBadgesContainer = createEl("div", { classes: ["d-flex"] });
+
+    // Hero XP Badge
+    const heroXPBadge = createEl("span", {
+      classes: ["xp-badge", "me-1"],
+      html: `<i class="bi bi-star-fill"></i> ${hero.xp} XP`,
+    });
+    xpBadgesContainer.appendChild(heroXPBadge);
+
+    // Unit XP Badge
+    const unitXPBadge = createEl("span", {
+      classes: ["xp-badge"],
+      html: `<i class="bi bi-star-fill"></i> ${unit.xp} XP`,
+    });
+    xpBadgesContainer.appendChild(unitXPBadge);
+
+    unitCardNameContainer.appendChild(unitCardName);
+    unitCardNameContainer.appendChild(xpBadgesContainer);
+    unitCardHead.appendChild(unitCardNameContainer);
+
+    // Add the model count and total points
+    const combinedInfo = createEl("p", {
+      classes: ["mb-0"],
+      text: `[${totalModelCount}] - ${totalCost}pts`,
+    });
+    unitCardHead.appendChild(combinedInfo);
+
+    // Create the card body
+    const unitCardBody = createEl("div", { classes: ["card-body"] });
+    unitCard.appendChild(unitCardBody);
+
+    // Joined unit reminder (simplified)
+    const joinedUnitReminder = createEl("div", {
+      classes: ["alert", "alert-info", "py-2", "mb-3"],
+      html: `<i class="bi bi-info-circle"></i> <strong>Joined Unit</strong>: Hero uses unit's Defense (${unit.defense}+) until unit models are removed. Morale test if unit has ${moraleThreshold} or fewer models.`,
+    });
+    unitCardBody.appendChild(joinedUnitReminder);
+
+    // ==== HERO SECTION ====
+    const heroSection = createEl("div", {
+      classes: ["mb-4", "border-bottom", "pb-3"],
+    });
+
+    // Hero header with name, type, and points (matching standard card layout)
+    const heroCardHeader = createEl("div", {
+      classes: [
+        "d-flex",
+        "justify-content-between",
+        "align-items-center",
+        "mb-3",
+      ],
+    });
+
+    // Hero basics
+    const heroBasics = createEl("div");
+
+    // Hero name
+    const heroName = createEl("h5", {
+      classes: ["mb-0"],
+      text: hero.customName || hero.name,
+    });
+    heroBasics.appendChild(heroName);
+
+    // Hero type and points
+    const heroTypePoints = createEl("p", {
+      classes: ["mb-0"],
+      text: `${hero.name} - ${hero.cost}pts`,
+    });
+    heroBasics.appendChild(heroTypePoints);
+
+    // Hero base sizes
+    const heroBaseSizes = createEl("p", {
+      classes: ["mb-0", "text-muted", "small"],
+      html: `<i class="bi bi-circle-fill"></i> ${hero.bases.round}mm | <i class="bi bi-square-fill"></i> ${hero.bases.square}mm`,
+    });
+    heroBasics.appendChild(heroBaseSizes);
+
+    // Add hero basics to header
+    heroCardHeader.appendChild(heroBasics);
+
+    // Hero stats (matching standard card layout)
+    const heroStatsContainer = createEl("div", { classes: ["stat-container"] });
+
+    // Quality stat
+    const heroQualityGroup = createEl("div", { classes: ["stat-group"] });
+    heroQualityGroup.appendChild(createEl("span", { html: icons.quality }));
+    heroQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Quality" })
+    );
+    heroQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-value-high"], text: hero.quality + "+" })
+    );
+    heroStatsContainer.appendChild(heroQualityGroup);
+
+    // Defense stat
+    const heroDefenseGroup = createEl("div", { classes: ["stat-group"] });
+    heroDefenseGroup.appendChild(createEl("span", { html: icons.defense }));
+    heroDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Defense" })
+    );
+    heroDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-value"], text: hero.defense + "+" })
+    );
+    heroStatsContainer.appendChild(heroDefenseGroup);
+
+    // Tough stat (if present)
+    const heroToughRule = hero.rules.find((rule) => rule.name === "Tough");
+    if (heroToughRule) {
+      const heroToughGroup = createEl("div", { classes: ["stat-group"] });
+      heroToughGroup.appendChild(createEl("span", { html: icons.tough }));
+      heroToughGroup.appendChild(
+        createEl("p", { classes: ["stat-label"], text: "Tough" })
+      );
+      heroToughGroup.appendChild(
+        createEl("p", { classes: ["stat-value"], text: heroToughRule.rating })
+      );
+      heroStatsContainer.appendChild(heroToughGroup);
+    }
+
+    // Add hero stats to header
+    heroCardHeader.appendChild(heroStatsContainer);
+    heroSection.appendChild(heroCardHeader);
+
+    // Hero special rules
+    const heroRulesContainer = createEl("div", { classes: ["mb-3"] });
+    const heroRulesList = createEl("div", {
+      classes: ["d-flex", "flex-wrap", "gap-1"],
+    });
+
+    // Add all hero rules
+    hero.rules.forEach((rule) => {
+      const ruleBadge = createEl("span", {
+        classes: ["badge", "bg-secondary", "allow-definitions"],
+        text: rule.name + (rule.rating ? `(${rule.rating})` : ""),
+      });
+      heroRulesList.appendChild(ruleBadge);
+    });
+
+    heroRulesContainer.appendChild(heroRulesList);
+    heroSection.appendChild(heroRulesContainer);
+
+    // Hero weapons
+    const heroWeaponsHeader = createEl("h4", { text: "Weapons" });
+    heroSection.appendChild(heroWeaponsHeader);
+
+    const heroWeapons = collectAndProcessWeapons(hero);
+    const heroWeaponsTable = createWeaponsTable(heroWeapons);
+    heroSection.appendChild(heroWeaponsTable);
+
+    // Hero upgrades (if any)
+    const heroUpgrades = hero.loadout.filter(
+      (upgrade) => upgrade.type === "ArmyBookItem"
+    );
+
+    if (heroUpgrades.length > 0) {
+      const upgradesHeader = createEl("h4", { text: "Upgrades" });
+      heroSection.appendChild(upgradesHeader);
+
+      const upgradesTable = createEl("table", {
+        classes: [
+          "table",
+          "table-sm",
+          "table-hover",
+          "table-striped",
+          "table-body",
+          "table-responsive",
+        ],
+      });
+
+      // Build the table header for upgrades
+      const upgradesThead = createEl("thead");
+      const upgradesHeaderRow = createEl("tr");
+      ["Upgrade", "Special"].forEach((text) => {
+        upgradesHeaderRow.appendChild(createEl("th", { text }));
+      });
+      upgradesThead.appendChild(upgradesHeaderRow);
+      upgradesTable.appendChild(upgradesThead);
+
+      // Build the table body for upgrades
+      const upgradesTbody = createEl("tbody", {
+        classes: ["table-group-divider"],
+      });
+
+      // Process upgrades for display, combining duplicates
+      const processedUpgrades = {};
+      heroUpgrades.forEach((upgrade) => {
+        const upgradeKey = upgrade.name;
+
+        if (!processedUpgrades[upgradeKey]) {
+          processedUpgrades[upgradeKey] = { ...upgrade };
+        } else {
+          // For duplicates, combine counts
+          processedUpgrades[upgradeKey].count =
+            (processedUpgrades[upgradeKey].count || 1) + (upgrade.count || 1);
+        }
+      });
+
+      Object.values(processedUpgrades).forEach((upgrade) => {
+        const row = createEl("tr");
+
+        // Upgrade name cell with count if needed
+        const upgradeName =
+          upgrade.count > 1
+            ? `${upgrade.count}× ${upgrade.name}`
+            : upgrade.name;
+        row.appendChild(createEl("td", { text: upgradeName }));
+
+        // Special cell: join upgrade content names (if any)
+        let specialText = "-";
+        if (Array.isArray(upgrade.content) && upgrade.content.length > 0) {
+          // Filter out weapons as they're shown in the weapons table
+          const specialRules = upgrade.content.filter(
+            (item) => item.type === "ArmyBookRule"
+          );
+          if (specialRules.length > 0) {
+            specialText = specialRules
+              .map(
+                (rule) => rule.name + (rule.rating ? `(${rule.rating})` : "")
+              )
+              .join(", ");
+          }
+        }
+
+        const upgradeSpecialCell = createEl("td", { text: specialText });
+        upgradeSpecialCell.classList.add("allow-definitions");
+        row.appendChild(upgradeSpecialCell);
+
+        upgradesTbody.appendChild(row);
+      });
+
+      upgradesTable.appendChild(upgradesTbody);
+      heroSection.appendChild(upgradesTable);
+    }
+
+    // Add hero section to card body
+    unitCardBody.appendChild(heroSection);
+
+    // ==== UNIT SECTION ====
+    const unitSection = createEl("div", { classes: ["mb-3"] });
+
+    // Unit header with name, type, and points (matching standard card layout)
+    const unitCardHeader = createEl("div", {
+      classes: [
+        "d-flex",
+        "justify-content-between",
+        "align-items-center",
+        "mb-3",
+      ],
+    });
+
+    // Unit basics
+    const unitBasics = createEl("div");
+
+    // Unit name
+    const unitName = createEl("h5", {
+      classes: ["mb-0"],
+      text: unit.customName || unit.name,
+    });
+    unitBasics.appendChild(unitName);
+
+    // Unit type and points
+    const unitTypePoints = createEl("p", {
+      classes: ["mb-0"],
+      text: `${unit.name} [${unit.size}] - ${unit.cost}pts`,
+    });
+    unitBasics.appendChild(unitTypePoints);
+
+    // Unit base sizes
+    const unitBaseSizes = createEl("p", {
+      classes: ["mb-0", "text-muted", "small"],
+      html: `<i class="bi bi-circle-fill"></i> ${unit.bases.round}mm | <i class="bi bi-square-fill"></i> ${unit.bases.square}mm`,
+    });
+    unitBasics.appendChild(unitBaseSizes);
+
+    // Add unit basics to header
+    unitCardHeader.appendChild(unitBasics);
+
+    // Unit stats (matching standard card layout)
+    const unitStatsContainer = createEl("div", { classes: ["stat-container"] });
+
+    // Quality stat
+    const unitQualityGroup = createEl("div", { classes: ["stat-group"] });
+    unitQualityGroup.appendChild(createEl("span", { html: icons.quality }));
+    unitQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Quality" })
+    );
+    unitQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-value-high"], text: unit.quality + "+" })
+    );
+    unitStatsContainer.appendChild(unitQualityGroup);
+
+    // Defense stat
+    const unitDefenseGroup = createEl("div", { classes: ["stat-group"] });
+    unitDefenseGroup.appendChild(createEl("span", { html: icons.defense }));
+    unitDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Defense" })
+    );
+    unitDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-value"], text: unit.defense + "+" })
+    );
+    unitStatsContainer.appendChild(unitDefenseGroup);
+
+    // Tough stat (if present)
+    const unitToughRule = unit.rules.find((rule) => rule.name === "Tough");
+    if (unitToughRule) {
+      const unitToughGroup = createEl("div", { classes: ["stat-group"] });
+      unitToughGroup.appendChild(createEl("span", { html: icons.tough }));
+      unitToughGroup.appendChild(
+        createEl("p", { classes: ["stat-label"], text: "Tough" })
+      );
+      unitToughGroup.appendChild(
+        createEl("p", { classes: ["stat-value"], text: unitToughRule.rating })
+      );
+      unitStatsContainer.appendChild(unitToughGroup);
+    }
+
+    // Add unit stats to header
+    unitCardHeader.appendChild(unitStatsContainer);
+    unitSection.appendChild(unitCardHeader);
+
+    // Unit special rules
+    const unitRulesContainer = createEl("div", { classes: ["mb-3"] });
+    const unitRulesList = createEl("div", {
+      classes: ["d-flex", "flex-wrap", "gap-1"],
+    });
+
+    // Add all unit rules
+    unit.rules.forEach((rule) => {
+      const ruleBadge = createEl("span", {
+        classes: ["badge", "bg-secondary", "allow-definitions"],
+        text: rule.name + (rule.rating ? `(${rule.rating})` : ""),
+      });
+      unitRulesList.appendChild(ruleBadge);
+    });
+
+    unitRulesContainer.appendChild(unitRulesList);
+    unitSection.appendChild(unitRulesContainer);
+
+    // Unit weapons
+    const unitWeaponsHeader = createEl("h4", { text: "Weapons" });
+    unitSection.appendChild(unitWeaponsHeader);
+
+    const unitWeapons = collectAndProcessWeapons(unit);
+    const unitWeaponsTable = createWeaponsTable(unitWeapons);
+    unitSection.appendChild(unitWeaponsTable);
+
+    // Unit upgrades (if any)
+    const unitUpgrades = unit.loadout.filter(
+      (upgrade) => upgrade.type === "ArmyBookItem"
+    );
+
+    if (unitUpgrades.length > 0) {
+      const upgradesHeader = createEl("h4", { text: "Upgrades" });
+      unitSection.appendChild(upgradesHeader);
+
+      const upgradesTable = createEl("table", {
+        classes: [
+          "table",
+          "table-sm",
+          "table-hover",
+          "table-striped",
+          "table-body",
+          "table-responsive",
+        ],
+      });
+
+      // Build the table header for upgrades
+      const upgradesThead = createEl("thead");
+      const upgradesHeaderRow = createEl("tr");
+      ["Upgrade", "Special"].forEach((text) => {
+        upgradesHeaderRow.appendChild(createEl("th", { text }));
+      });
+      upgradesThead.appendChild(upgradesHeaderRow);
+      upgradesTable.appendChild(upgradesThead);
+
+      // Build the table body for upgrades
+      const upgradesTbody = createEl("tbody", {
+        classes: ["table-group-divider"],
+      });
+
+      // Process upgrades for display, combining duplicates
+      const processedUpgrades = {};
+      unitUpgrades.forEach((upgrade) => {
+        const upgradeKey = upgrade.name;
+
+        if (!processedUpgrades[upgradeKey]) {
+          processedUpgrades[upgradeKey] = { ...upgrade };
+        } else {
+          // For duplicates, combine counts
+          processedUpgrades[upgradeKey].count =
+            (processedUpgrades[upgradeKey].count || 1) + (upgrade.count || 1);
+        }
+      });
+
+      Object.values(processedUpgrades).forEach((upgrade) => {
+        const row = createEl("tr");
+
+        // Upgrade name cell with count if needed
+        const upgradeName =
+          upgrade.count > 1
+            ? `${upgrade.count}× ${upgrade.name}`
+            : upgrade.name;
+        row.appendChild(createEl("td", { text: upgradeName }));
+
+        // Special cell: join upgrade content names (if any)
+        let specialText = "-";
+        if (Array.isArray(upgrade.content) && upgrade.content.length > 0) {
+          // Filter out weapons as they're shown in the weapons table
+          const specialRules = upgrade.content.filter(
+            (item) => item.type === "ArmyBookRule"
+          );
+          if (specialRules.length > 0) {
+            specialText = specialRules
+              .map(
+                (rule) => rule.name + (rule.rating ? `(${rule.rating})` : "")
+              )
+              .join(", ");
+          }
+        }
+
+        const upgradeSpecialCell = createEl("td", { text: specialText });
+        upgradeSpecialCell.classList.add("allow-definitions");
+        row.appendChild(upgradeSpecialCell);
+
+        upgradesTbody.appendChild(row);
+      });
+
+      upgradesTable.appendChild(upgradesTbody);
+      unitSection.appendChild(upgradesTable);
+    }
+
+    // Add unit section to card body
+    unitCardBody.appendChild(unitSection);
+
+    // Add HP and Activation UI
+    addHitPointsUI(unitCard, unit, armyForgeId);
+    addHeroHitPointsUI(unitCard, hero, unit, armyForgeId);
+    addMoraleAndActionUI(unitCard, unit, armyForgeId);
+
+    // Add Spell Token UI for casters
+    if (hasCasterRule(hero)) {
+      addSpellTokenUI(unitCard, hero, armyForgeId);
     }
 
     return unitCol;
