@@ -277,6 +277,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Step 3: Create a map to combine identical weapons
     const weaponMap = {};
 
+    // Calculate the multiplier for combined units
+    const combinedMultiplier = unit.isCombinedUnit ? unit.combinedCount : 1;
+
     allWeapons.forEach((weapon) => {
       // Create a unique key for each weapon type
       // This key combines all relevant properties that would make weapons distinct
@@ -288,15 +291,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         formatSpecialRulesString(weapon.specialRules),
       ].join("|");
 
+      // Calculate the weapon count considering combined units
+      const weaponCount = weapon.count || 1;
+
       if (!weaponMap[weaponKey]) {
         // First time seeing this weapon - create entry with count
         weaponMap[weaponKey] = {
           ...weapon,
-          count: weapon.count || 1,
+          count: weaponCount * combinedMultiplier,
         };
       } else {
         // This is a duplicate - add to the count
-        weaponMap[weaponKey].count += weapon.count || 1;
+        weaponMap[weaponKey].count += weaponCount * combinedMultiplier;
       }
     });
 
@@ -1707,7 +1713,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     //Fuck with Alex
     if (armyForgeId === "Xo19MAwQPGbs") {
-      // Choose one or more of these
       addUnitFixingProgressBar(remoteData.units);
     }
   }
@@ -1996,26 +2001,79 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /**
-   * Display all units from the remote data
+   * Display all units from the remote data, properly handling combined units
    * @param {Object} remoteData - The army data from Army Forge
    */
   function displayAllUnits(remoteData) {
     // Clear existing unit display
-    // Loop through units and call displayUnitCard
     const unitsContainer = document.getElementById("units-container");
     const shareButton = document.getElementById("share-link-container");
     unitsContainer.innerHTML = "";
 
     shareButton.innerHTML = `<a class="btn btn-outline-primary w-100 mb-3" href="https://army-forge.onepagerules.com/share?id=${armyForgeId}" target="_blank"id="share-button" type="button"><i class="bi bi-box-arrow-up-right me-1 opacity-75" role="img" aria-label="external link icon"></i>Army Forge link</a>`;
-    const displayedUnitsIds = new Set();
 
+    // Track units by selectionId to handle combined units
+    const displayedUnitsIds = new Set();
+    const combinedUnits = new Map();
+
+    // First pass: Identify combined units and their partners
     for (const unit of remoteData.units) {
+      if (unit.combined && unit.joinToUnit) {
+        // This is a secondary unit in a combined pair
+        if (!combinedUnits.has(unit.joinToUnit)) {
+          combinedUnits.set(unit.joinToUnit, []);
+        }
+        combinedUnits.get(unit.joinToUnit).push(unit);
+      }
+    }
+
+    // Second pass: Create unit cards, handling combined units properly
+    for (const unit of remoteData.units) {
+      // Skip if already processed
       if (displayedUnitsIds.has(unit.selectionId)) {
         continue;
       }
+
       displayedUnitsIds.add(unit.selectionId);
-      const unitCard = createUnitCard(unit, remoteData);
-      unitsContainer.appendChild(unitCard);
+
+      // If this unit is part of a combined unit
+      if (unit.combined) {
+        // For primary units in combined pairs
+        if (!unit.joinToUnit) {
+          // Check if this unit has secondary units joined to it
+          const secondaryUnits = combinedUnits.get(unit.selectionId) || [];
+
+          // Mark all secondaries as displayed
+          secondaryUnits.forEach((secondary) => {
+            displayedUnitsIds.add(secondary.selectionId);
+          });
+
+          // Create a merged unit object for display
+          const mergedUnit = {
+            ...unit,
+            // Double the size for combined units
+            size: (
+              parseInt(unit.size) *
+              (secondaryUnits.length + 1)
+            ).toString(),
+            // Multiply the cost
+            cost: unit.cost * (secondaryUnits.length + 1),
+            // Mark as combined for UI display
+            isCombinedUnit: true,
+            combinedCount: secondaryUnits.length + 1,
+            // Keep the XP value the same
+            xp: unit.xp,
+          };
+
+          const unitCard = createUnitCard(mergedUnit, remoteData);
+          unitsContainer.appendChild(unitCard);
+        }
+        // Skip secondary units (they're merged with primaries)
+      } else {
+        // Regular unit or hero with joining
+        const unitCard = createUnitCard(unit, remoteData);
+        unitsContainer.appendChild(unitCard);
+      }
     }
   }
 
@@ -2281,7 +2339,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /**
-   * Create a unit card for display
+   * Create a unit card for display, with proper handling of combined units
    * @param {Object} unit - The unit object
    * @param {Object} remoteData - The complete army data
    * @returns {HTMLElement} - The unit card element
@@ -2314,22 +2372,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       return el;
     };
 
-    // Calculate the actual unit count based on whether it's combined
-    const isCombined = unit.combined === true;
+    // Calculate the actual unit count based on combined status
+    const isCombined = unit.isCombinedUnit === true;
+    const combinedCount = unit.combinedCount || 1;
     const baseUnitCount = parseInt(unit.size) || 0;
-    const actualUnitCount = isCombined ? baseUnitCount * 2 : baseUnitCount;
+
+    // For a combined unit, the size is already multiplied in displayAllUnits
+    const actualUnitCount = baseUnitCount;
 
     // Calculate the total cost of the unit including all upgrades
     let totalCost = unit.cost;
-    unit.selectedUpgrades.forEach((upgrade) => {
-      if (upgrade.option && upgrade.option.costs) {
-        upgrade.option.costs.forEach((costItem) => {
-          if (costItem.unitId === unit.id) {
-            totalCost += costItem.cost;
-          }
-        });
-      }
-    });
+    if (unit.selectedUpgrades) {
+      unit.selectedUpgrades.forEach((upgrade) => {
+        if (upgrade.option && upgrade.option.costs) {
+          upgrade.option.costs.forEach((costItem) => {
+            if (costItem.unitId === unit.id) {
+              // For combined units, multiply the upgrade cost by the number of combined units
+              const multiplier = unit.isCombinedUnit ? unit.combinedCount : 1;
+              totalCost += costItem.cost * multiplier;
+            }
+          });
+        }
+      });
+    }
 
     // Get modified base sizes from upgrades
     let baseSizes = { ...unit.bases };
@@ -2461,7 +2526,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (isCombined) {
       const unitCardCombined = createEl("div", {
         classes: ["mb-0", "text-warning"],
-        text: "Combined Unit (2× Basic Units)",
+        text: `Combined Unit (${combinedCount}× Basic Units)`,
       });
       unitCardBasics.appendChild(unitCardCombined);
     }
