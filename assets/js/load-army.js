@@ -1024,7 +1024,9 @@ document.addEventListener("DOMContentLoaded", async () => {
    */
   function saveSpellTokens(unitId, armyId, tokens) {
     const key = `spell_tokens_${armyId}_${unitId}`;
-    localStorage.setItem(key, tokens);
+    // Cap tokens at maximum of 6
+    const cappedTokens = Math.min(tokens, 6);
+    localStorage.setItem(key, cappedTokens);
   }
 
   /**
@@ -1042,16 +1044,26 @@ document.addEventListener("DOMContentLoaded", async () => {
    * @param {number} defaultTokens - Default number of tokens (default: 3)
    */
   function resetAllSpellTokens(armyId, defaultTokens = 3) {
+    const MAX_TOKENS = 6;
+    // Cap default tokens to maximum
+    const cappedDefaultTokens = Math.min(defaultTokens, MAX_TOKENS);
+
     // Get all spell token containers
     const tokenContainers = document.querySelectorAll(".spell-token-container");
 
     tokenContainers.forEach((container) => {
       const unitId = container.dataset.unitId;
       const counterElement = container.querySelector(".token-count");
+      const increaseBtn = container.querySelector(".btn-success");
 
-      // Reset to default token count
-      saveSpellTokens(unitId, armyId, defaultTokens);
-      updateSpellTokenDisplay(counterElement, defaultTokens);
+      // Reset to default token count (capped at max)
+      saveSpellTokens(unitId, armyId, cappedDefaultTokens);
+      updateSpellTokenDisplay(counterElement, cappedDefaultTokens);
+
+      // Update increase button state
+      if (increaseBtn) {
+        increaseBtn.disabled = cappedDefaultTokens >= MAX_TOKENS;
+      }
     });
   }
 
@@ -1064,6 +1076,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   function addSpellTokenUI(unitCard, unit, armyForgeId) {
     // Get current token count
     const tokens = getSpellTokens(unit.selectionId, armyForgeId);
+    const MAX_TOKENS = 6;
 
     // Create spell token container
     const tokenContainer = document.createElement("div");
@@ -1073,7 +1086,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Create spell token label
     const tokenLabel = document.createElement("span");
-    tokenLabel.innerHTML = "<i class='bi bi-stars'></i> Spell Tokens";
+    tokenLabel.innerHTML =
+      "<i class='bi bi-stars'></i> Spell Tokens <small class='text-muted'>(Max 6)</small>";
     tokenContainer.appendChild(tokenLabel);
 
     // Create token counter with buttons
@@ -1090,6 +1104,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         const newTokens = currentTokens - 1;
         saveSpellTokens(unit.selectionId, armyForgeId, newTokens);
         updateSpellTokenDisplay(tokenCounter, newTokens);
+        // Enable increase button if below max
+        if (newTokens < MAX_TOKENS) {
+          increaseBtn.disabled = false;
+        }
       }
     });
     tokenControls.appendChild(decreaseBtn);
@@ -1106,11 +1124,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const increaseBtn = document.createElement("button");
     increaseBtn.className = "btn btn-sm btn-success";
     increaseBtn.innerHTML = "<i class='bi bi-plus'></i>";
+    // Disable if already at max tokens
+    increaseBtn.disabled = tokens >= MAX_TOKENS;
     increaseBtn.addEventListener("click", function () {
       const currentTokens = getSpellTokens(unit.selectionId, armyForgeId);
-      const newTokens = currentTokens + 1;
-      saveSpellTokens(unit.selectionId, armyForgeId, newTokens);
-      updateSpellTokenDisplay(tokenCounter, newTokens);
+      if (currentTokens < MAX_TOKENS) {
+        const newTokens = currentTokens + 1;
+        saveSpellTokens(unit.selectionId, armyForgeId, newTokens);
+        updateSpellTokenDisplay(tokenCounter, newTokens);
+        // Disable button if max reached
+        if (newTokens >= MAX_TOKENS) {
+          increaseBtn.disabled = true;
+        }
+      }
     });
     tokenControls.appendChild(increaseBtn);
 
@@ -2201,10 +2227,6 @@ document.addEventListener("DOMContentLoaded", async () => {
    * Add Caster(X) tokens to all casters in the army
    * @param {string} armyId - Army ID
    */
-  /**
-   * Add Caster(X) tokens to all casters in the army
-   * @param {string} armyId - Army ID
-   */
   function addAllCasterTokens(armyId) {
     // Get cached army data
     const cacheKey = `armyData_${armyId}`;
@@ -2216,6 +2238,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Get all spell token containers
     const tokenContainers = document.querySelectorAll(".spell-token-container");
+    const MAX_TOKENS = 6;
 
     // Keep track of which units received tokens
     const updatedUnits = [];
@@ -2224,6 +2247,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     tokenContainers.forEach((container) => {
       const unitId = container.dataset.unitId;
       const counterElement = container.querySelector(".token-count");
+      const increaseBtn = container.querySelector(".btn-success");
 
       // Find the unit in the cached data
       const unit = cachedData.data.units.find((u) => u.selectionId === unitId);
@@ -2235,11 +2259,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (casterLevel > 0) {
         // Get current tokens and add caster level
         const currentTokens = getSpellTokens(unitId, armyId);
-        const newTokens = currentTokens + casterLevel;
+        // Cap at maximum tokens
+        const newTokens = Math.min(currentTokens + casterLevel, MAX_TOKENS);
 
         // Update tokens
         saveSpellTokens(unitId, armyId, newTokens);
         updateSpellTokenDisplay(counterElement, newTokens);
+
+        // Update increase button state
+        if (increaseBtn) {
+          increaseBtn.disabled = newTokens >= MAX_TOKENS;
+        }
 
         // Add to updated units list
         updatedUnits.push({
@@ -2247,6 +2277,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           casterLevel: casterLevel,
           oldTokens: currentTokens,
           newTokens: newTokens,
+          capped: newTokens === MAX_TOKENS,
         });
       }
     });
@@ -2255,7 +2286,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (updatedUnits.length > 0) {
       let toastMessage = "Added tokens to:<br>";
       updatedUnits.forEach((unit) => {
-        toastMessage += `<strong>${unit.name}</strong>: +${unit.casterLevel} tokens (${unit.oldTokens} → ${unit.newTokens})<br>`;
+        let statusMsg = unit.capped ? ` (max ${MAX_TOKENS})` : "";
+        toastMessage += `<strong>${unit.name}</strong>: +${Math.min(
+          unit.casterLevel,
+          MAX_TOKENS - unit.oldTokens
+        )} tokens (${unit.oldTokens} → ${unit.newTokens})${statusMsg}<br>`;
       });
 
       showDetailedToast("Spell Tokens Added", toastMessage, "success");
@@ -2267,6 +2302,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     }
   }
+
   /**
    * Show a detailed toast notification with HTML content
    * @param {string} title - Toast title
