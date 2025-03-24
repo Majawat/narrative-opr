@@ -2,8 +2,7 @@
 
 ## Top priority
 1. If shot at, and lost wounds. Prompt for morale if under half as usual.
-2. Victoria's bug lady's hp bar is wrong, but Tough is correct. HP bar should match
-3. Fix available points vs actually used points. This affects the underdog points.
+2. Fix available points vs actually used points. This affects the underdog points.
     - Will need to calculate all the total used points for each army, and *then* figure out underdog points and command points.
 
 ## High priority

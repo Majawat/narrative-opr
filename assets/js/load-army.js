@@ -250,7 +250,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Check loadout items for additional Tough values
     if (unit.loadout) {
       for (const item of unit.loadout) {
-        if (item.content) {
+        // Direct content array in loadout items
+        if (item.content && Array.isArray(item.content)) {
           for (const contentItem of item.content) {
             if (contentItem.name === "Tough" && contentItem.rating) {
               toughValue += parseInt(contentItem.rating);
@@ -268,77 +269,21 @@ document.addEventListener("DOMContentLoaded", async () => {
    * @param {Object} unit - The unit object
    * @returns {number} - Total hit points
    */
-  /**
-   * Calculates total hit points for a unit
-   * @param {Object} unit - The unit object
-   * @returns {number} - Total hit points
-   */
   function calculateTotalHitPoints(unit) {
+    // Get the model count
     const modelCount = parseInt(unit.size) || 1;
 
-    // Check if there are upgrades that modify Tough values for specific models
-    let totalHP = 0;
+    // Use our fixed getToughValue function to get the correct tough value
+    const toughValue = getToughValue(unit);
 
-    // Track replacements from upgrades
-    let replacedModelCount = 0;
-
-    // Check for upgrades that replace models with ones having Tough
-    if (unit.selectedUpgrades) {
-      unit.selectedUpgrades.forEach((upgrade) => {
-        // Only process replacements
-        if (upgrade.upgrade && upgrade.upgrade.variant === "replace") {
-          // Get the number of affected models (default to 1 if not specified)
-          const affectedModels =
-            upgrade.upgrade.affects &&
-            upgrade.upgrade.affects.type === "exactly" &&
-            upgrade.upgrade.affects.value
-              ? parseInt(upgrade.upgrade.affects.value)
-              : 1;
-
-          // Check if replacement adds Tough
-          let replacementTough = 0;
-          if (upgrade.option && upgrade.option.gains) {
-            upgrade.option.gains.forEach((gain) => {
-              if (gain.content) {
-                gain.content.forEach((content) => {
-                  if (content.name === "Tough" && content.rating) {
-                    replacementTough = parseInt(content.rating);
-                  }
-                });
-              }
-            });
-          }
-
-          // Add replacement HP to total and track replaced models
-          if (replacementTough > 0) {
-            totalHP += affectedModels * replacementTough;
-            replacedModelCount += affectedModels;
-          }
-        }
-      });
+    // Calculate total hit points
+    if (toughValue > 0) {
+      // For units with Tough, each model has Tough value as HP
+      return modelCount * toughValue;
+    } else {
+      // For units without Tough, each model has 1 HP
+      return modelCount;
     }
-
-    // Get base Tough value for remaining models
-    const baseToughRule = unit.rules.find((rule) => rule.name === "Tough");
-    const baseTough =
-      baseToughRule && baseToughRule.rating
-        ? parseInt(baseToughRule.rating)
-        : 0;
-
-    // Calculate HP for non-replaced models
-    const remainingModels = modelCount - replacedModelCount;
-
-    if (remainingModels > 0) {
-      if (baseTough > 0) {
-        // Units with base Tough: remainingModels * baseTough
-        totalHP += remainingModels * baseTough;
-      } else {
-        // Units without Tough: 1 HP per model
-        totalHP += remainingModels;
-      }
-    }
-
-    return Math.max(totalHP, 1); // Ensure unit has at least 1 HP
   }
 
   /**
@@ -594,6 +539,8 @@ document.addEventListener("DOMContentLoaded", async () => {
    */
   function initializeHitPoints(unit, armyId) {
     const unitId = unit.selectionId;
+    const toughValue = getToughValue(unit);
+    const modelCount = parseInt(unit.size) || 1;
     const maxHP = calculateTotalHitPoints(unit);
 
     // Check if we already have hit points stored
@@ -1929,7 +1876,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const chargedInMeleeButton = document.createElement("button");
     chargedInMeleeButton.className =
       "btn btn-sm btn-outline-danger flex-grow-1";
-    chargedInMeleeButton.innerHTML = `<i class="bi bi-shield-x"></i> Charged`;
+    chargedInMeleeButton.innerHTML = `<i class="bi bi-shield-x"></i> Was Charged`;
     chargedInMeleeButton.addEventListener("click", function () {
       processChargedInMelee(unit.selectionId, armyForgeId);
     });
@@ -3310,13 +3257,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     unitCardHeader.appendChild(unitCardStats);
 
     // Create traits container with all special rules
-    const unitTraitsContainer = createEl("div", { classes: ["mb-3"] });
+    let hasDefenseBonus = false;
+    const unitTraitsContainer = createEl("div", {
+      classes: ["mb-3", "traits-container"],
+    });
     const unitTraits = createEl("div", {
       classes: ["d-flex", "flex-wrap", "gap-1"],
     });
     Array.from(specialRules)
       .sort()
       .forEach((rule) => {
+        if (rule.includes("Defense")) {
+          hasDefenseBonus = true;
+        }
         unitTraits.appendChild(
           createEl("span", {
             classes: ["badge", "bg-secondary", "allow-definitions"],
@@ -3324,7 +3277,17 @@ document.addEventListener("DOMContentLoaded", async () => {
           })
         );
       });
-    unitTraitsContainer.appendChild(unitTraits);
+    if (hasDefenseBonus) {
+      const disclaimerNote = createEl("div", {
+        classes: ["small", "text-muted", "fst-italic", "mt-1"],
+        html: `*Defense bonus from items is already included in the Defense stat.`,
+      });
+      unitTraitsContainer.appendChild(unitTraits);
+      unitTraitsContainer.appendChild(disclaimerNote);
+    } else {
+      unitTraitsContainer.appendChild(unitTraits);
+    }
+
     unitCardBody.appendChild(unitTraitsContainer);
 
     // ===== WEAPONS SECTION (inside card-body) =====
