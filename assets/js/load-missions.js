@@ -241,11 +241,9 @@ function createRulesContent(mission) {
     content += `<h3>Special Rules</h3>
       <ul>`;
     mission.specialRules.forEach((rule) => {
+      // Use the HTML directly without converting newlines to <br>
       content += `<li>
-              <strong>${rule.name}:</strong> ${rule.description.replace(
-        /\n/g,
-        "<br>"
-      )}
+              <strong>${rule.name}:</strong> ${rule.description}
           </li>`;
     });
     content += `</ul>`;
@@ -265,6 +263,14 @@ function createRulesContent(mission) {
   if (mission.deployment) {
     content += `<h3>Deployment</h3>
       <p>${mission.deployment}</p>`;
+  }
+
+  if (mission.scoringSystem && mission.scoringSystem.points) {
+    content += `<h3>Scoring System</h3><ul>`;
+    mission.scoringSystem.points.forEach((point) => {
+      content += `<li>${point}</li>`;
+    });
+    content += `</ul>`;
   }
 
   if (mission.victoryConditions) {
