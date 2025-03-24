@@ -1,0 +1,274 @@
+{
+  "missions": [
+    {
+      "number": 1,
+      "title": "The Unearthed Tomb",
+      "points": 1000,
+      "datetime": "2025-02-22T10:00:00-06:00",
+      "month": "February",
+      "status": "completed",
+      "overview": "A mysterious signal emanates from an ancient and forgotten world. It leads to a tomb-like structure, deep beneath a planet's surface, said to be a precursor to the Mechanist Nexus. This ancient site is vital to unlocking the secrets of the Nexus, and now multiple factions have converged to claim it for their own purposes. The battle begins as factions scramble to unearth the tomb's entrance and secure its treasures before they are all lost.",
+      "objective": {
+        "primary": "Each faction races to claim the artifacts inside the tomb, which hold the key to accessing the Mechanist Nexus. The first team to capture and extract the Tomb Artifact from the center of the battlefield wins. The Tomb Artifact is a special objective marker that must be carried to a faction's deployment zone.",
+        "secondary": []
+      },
+      "specialRules": [
+        {
+          "name": "Tomb of Secrets",
+          "description": "The Tomb Artifact is hidden in the center of the battlefield within a piece of dense terrain (such as a crumbling ruin or ancient control room). When any unit enters this terrain, they must roll a D6:\n- On a 4+, the player finds the Artifact and can pick it up.\n- On a 1-3, a random malfunction occurs (players roll a D6 for a random event):\n  1. Crumbling Terrain: The terrain becomes difficult to move through for the rest of the game.\n  2. Tech Surge: A nearby machine becomes active and shoots at the unit that touched the artifact, dealing a D6 damage to one model in that unit.\n  3. Cloak of Darkness: The unit is disoriented and must reroll their next action with a -1 modifier."
+        },
+        {
+          "name": "No Reinforcements",
+          "description": "For this mission, no reserve units can be called in. Players must fight with what they deploy at the start of the battle."
+        },
+        {
+          "name": "Neutral Forces",
+          "description": "There are automated sentries patrolling the tomb, which will attack any unit (friend or foe) if they come within 6\" of them. These sentries are treated as a neutral enemy force. They are not controlled by any player but will target the nearest unit, following normal targeting rules."
+        }
+      ],
+      "terrainSuggestions": [
+        {
+          "name": "Shifting Ground",
+          "description": "A large area of the board with unstable or shifting terrain that could block movement or line of sight at various points. This represents the volatile energy caused by the Nexus's awakening."
+        },
+        {
+          "name": "Damaged Power Relays",
+          "description": "These relays (which are the Power Nodes) look like mechanical structures overrun with cables and flickering energy. They provide cover but also represent the unstable power of the Nexus."
+        },
+        {
+          "name": "Ruins of a Fallen City",
+          "description": "Some areas of the battlefield are filled with wreckage from long-gone cities, where ancient technology remains active."
+        }
+      ],
+      "deployment": "Each player sets up their forces in their respective quarter. The center of the battlefield contains the \"Tomb Artifact,\" an important objective marker located within the Ancient Control Room.",
+      "victoryConditions": {
+        "primary": "The first player to extract the Tomb Artifact to their deployment zone wins the mission.",
+        "rewards": [
+          {
+            "condition": "Victory",
+            "description": "The winning player gains access to the first piece of the Mechanist Nexus data and can upgrade one unit in their army (this could be a small, lore-based boost like better tech, weapons, or leadership abilities)."
+          },
+          {
+            "condition": "Defeat",
+            "description": "The losing player suffers a significant delay in their plans, losing one unit permanently (a single unit is removed from their army list). The winner's success increases the likelihood of the Nexus activating earlier, which will influence the second mission."
+          }
+        ]
+      },
+      "battleReportFile": "assets/json/battle-reports/mission1.json",
+      "winner": "Alex",
+      "winningArmy": "van Louen's Roughnecks"
+    },
+    {
+      "number": 2,
+      "title": "Signal in the Storm",
+      "points": 1200,
+      "datetime": "2025-03-23T10:00:00-05:00",
+      "month": "March",
+      "status": "completed",
+      "overview": "The Tomb Artifact has been secured, but the action has caused the ancient mechanisms of the tomb to stir to life, triggering environmental chaos. The Nexus is beginning to wake, and dangerous, volatile terrain has begun to affect the battlefield. The factions are forced to confront one another in a skirmish, as the storm of mechanical and environmental chaos grows stronger.",
+      "objective": {
+        "primary": "The Axiom component is locked away in a reinforced central chamber. A unit must first gather access codes from at least two of the three security terminals (by successfully activating them as detailed below) before entering the chamber and extracting the component. Once extracted, the unit must safely exit to the designated extraction zone.",
+        "secondary": [
+          {
+            "name": "Data Recovery",
+            "description": "Valuable historical data about the Axiom Network is stored in certain data terminals. Each such activation awards 1XP, representing strategic insights that may help later."
+          },
+          {
+            "name": "Storm Shielding",
+            "description": "Some terminals control weather devices. When activated, they allow the player to designate one terrain piece to be shielded from the worst of the storm for one round."
+          }
+        ]
+      },
+      "specialRules": [
+        {
+          "name": "Terminals",
+          "description": "Place 9 objective markers representing terminals. When a unit reaches a terminal, roll a D3.\n- On a 1: The terminal is a Storm Control Terminal. The player can activate a storm shield over one piece of terrain, granting cover and preventing units within from suffering storm penalties.\n- On a 2: The terminal is a Data Terminal. The player can download historical data, gaining 1 XP (or another narrative benefit).\n- On a 3: The terminal is a Security Terminal. The player gains a piece of coded data. Once a player has two coded data pieces, they can unlock the central chamber to retrieve the Axiom component."
+        },
+        {
+          "name": "Electrical Storm Surge",
+          "description": "At the start of each round, roll a D6. On a 4+, the storm is active that round.\n- All units with the \"Mechanical\" or \"Robot\" quality suffer -1 to hit.\n- Energy weapons (laser, plasma, etc.) have their range halved.\n- Units in Sheltered Terrain (inside buildings, under intact structures) ignore the hit penalty from the storm.\n- Jump, Flyer, or Fast units take dangerous terrain tests (roll 1d6 for each model; on a 1, they take a wound)."
+        }
+      ],
+      "victoryConditions": {
+        "primary": "A player wins immediately if they secure the Axiom component by unlocking the chamber and extracting it off the board (via an exit point or extraction action).",
+        "rewards": [
+          {
+            "condition": "Victory",
+            "description": "The winning player gains access to the second piece of the Axiom data and can upgrade one unit in their army with 1XP."
+          }
+        ]
+      },
+      "battleReportFile": "assets/json/battle-reports/mission2.json",
+      "winner": "Victoria",
+      "winningArmy": "Galdoo'o naahlk wildigitkw"
+    },
+    {
+      "number": 3,
+      "title": "The Fractured Signal",
+      "points": 1400,
+      "datetime": null,
+      "month": "April",
+      "status": "current",
+      "overview": "A garbled transmission emanates from deep within the Nexus—an intelligence trapped within? Or a warning?",
+      "objective": {
+        "primary": "",
+        "secondary": []
+      },
+      "specialRules": [],
+      "victoryConditions": {
+        "primary": "",
+        "rewards": []
+      },
+      "battleReportFile": null,
+      "winner": null,
+      "winningArmy": null
+    },
+    {
+      "number": 4,
+      "title": "Vault of the Lost",
+      "points": 1600,
+      "datetime": null,
+      "month": "May",
+      "status": "upcoming",
+      "overview": "A subterranean chamber opens, revealing stasis pods containing ancient warriors—some are waking up.",
+      "objective": {
+        "primary": "",
+        "secondary": []
+      },
+      "specialRules": [],
+      "victoryConditions": {
+        "primary": "",
+        "rewards": []
+      },
+      "battleReportFile": null,
+      "winner": null,
+      "winningArmy": null
+    },
+    {
+      "number": 5,
+      "title": "The Rift Unleashed",
+      "points": 1800,
+      "datetime": null,
+      "month": "June",
+      "status": "upcoming",
+      "overview": "The Nexus' unstable energy fractures reality, opening dimensional rifts that pour forth unknown horrors.",
+      "objective": {
+        "primary": "",
+        "secondary": []
+      },
+      "specialRules": [],
+      "victoryConditions": {
+        "primary": "",
+        "rewards": []
+      },
+      "battleReportFile": null,
+      "winner": null,
+      "winningArmy": null
+    },
+    {
+      "number": 6,
+      "title": "The Siege of the Mechanist Core",
+      "points": 2000,
+      "datetime": null,
+      "month": "July",
+      "status": "upcoming",
+      "overview": "One faction makes a bold play to seize the Nexus' heart, forcing others into a desperate defense or counterattack.",
+      "objective": {
+        "primary": "",
+        "secondary": []
+      },
+      "specialRules": [],
+      "victoryConditions": {
+        "primary": "",
+        "rewards": []
+      },
+      "battleReportFile": null,
+      "winner": null,
+      "winningArmy": null
+    },
+    {
+      "number": 7,
+      "title": "Echoes of the Machine God",
+      "points": 2200,
+      "datetime": null,
+      "month": "August",
+      "status": "upcoming",
+      "overview": "An ancient AI, once thought erased, begins whispering to those who listen, offering knowledge—or control.",
+      "objective": {
+        "primary": "",
+        "secondary": []
+      },
+      "specialRules": [],
+      "victoryConditions": {
+        "primary": "",
+        "rewards": []
+      },
+      "battleReportFile": null,
+      "winner": null,
+      "winningArmy": null
+    },
+    {
+      "number": 8,
+      "title": "Twilight of the Jackals",
+      "points": 2400,
+      "datetime": null,
+      "month": "September",
+      "status": "upcoming",
+      "overview": "The Jackals make their move, claiming key Nexus components for themselves. But their true motives remain uncertain.",
+      "objective": {
+        "primary": "",
+        "secondary": []
+      },
+      "specialRules": [],
+      "victoryConditions": {
+        "primary": "",
+        "rewards": []
+      },
+      "battleReportFile": null,
+      "winner": null,
+      "winningArmy": null
+    },
+    {
+      "number": 9,
+      "title": "The Breaking of the Nexus",
+      "points": 2600,
+      "datetime": null,
+      "month": "October",
+      "status": "upcoming",
+      "overview": "The Nexus reaches a critical threshold. It will either transcend its purpose—or implode catastrophically.",
+      "objective": {
+        "primary": "",
+        "secondary": []
+      },
+      "specialRules": [],
+      "victoryConditions": {
+        "primary": "",
+        "rewards": []
+      },
+      "battleReportFile": null,
+      "winner": null,
+      "winningArmy": null
+    },
+    {
+      "number": 10,
+      "title": "Final Reckoning",
+      "points": 3000,
+      "datetime": null,
+      "month": "November",
+      "status": "upcoming",
+      "overview": "The war is over, but the victors will shape what remains. Who will hold dominion over the shattered Nexus?",
+      "objective": {
+        "primary": "",
+        "secondary": []
+      },
+      "specialRules": [],
+      "victoryConditions": {
+        "primary": "",
+        "rewards": []
+      },
+      "battleReportFile": null,
+      "winner": null,
+      "winningArmy": null
+    }
+  ]
+}
