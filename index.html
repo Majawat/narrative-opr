@@ -452,17 +452,32 @@
         <p class="px-md-4 px-sm-3 px-1">
           After a fierce battle among the ruins, van Louen's forces secured the
           artifact—a crystalline matrix core pulsing with otherworldly energy.
-          Initial analysis suggests it functions as some form of navigational
+          Initial analysis suggested it functioned as some form of navigational
           key, potentially revealing the locations of other Axiom Network
           components scattered across the sector.
         </p>
         <p class="px-md-4 px-sm-3 px-1">
-          However, the excavation and removal of the artifact has triggered a
-          cascade of strange phenomena across Taraxis Prime. Gravitational
-          anomalies, temporal distortions, and instances of machine-spirits
-          spontaneously achieving sentience have been reported. The Axiom
-          Network appears to be responding to the removal of the
-          component—perhaps even tracking it.
+          The excavation and removal of the artifact triggered a cascade of
+          strange phenomena, with the artifact beginning to emit coded pulses
+          pointing to a storm-ravaged planet. The pulses led four competing
+          forces to an abandoned research outpost, where a second Axiom
+          component was secured within a reinforced vault.
+        </p>
+        <p class="px-md-4 px-sm-3 px-1">
+          The battle for this second component unfolded amid violent electrical
+          storms that wreaked havoc on technology and fast-moving units. Forces
+          raced to activate terminals throughout the facility, searching for
+          security codes to unlock the central chamber. After a hard-fought
+          battle with rapidly shifting fortunes, Victoria's Wood Elves narrowly
+          claimed victory, securing the second Axiom component for their
+          mysterious purposes.
+        </p>
+        <p class="px-md-4 px-sm-3 px-1">
+          With two components now recovered, the Axiom Network's activity has
+          intensified. Strange signals, reality distortions, and technological
+          anomalies are becoming more frequent across the sector. The race to
+          secure—or destroy—the remaining components grows more urgent as the
+          ancient system's true purpose begins to emerge.
         </p>
       </section>
 
@@ -762,15 +777,15 @@
 
           <div
             id="mission2-item"
-            class="accordion-item nav-scroll-top mission-current"
+            class="accordion-item nav-scroll-top mission-completed"
           >
             <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
               <button
-                class="accordion-button"
+                class="accordion-button collapsed"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#panelsStayOpen-collapseTwo"
-                aria-expanded="true"
+                aria-expanded="false"
                 aria-controls="panelsStayOpen-collapseTwo"
               >
                 <a
@@ -782,127 +797,312 @@
             </h2>
             <div
               id="panelsStayOpen-collapseTwo"
-              class="accordion-collapse collapse show"
+              class="accordion-collapse collapse"
               aria-labelledby="panelsStayOpen-headingTwo"
             >
               <div class="accordion-body">
-                <h3>Overview</h3>
-                <p>
-                  The artifact recovered from the first mission has begun
-                  emitting coded pulses that point to a harsh, storm-ravaged
-                  planet. Intelligence suggests another Axiom Network component
-                  is located in an abandoned research outpost. Forces must
-                  navigate violent electrical storms that periodically disable
-                  technology while racing to extract the component from the
-                  deteriorating facility.
-                </p>
-                <h3>Objective</h3>
-                <h4>Primary Objective</h4>
-                <p>
-                  <strong>Component Extraction</strong>: The Axiom component is
-                  locked away in a reinforced central chamber. A unit must first
-                  gather access codes from at least two of the three security
-                  terminals (by successfully activating them as detailed below)
-                  before entering the chamber and extracting the component. Once
-                  extracted, the unit must safely exit to the designated
-                  extraction zone.
-                </p>
-                <h4>Secondary Objectives</h4>
-
-                <ul>
-                  <li>
-                    <strong>Data Recovery</strong>: Valuable historical data
-                    about the Axiom Network is stored in certain data terminals.
-                    Each such activation awards 1XP, representing strategic
-                    insights that may help later.
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs" id="mission2Tabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link active"
+                      id="battle-report2-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#battle-report2"
+                      type="button"
+                      role="tab"
+                      aria-controls="battle-report2"
+                      aria-selected="true"
+                    >
+                      Battle Report
+                    </button>
                   </li>
-                  <li>
-                    <strong>Storm Shielding</strong>: Some terminals control
-                    weather devices. When activated, they allow the player to
-                    designate one terrain piece to be shielded from the worst of
-                    the storm for one round.
+                  <li class="nav-item" role="presentation">
+                    <button
+                      class="nav-link"
+                      id="original-rules2-tab"
+                      data-bs-toggle="tab"
+                      data-bs-target="#original-rules2"
+                      type="button"
+                      role="tab"
+                      aria-controls="original-rules2"
+                      aria-selected="false"
+                    >
+                      Original Rules
+                    </button>
                   </li>
                 </ul>
 
-                <h3>Special Rules</h3>
-                <ul>
-                  <li>
-                    <strong>Terminals</strong>: Place 9 objective markers
-                    representing terminals. When a unit reaches a terminal, roll
-                    a
-                    <button type="button" class="btn dice-notation">D3</button>.
-                  </li>
-                  <ul>
-                    <li>
-                      On a 1: The terminal is a
-                      <strong>Storm Control Terminal</strong>>. The player can
-                      activate a storm shield over one piece of terrain,
-                      granting cover and preventing units within from suffering
-                      storm penalties.
-                    </li>
-                    <li>
-                      On a 2: The terminal is a <strong>Data Terminal</strong>.
-                      The player can download historical data, gaining 1 XP (or
-                      another narrative benefit).
-                    </li>
-                    <li>
-                      On a 3: The terminal is a
-                      <strong>Security Terminal</strong>. The player gains a
-                      piece of coded data. Once a player has two coded data
-                      pieces, they can unlock the central chamber to retrieve
-                      the Axiom component.
-                    </li>
-                  </ul>
+                <!-- Tab Content -->
+                <div class="tab-content mt-3" id="mission2TabsContent">
+                  <!-- Battle Report Tab (Default) -->
+                  <div
+                    class="tab-pane fade show active"
+                    id="battle-report2"
+                    role="tabpanel"
+                    aria-labelledby="battle-report2-tab"
+                  >
+                    <h3>Battle for the Storm Vault</h3>
+                    <p>
+                      As lightning crackled across the stormy skies of a
+                      forgotten research outpost, four armies converged on the
+                      Axiom component hidden within a reinforced vault. The
+                      violent electrical storms periodically disabled technology
+                      and threatened flying units, adding an unpredictable
+                      element to an already tense battlefield.
+                    </p>
 
-                  <li>
-                    <strong>Electrical Storm Surge</strong>: At the start of
-                    each round, roll a
-                    <button type="button" class="btn dice-notation">D6</button>.
-                    On a 4+, the storm is active that round.
+                    <h4>Round 1: Race to the Terminals</h4>
+                    <p>
+                      The first round began with a powerful electrical storm
+                      surging across the battlefield. Claire's Emerald Tide
+                      advanced quickly but suffered heavy casualties as the
+                      storm proved particularly deadly to their fast-moving
+                      units, losing four models to dangerous terrain tests.
+                      Undeterred, they located a data terminal, earning valuable
+                      intelligence for future battles.
+                    </p>
+
+                    <p>
+                      Cody's Nightfang Sentinels moved forward to secure a
+                      security terminal, obtaining the first set of data codes
+                      needed to unlock the central vault. However, Alex's
+                      Longshanks combat walker responded swiftly, unleashing
+                      devastating fire that eliminated the Nightfangs entirely,
+                      using an underdog point to ensure his attacks hit their
+                      mark.
+                    </p>
+
+                    <p>
+                      Victoria's Treemen activated a storm control terminal in
+                      her deployment zone, creating a safe haven for one of her
+                      units from the electrical disturbances. The rest of the
+                      round saw all armies repositioning and searching for
+                      additional terminals, with Claire's Mindworm and Alex's
+                      Command Squad both locating data terminals for additional
+                      XP.
+                    </p>
+
+                    <h4>Round 2: Ambush and Counter-Ambush</h4>
+                    <p>
+                      As the storm temporarily subsided, the battlefield erupted
+                      with ambushing forces appearing from all sides. Claire
+                      deployed her Mossbacks to threaten Cody's Hallowed
+                      Breakers, only for Cody to counter-ambush with Seraphine.
+                      Alex positioned his RT Acreage to target Claire's
+                      Mindworm, while Cody brought Zerek Thal directly into
+                      position near the vault.
+                    </p>
+
+                    <p>
+                      The early part of this round was defined by Alex seizing
+                      the initiative, with RT Acreage inflicting damage on the
+                      Mindworm. Meanwhile, a spectacular clash occurred between
+                      Cody's Stormfang Riders and Victoria's Eternal Hunters,
+                      with the Hunters decimating their opponents, inflicting
+                      all 9 wounds in a devastating counter-attack.
+                    </p>
+
+                    <p>
+                      Claire's massive creature engaged Victoria's
+                      beetle-mounted commander in melee, resulting in a tense
+                      standoff where both titans inflicted a single wound on
+                      each other. Elsewhere, Victoria's Tree Giant whipped into
+                      Cody's Dustborn Marauders for significant damage, while
+                      Claire's Mindworm demonstrated its psychic might by
+                      blasting RT Acreage with powerful spells.
+                    </p>
+
+                    <h4>Round 3: The Vault Opens</h4>
+                    <p>
+                      With the storm still calm, Claire ambushed with her Hive
+                      Lord directly into the vault building, seeking to
+                      intercept anyone who gathered the necessary security
+                      codes. The round began with dramatic repositioning as
+                      Claire's Mindworm eliminated most of RT Acreage, and
+                      Alex's APC was forced to retreat after taking heavy
+                      damage.
+                    </p>
+
+                    <p>
+                      In a crucial moment, Victoria's forces managed to reach
+                      the vault and secured the Axiom shard! Meanwhile, Cody's
+                      forces engaged Claire's Mossbacks, eliminating two but
+                      failing to break their morale. Seraphine enhanced her
+                      allies' weapons with an 18" range boost spell, making the
+                      radiant guard's flamers and fusion weapons much more
+                      threatening across the battlefield.
+                    </p>
+
+                    <h4>Round 4: The Chase Begins</h4>
+                    <p>
+                      The battlefield descended into chaos as Victoria's forces
+                      attempted to extract the shard while everyone else gave
+                      chase. Claire's Hive Lord intercepted Victoria's Eternal
+                      Hunters in a brutal assault, overwhelming them and causing
+                      them to drop the precious objective.
+                    </p>
+
+                    <p>
+                      In a daring move, Cody's Zerek Thal swooped in and grabbed
+                      the objective from beneath the Hive Lord. Victoria's
+                      beetle commander attempted to stop this with a dragon
+                      breath attack, but initially failed—until using an
+                      underdog point to force the hit through.
+                    </p>
+
+                    <h4>Round 5: Final Gambit</h4>
+                    <p>
+                      As the final round began, the electrical storm returned
+                      with renewed fury. Victoria's Tree Giant eliminated Cody's
+                      last Dustborn warrior, while Claire's Bracken Lord charged
+                      through dangerous terrain (taking 2 wounds in the process)
+                      to engage Zerek Thal in melee. Despite the ferocity of the
+                      attack (8 hits!), Zerek somehow survived initially.
+                    </p>
+
+                    <p>
+                      The battle reached its climactic conclusion with Claire's
+                      Hive Lord ultimately securing the shard as the storm raged
+                      on. However, time constraints forced a quick resolution:
+                      the commanders agreed that in the final moments, Cody and
+                      Victoria's forces would have joined together to defeat the
+                      Hive Lord, with Victoria narrowly claiming the Axiom
+                      component for the Wood Elves!
+                    </p>
+                  </div>
+
+                  <!-- Original Rules Tab -->
+                  <div
+                    class="tab-pane fade"
+                    id="original-rules2"
+                    role="tabpanel"
+                    aria-labelledby="original-rules2-tab"
+                  >
+                    <h3>Overview</h3>
+                    <p>
+                      The artifact recovered from the first mission has begun
+                      emitting coded pulses that point to a harsh, storm-ravaged
+                      planet. Intelligence suggests another Axiom Network
+                      component is located in an abandoned research outpost.
+                      Forces must navigate violent electrical storms that
+                      periodically disable technology while racing to extract
+                      the component from the deteriorating facility.
+                    </p>
+                    <h3>Objective</h3>
+                    <h4>Primary Objective</h4>
+                    <p>
+                      <strong>Component Extraction</strong>: The Axiom component
+                      is locked away in a reinforced central chamber. A unit
+                      must first gather access codes from at least two of the
+                      three security terminals (by successfully activating them
+                      as detailed below) before entering the chamber and
+                      extracting the component. Once extracted, the unit must
+                      safely exit to the designated extraction zone.
+                    </p>
+                    <h4>Secondary Objectives</h4>
+
                     <ul>
                       <li>
-                        All units with the "Mechanical" or "Robot" quality
-                        suffer -1 to hit.
+                        <strong>Data Recovery</strong>: Valuable historical data
+                        about the Axiom Network is stored in certain data
+                        terminals. Each such activation awards 1XP, representing
+                        strategic insights that may help later.
                       </li>
                       <li>
-                        Energy weapons (laser, plasma, etc.) have their range
-                        halved.
-                      </li>
-                      <li>
-                        Units in Sheltered Terrain (inside buildings, under
-                        intact structures) ignore the hit penalty from the
-                        storm.
-                      </li>
-                      <li>
-                        Jump, Flyer, or Fast units take dangerous terrain tests
-                        (roll 1d6 for each model; on a 1, they take a wound).
+                        <strong>Storm Shielding</strong>: Some terminals control
+                        weather devices. When activated, they allow the player
+                        to designate one terrain piece to be shielded from the
+                        worst of the storm for one round.
                       </li>
                     </ul>
-                  </li>
-                </ul>
-                <h3>Victory Conditions</h3>
-                <p>
-                  A player wins immediately if they secure the Axiom component
-                  by unlocking the chamber and extracting it off the board (via
-                  an exit point or extraction action).
-                </p>
-                <ul>
-                  <li>
-                    <strong>Victory:</strong> The winning player gains access to
-                    the second piece of the Axiom data and can upgrade one unit
-                    in their army with 1XP.
-                  </li>
-                </ul>
+
+                    <h3>Special Rules</h3>
+                    <ul>
+                      <li>
+                        <strong>Terminals</strong>: Place 9 objective markers
+                        representing terminals. When a unit reaches a terminal,
+                        roll a
+                        <button type="button" class="btn dice-notation">
+                          D3</button
+                        >.
+                      </li>
+                      <ul>
+                        <li>
+                          On a 1: The terminal is a
+                          <strong>Storm Control Terminal</strong>>. The player
+                          can activate a storm shield over one piece of terrain,
+                          granting cover and preventing units within from
+                          suffering storm penalties.
+                        </li>
+                        <li>
+                          On a 2: The terminal is a
+                          <strong>Data Terminal</strong>. The player can
+                          download historical data, gaining 1 XP (or another
+                          narrative benefit).
+                        </li>
+                        <li>
+                          On a 3: The terminal is a
+                          <strong>Security Terminal</strong>. The player gains a
+                          piece of coded data. Once a player has two coded data
+                          pieces, they can unlock the central chamber to
+                          retrieve the Axiom component.
+                        </li>
+                      </ul>
+
+                      <li>
+                        <strong>Electrical Storm Surge</strong>: At the start of
+                        each round, roll a
+                        <button type="button" class="btn dice-notation">
+                          D6</button
+                        >. On a 4+, the storm is active that round.
+                        <ul>
+                          <li>
+                            All units with the "Mechanical" or "Robot" quality
+                            suffer -1 to hit.
+                          </li>
+                          <li>
+                            Energy weapons (laser, plasma, etc.) have their
+                            range halved.
+                          </li>
+                          <li>
+                            Units in Sheltered Terrain (inside buildings, under
+                            intact structures) ignore the hit penalty from the
+                            storm.
+                          </li>
+                          <li>
+                            Jump, Flyer, or Fast units take dangerous terrain
+                            tests (roll 1d6 for each model; on a 1, they take a
+                            wound).
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <h3>Victory Conditions</h3>
+                    <p>
+                      A player wins immediately if they secure the Axiom
+                      component by unlocking the chamber and extracting it off
+                      the board (via an exit point or extraction action).
+                    </p>
+                    <ul>
+                      <li>
+                        <strong>Victory:</strong> The winning player gains
+                        access to the second piece of the Axiom data and can
+                        upgrade one unit in their army with 1XP.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div
             id="mission3-item"
-            class="accordion-item nav-scroll-top mission-upcoming"
+            class="accordion-item nav-scroll-top mission-current"
           >
             <h2 class="accordion-header" id="panelsStayOpen-headingThree">
               <button
-                class="accordion-button collapsed"
+                class="accordion-button collapse show"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#panelsStayOpen-collapseThree"
@@ -917,7 +1117,7 @@
             </h2>
             <div
               id="panelsStayOpen-collapseThree"
-              class="accordion-collapse collapse"
+              class="accordion-collapse"
               aria-labelledby="panelsStayOpen-headingThree"
             >
               <div class="accordion-body">
