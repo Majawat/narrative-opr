@@ -83,12 +83,16 @@ function createMissionItem(mission) {
       ? "mission-current"
       : "mission-upcoming";
 
+  const dateObj = new Date(mission.datetime);
   const dateText = mission.datetime
-    ? new Date(mission.datetime).toLocaleDateString("en-US", {
+    ? `${dateObj.toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
-      })
+      })} at ${dateObj.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+      })}`
     : `${mission.month} - Date TBD`;
 
   const missionItem = document.createElement("div");
