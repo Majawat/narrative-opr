@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     RUSH: "rush",
     CHARGE: "charge",
     UNSHAKEN: "unshaken",
+    CHARGED_IN_MELEE: "charged_in_melee",
   };
 
   // Morale status constants
@@ -22,6 +23,158 @@ document.addEventListener("DOMContentLoaded", async () => {
     SHAKEN: "shaken",
     ROUTED: "routed",
   };
+
+  // Add fatigue constants
+  const FATIGUE_STATUS = {
+    FRESH: "fresh",
+    FATIGUED: "fatigued",
+  };
+
+  // Add these functions for fatigue tracking
+  function saveUnitFatigueStatus(
+    unitId,
+    armyId,
+    status = FATIGUE_STATUS.FRESH
+  ) {
+    const key = `fatigue_${armyId}_${unitId}`;
+    localStorage.setItem(key, status);
+  }
+
+  function getUnitFatigueStatus(unitId, armyId) {
+    const key = `fatigue_${armyId}_${unitId}`;
+    const status = localStorage.getItem(key) || FATIGUE_STATUS.FRESH;
+    return status;
+  }
+
+  function resetAllFatigueStatuses(armyId) {
+    const unitCards = document.querySelectorAll("[id^='unit-']");
+
+    unitCards.forEach((card) => {
+      const unitId = card.id.replace("unit-", "");
+      // Reset fatigue status
+      saveUnitFatigueStatus(unitId, armyId, FATIGUE_STATUS.FRESH);
+
+      // Update UI
+      updateFatigueStatusUI(card, FATIGUE_STATUS.FRESH);
+    });
+  }
+
+  /**
+   * Update the fatigue status UI
+   * @param {HTMLElement} unitCard - The unit card element
+   * @param {string} fatigueStatus - Fatigue status (from FATIGUE_STATUS object)
+   */
+  function updateFatigueStatusUI(unitCard, fatigueStatus) {
+    // Find the fatigue badge
+    const fatigueBadge = unitCard.querySelector(".fatigue-badge");
+    if (!fatigueBadge) return;
+
+    // Update based on fatigue status
+    if (fatigueStatus === FATIGUE_STATUS.FATIGUED) {
+      fatigueBadge.className = "fatigue-badge btn btn-sm btn-warning w-50";
+      fatigueBadge.innerHTML = '<i class="bi bi-battery-half"></i> Fatigued';
+    } else {
+      fatigueBadge.className = "fatigue-badge btn btn-sm btn-success w-50";
+      fatigueBadge.innerHTML = '<i class="bi bi-lightning-charge"></i> Fresh';
+    }
+  }
+
+  /**
+   * Process a unit being charged in melee
+   * @param {string} unitId - Unit's selection ID
+   * @param {string} armyId - Army ID
+   */
+  function processChargedInMelee(unitId, armyId) {
+    // Get the unit card
+    const unitCard = document.getElementById(`unit-${unitId}`);
+    if (!unitCard) return;
+
+    // Get unit data
+    const cacheKey = `armyData_${armyId}`;
+    const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+    if (!cachedData || !cachedData.data) return;
+
+    const unit = cachedData.data.units.find((u) => u.selectionId === unitId);
+    if (!unit) return;
+
+    // Show strike back prompt
+    showStrikeBackPrompt(unitId, armyId, unit.customName || unit.name);
+  }
+
+  /**
+   * Show prompt asking if unit struck back when charged
+   * @param {string} unitId - Unit's selection ID
+   * @param {string} armyId - Army ID
+   * @param {string} unitName - Name of the unit
+   */
+  function showStrikeBackPrompt(unitId, armyId, unitName) {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className =
+      "toast strike-back-toast align-items-center bg-body border-0";
+    toast.role = "alert";
+    toast.ariaLive = "assertive";
+    toast.ariaAtomic = "true";
+    toast.style.marginBottom = "10px";
+
+    toast.innerHTML = `
+    <div class="d-flex flex-column">
+      <div class="toast-header bg-dark text-white">
+        <strong class="me-auto">Strike Back</strong>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <p><strong>${unitName}</strong> was charged in melee. Did this unit strike back?</p>
+        <div class="d-flex justify-content-between">
+          <button class="btn btn-success strike-back-yes-btn">Yes, Struck Back</button>
+          <button class="btn btn-secondary strike-back-no-btn">No, Did Not Strike</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { autohide: false });
+    bsToast.show();
+
+    // Add event listeners for buttons
+    const strikeBackYesButton = toast.querySelector(".strike-back-yes-btn");
+    const strikeBackNoButton = toast.querySelector(".strike-back-no-btn");
+
+    strikeBackYesButton.addEventListener("click", function () {
+      // Unit struck back, so mark as fatigued
+      saveUnitFatigueStatus(unitId, armyId, FATIGUE_STATUS.FATIGUED);
+      updateFatigueStatusUI(
+        document.getElementById(`unit-${unitId}`),
+        FATIGUE_STATUS.FATIGUED
+      );
+
+      // Show notification about fatigue
+      showToast(
+        "Unit Fatigued",
+        `${unitName} is now fatigued and will only hit on 6s in melee for the rest of this round.`,
+        "warning"
+      );
+
+      // Show melee result prompt
+      showMeleeResultPrompt(unitId, armyId, unitName);
+
+      // Close this toast
+      bsToast.hide();
+      setTimeout(() => toastContainer.removeChild(toast), 500);
+    });
+
+    strikeBackNoButton.addEventListener("click", function () {
+      // Unit did not strike back, but still need to check melee result
+      showMeleeResultPrompt(unitId, armyId, unitName);
+
+      // Close this toast
+      bsToast.hide();
+      setTimeout(() => toastContainer.removeChild(toast), 500);
+    });
+  }
 
   // Define handleRefreshData early to avoid reference error
   function handleRefreshData() {
@@ -277,6 +430,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Step 3: Create a map to combine identical weapons
     const weaponMap = {};
 
+    // Calculate the multiplier for combined units
+    const combinedMultiplier = unit.isCombinedUnit ? unit.combinedCount : 1;
+
     allWeapons.forEach((weapon) => {
       // Create a unique key for each weapon type
       // This key combines all relevant properties that would make weapons distinct
@@ -288,15 +444,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         formatSpecialRulesString(weapon.specialRules),
       ].join("|");
 
+      // Calculate the weapon count considering combined units
+      const weaponCount = weapon.count || 1;
+
       if (!weaponMap[weaponKey]) {
         // First time seeing this weapon - create entry with count
         weaponMap[weaponKey] = {
           ...weapon,
-          count: weapon.count || 1,
+          count: weaponCount * combinedMultiplier,
         };
       } else {
         // This is a duplicate - add to the count
-        weaponMap[weaponKey].count += weapon.count || 1;
+        weaponMap[weaponKey].count += weaponCount * combinedMultiplier;
       }
     });
 
@@ -625,6 +784,196 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Add hit points container to footer
     unitCardFooter.appendChild(hpContainer);
   }
+
+  /**
+   * Add hit points UI for a hero that's joined to a unit
+   * @param {HTMLElement} unitCard - The unit card element
+   * @param {Object} hero - The hero object
+   * @param {Object} unit - The unit object the hero is joined to
+   * @param {string} armyForgeId - Army ID
+   */
+  function addHeroHitPointsUI(unitCard, hero, unit, armyForgeId) {
+    // Initialize hit points
+    const hpData = initializeHitPoints(hero, armyForgeId);
+    const toughValue = getToughValue(hero);
+    const heroId = hero.selectionId;
+    const unitHpData = getHitPoints(unit.selectionId, armyForgeId);
+
+    // Create hit points container
+    const hpContainer = document.createElement("div");
+    hpContainer.className =
+      "hero-hit-points-container d-flex justify-content-between align-items-center mb-2";
+
+    // Create HP label
+    let hpLabel = document.createElement("span");
+    hpLabel.innerHTML = `<i class="bi bi-heart-fill text-danger"></i> ${
+      hero.customName || hero.name
+    } HP (Tough ${toughValue})`;
+    hpContainer.appendChild(hpLabel);
+
+    // Create HP controls
+    const hpControls = document.createElement("div");
+    hpControls.className = "d-flex align-items-center";
+
+    // Decrease HP button
+    const decreaseBtn = document.createElement("button");
+    decreaseBtn.className = "btn btn-sm btn-danger me-2";
+    decreaseBtn.innerHTML = "<i class='bi bi-dash'></i>";
+    decreaseBtn.disabled = unitHpData.current > 0; // Disable if unit still has HP
+    decreaseBtn.addEventListener("click", function () {
+      if (hpData.current > 0) {
+        hpData.current--;
+        saveHitPoints(heroId, armyForgeId, hpData.current, hpData.max);
+        updateHPDisplay();
+
+        // Update the card border color based on both unit and hero HP
+        updateCardBorder();
+      }
+    });
+    hpControls.appendChild(decreaseBtn);
+
+    // HP display
+    const hpDisplay = document.createElement("div");
+    hpDisplay.className = "d-flex flex-column align-items-center me-2";
+
+    const hpText = document.createElement("div");
+    hpText.className = "hp-text";
+    hpText.innerHTML = `<span class="hp-current">${hpData.current}</span>/<span class="hp-max">${hpData.max}</span>`;
+    hpDisplay.appendChild(hpText);
+
+    // Progress bar
+    const progressContainer = document.createElement("div");
+    progressContainer.className = "progress";
+    progressContainer.style.width = "60px";
+    progressContainer.style.height = "6px";
+
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar hp-progress-bar";
+    progressBar.style.width = `${(hpData.current / hpData.max) * 100}%`;
+
+    // Set color based on health percentage
+    const healthPercent = (hpData.current / hpData.max) * 100;
+    if (healthPercent <= 25) {
+      progressBar.classList.add("bg-danger");
+    } else if (healthPercent <= 60) {
+      progressBar.classList.add("bg-warning");
+    } else {
+      progressBar.classList.add("bg-success");
+    }
+
+    progressContainer.appendChild(progressBar);
+    hpDisplay.appendChild(progressContainer);
+    hpControls.appendChild(hpDisplay);
+
+    // Increase HP button
+    const increaseBtn = document.createElement("button");
+    increaseBtn.className = "btn btn-sm btn-success";
+    increaseBtn.innerHTML = "<i class='bi bi-plus'></i>";
+    increaseBtn.disabled = unitHpData.current > 0; // Disable if unit still has HP
+    increaseBtn.addEventListener("click", function () {
+      if (hpData.current < hpData.max) {
+        hpData.current++;
+        saveHitPoints(heroId, armyForgeId, hpData.current, hpData.max);
+        updateHPDisplay();
+
+        // Update the card border color based on both unit and hero HP
+        updateCardBorder();
+      }
+    });
+    hpControls.appendChild(increaseBtn);
+
+    hpContainer.appendChild(hpControls);
+
+    // Function to update HP display
+    function updateHPDisplay() {
+      const currentHP = hpContainer.querySelector(".hp-current");
+      currentHP.textContent = hpData.current;
+
+      // Update progress bar
+      const progressBar = hpContainer.querySelector(".hp-progress-bar");
+      progressBar.style.width = `${(hpData.current / hpData.max) * 100}%`;
+
+      // Update progress bar color
+      progressBar.classList.remove("bg-danger", "bg-warning", "bg-success");
+      const healthPercent = (hpData.current / hpData.max) * 100;
+      if (healthPercent <= 25) {
+        progressBar.classList.add("bg-danger");
+      } else if (healthPercent <= 60) {
+        progressBar.classList.add("bg-warning");
+      } else {
+        progressBar.classList.add("bg-success");
+      }
+    }
+
+    // Function to update card border based on both unit and hero HP
+    function updateCardBorder() {
+      const cardElement = unitCard.querySelector(".card");
+      const unitHpCurrent = getHitPoints(unit.selectionId, armyForgeId).current;
+      const heroHpCurrent = getHitPoints(heroId, armyForgeId).current;
+
+      // Only show red border if both unit and hero HP are 0
+      if (unitHpCurrent === 0 && heroHpCurrent === 0) {
+        unitCard.classList.add("border-danger");
+      } else {
+        unitCard.classList.remove("border-danger");
+      }
+    }
+
+    // Find or create card footer
+    let unitCardFooter = unitCard.querySelector(".card-footer");
+    if (!unitCardFooter) {
+      unitCardFooter = document.createElement("div");
+      unitCardFooter.className = "card-footer";
+      unitCard.appendChild(unitCardFooter);
+    }
+
+    // Add hit points container to footer
+    unitCardFooter.appendChild(hpContainer);
+
+    // Add an event listener to the unit's HP to enable/disable hero HP controls
+    const unitHpContainer = unitCard.querySelector(".hit-points-container");
+    if (unitHpContainer) {
+      // Initial check for unit HP
+      checkUnitHP();
+
+      // Add listeners to unit HP buttons
+      const unitDecreaseBtn = unitHpContainer.querySelector(".btn-danger");
+      if (unitDecreaseBtn) {
+        unitDecreaseBtn.addEventListener("click", function () {
+          checkUnitHP();
+          updateCardBorder();
+        });
+      }
+
+      const unitIncreaseBtn = unitHpContainer.querySelector(".btn-success");
+      if (unitIncreaseBtn) {
+        unitIncreaseBtn.addEventListener("click", function () {
+          checkUnitHP();
+          updateCardBorder();
+        });
+      }
+    }
+
+    // Function to check unit HP and enable/disable hero HP controls
+    function checkUnitHP() {
+      setTimeout(() => {
+        const unitHpData = getHitPoints(unit.selectionId, armyForgeId);
+        const heroButtons = hpContainer.querySelectorAll("button");
+
+        if (unitHpData.current === 0) {
+          // Enable hero HP buttons
+          heroButtons.forEach((btn) => (btn.disabled = false));
+        } else {
+          // Disable hero HP buttons
+          heroButtons.forEach((btn) => (btn.disabled = true));
+        }
+      }, 100); // Small delay to ensure HP data is updated
+    }
+
+    // Initial border update
+    updateCardBorder();
+  }
+
   /**
    * Check if a unit has the Caster special rule
    * @param {Object} unit - The unit object
@@ -1058,18 +1407,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // Check if it's a CHARGE action (show melee result prompt)
+    // Check if it's a CHARGE action (handle charging specific logic)
     if (action === ACTIONS.CHARGE) {
-      // Save activation first
-      saveUnitActivation(unitId, armyId, action, true);
-      updateActivationUI(unitCard, action, true);
+      // Mark unit as fatigued when charging
+      saveUnitFatigueStatus(unitId, armyId, FATIGUE_STATUS.FATIGUED);
+      updateFatigueStatusUI(unitCard, FATIGUE_STATUS.FATIGUED);
+
+      // Show notification about fatigue
+      showToast(
+        "Unit Fatigued",
+        `${
+          unit.customName || unit.name
+        } is now fatigued and will only hit on 6s in melee for the rest of this round.`,
+        "warning"
+      );
 
       // Show melee result prompt
-      showMeleeResultPrompt(
-        unitId,
-        armyId,
-        unit.customName || unit.name | "Unit"
-      );
+      showMeleeResultPrompt(unitId, armyId, unit.customName || unit.name);
+
+      // Save activation
+      saveUnitActivation(unitId, armyId, action, true);
+      updateActivationUI(unitCard, action, true);
       return;
     }
 
@@ -1079,13 +1437,88 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Check if morale test is needed (unit at half strength)
     if (shouldTakeMoraleTest(unit, hpData.current, hpData.max)) {
-      showMoraleTestPrompt(
-        unitId,
-        armyId,
-        unit.customName || unit.name | "Unit",
-        false
-      );
+      showMoraleTestPrompt(unitId, armyId, unit.customName || unit.name, false);
     }
+  }
+
+  /**
+   * Show prompt to select which unit is being charged
+   * @param {string} unitId - Charging unit's selection ID
+   * @param {string} armyId - Army ID
+   * @param {string} unitName - Name of the charging unit
+   */
+  function showChargeTargetPrompt(unitId, armyId, unitName) {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+
+    // Get all units except the charging one
+    const otherUnitCards = Array.from(
+      document.querySelectorAll("[id^='unit-']")
+    )
+      .filter((card) => card.id !== `unit-${unitId}`)
+      .filter((card) => {
+        // Filter out routed units
+        const unitId = card.id.replace("unit-", "");
+        const moraleStatus = getUnitMoraleStatus(unitId, armyId);
+        return moraleStatus !== MORALE_STATUS.ROUTED;
+      });
+
+    // If no other units, show melee result prompt directly
+    if (otherUnitCards.length === 0) {
+      showMeleeResultPrompt(unitId, armyId, unitName);
+      return;
+    }
+
+    const toast = document.createElement("div");
+    toast.className =
+      "toast charge-target-toast align-items-center bg-body border-0";
+    toast.role = "alert";
+    toast.ariaLive = "assertive";
+    toast.ariaAtomic = "true";
+    toast.style.marginBottom = "10px";
+
+    toast.innerHTML = `
+    <div class="d-flex flex-column">
+      <div class="toast-header bg-danger text-white">
+        <strong class="me-auto">Charge Target</strong>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <p><strong>${unitName}</strong> is charging. Which unit is being charged?</p>
+        <div class="list-group mb-2" id="target-unit-list">
+          ${otherUnitCards
+            .map((card) => {
+              const targetUnitId = card.id.replace("unit-", "");
+              const unitHeader = card.querySelector(".card-header");
+              const unitName = unitHeader
+                ? unitHeader.textContent.trim()
+                : "Unknown Unit";
+              return `<button type="button" class="list-group-item list-group-item-action target-unit-btn" data-target-id="${targetUnitId}">${unitName}</button>`;
+            })
+            .join("")}
+        </div>
+      </div>
+    </div>
+  `;
+
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast, { autohide: false });
+    bsToast.show();
+
+    // Add event listeners for target buttons
+    const targetButtons = toast.querySelectorAll(".target-unit-btn");
+    targetButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const targetUnitId = this.dataset.targetId;
+        // Mark target unit as charged (for strike back)
+        trackChargedUnit(targetUnitId, armyId);
+        // Show melee result prompt
+        showMeleeResultPrompt(unitId, armyId, unitName);
+        // Close target selection toast
+        bsToast.hide();
+        setTimeout(() => toastContainer.removeChild(toast), 500);
+      });
+    });
   }
 
   /**
@@ -1260,11 +1693,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     toast.innerHTML = `
     <div class="d-flex flex-column">
-      <div class="toast-header bg-warning text-dark">
+      <div class="toast-header bg-warning-subtle text-warning-emphasis">
         <strong class="me-auto">Morale Test Required</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
-      <div class="toast-body">
+      <div class="toast-body bg-body text-body">
         <p><i class="bi bi-exclamation-triangle me-1"></i> <strong>${unitName}</strong> ${reason}.</p>
         <p class="mb-2">Take a Quality test for Morale. Did the unit pass?</p>
         <div class="d-flex justify-content-between">
@@ -1314,13 +1747,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     toast.style.marginBottom = "10px";
 
     toast.innerHTML = `
-    <div class="d-flex">
-      <div class="toast-body">
-        <strong>${title}:</strong> ${message}
+      <div class="d-flex flex-column">
+        <div class="toast-header bg-${type}-subtle text-${type}-emphasis">
+          <strong class="me-auto">${title}</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-body text-body">
+          ${message}
+        </div>
       </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-  `;
+    `;
 
     toastContainer.appendChild(toast);
     const bsToast = new bootstrap.Toast(toast, { delay: 5000 });
@@ -1350,6 +1786,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Get current morale status
     const moraleStatus = getUnitMoraleStatus(unit.selectionId, armyForgeId);
 
+    // Get current fatigue status
+    const fatigueStatus = getUnitFatigueStatus(unit.selectionId, armyForgeId);
+
     // Create morale status container
     const moraleContainer = document.createElement("div");
     moraleContainer.className =
@@ -1365,13 +1804,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     moraleStatusLabel.className =
       "morale-status-label btn btn-sm btn-success w-100";
     moraleStatusLabel.innerHTML = `<i class="bi bi-shield-fill"></i> Ready`;
-    moraleStatusLabel.disabled = true; // This is just for display, not interactive
+    moraleStatusLabel.disabled = true; // This is just for display
 
     moraleContainer.appendChild(moraleStatusLabel);
     unitCardFooter.appendChild(moraleContainer);
 
     // Update initial morale status
     updateMoraleStatusUI(unitCard, moraleStatus);
+
+    // Add fatigue status container
+    const fatigueContainer = document.createElement("div");
+    fatigueContainer.className =
+      "fatigue-status-container d-flex justify-content-between align-items-center mb-2";
+
+    // Add fatigue label
+    const fatigueLabel = document.createElement("span");
+    fatigueLabel.innerHTML = "<i class='bi bi-battery-half'></i> Fatigue";
+    fatigueContainer.appendChild(fatigueLabel);
+
+    // Create fatigue status badge
+    const fatigueBadge = document.createElement("button");
+    fatigueBadge.className = "fatigue-badge btn btn-sm btn-success w-50";
+    fatigueBadge.innerHTML = `<i class="bi bi-lightning-charge"></i> Fresh`;
+    fatigueBadge.disabled = true; // This is just for display
+
+    // Add tooltip to explain fatigue
+    fatigueBadge.setAttribute("data-bs-toggle", "tooltip");
+    fatigueBadge.setAttribute("data-bs-placement", "top");
+    fatigueBadge.setAttribute(
+      "title",
+      "Fatigued units only hit on unmodified rolls of 6 in melee"
+    );
+
+    fatigueContainer.appendChild(fatigueBadge);
+    unitCardFooter.appendChild(fatigueContainer);
+
+    // Update initial fatigue status
+    updateFatigueStatusUI(unitCard, fatigueStatus);
 
     // Add activation container
     const activationContainer = document.createElement("div");
@@ -1430,6 +1899,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     actionButtonContainer.appendChild(unshakenButton);
 
+    // Charged In Melee button (new)
+    const chargedInMeleeButton = document.createElement("button");
+    chargedInMeleeButton.className =
+      "btn btn-sm btn-outline-danger flex-grow-1";
+    chargedInMeleeButton.innerHTML = `<i class="bi bi-shield-x"></i> Charged`;
+    chargedInMeleeButton.addEventListener("click", function () {
+      processChargedInMelee(unit.selectionId, armyForgeId);
+    });
+    actionButtonContainer.appendChild(chargedInMeleeButton);
+
     activationContainer.appendChild(actionButtonContainer);
 
     // Create completed action indicator (hidden initially)
@@ -1452,6 +1931,120 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add morale info panel
     addMoraleInfoToUnitCard(unitCard, unit);
+
+    // Initialize tooltip
+    new bootstrap.Tooltip(fatigueBadge);
+  }
+
+  /**
+   * Process a unit striking back in melee
+   * @param {string} unitId - Unit's selection ID
+   * @param {string} armyId - Army ID
+   */
+  function processStrikeBack(unitId, armyId) {
+    // Get the unit card
+    const unitCard = document.getElementById(`unit-${unitId}`);
+    if (!unitCard) return;
+
+    // Get unit data
+    const cacheKey = `armyData_${armyId}`;
+    const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+    if (!cachedData || !cachedData.data) return;
+
+    const unit = cachedData.data.units.find((u) => u.selectionId === unitId);
+    if (!unit) return;
+
+    // Mark unit as fatigued
+    saveUnitFatigueStatus(unitId, armyId, FATIGUE_STATUS.FATIGUED);
+    updateFatigueStatusUI(unitCard, FATIGUE_STATUS.FATIGUED);
+
+    // Show fatigue notification
+    showToast(
+      "Unit Fatigued",
+      `${
+        unit.customName || unit.name
+      } is now fatigued and will only hit on 6s in melee for the rest of this round.`,
+      "warning"
+    );
+
+    // Show melee result prompt (same as we do for a charge)
+    showMeleeResultPrompt(unitId, armyId, unit.customName || unit.name);
+
+    // Hide strike back button
+    hideStrikeBackButton(unitId);
+  }
+
+  /**
+   * Show strike back button for a unit that was charged
+   * @param {string} unitId - Unit's selection ID that was charged
+   */
+  function showStrikeBackButton(unitId) {
+    const unitCard = document.getElementById(`unit-${unitId}`);
+    if (!unitCard) return;
+
+    const strikeBackBtn = unitCard.querySelector(".strike-back-btn");
+    if (strikeBackBtn) {
+      strikeBackBtn.classList.remove("d-none");
+    }
+  }
+
+  /**
+   * Hide strike back button
+   * @param {string} unitId - Unit's selection ID
+   */
+  function hideStrikeBackButton(unitId) {
+    const unitCard = document.getElementById(`unit-${unitId}`);
+    if (!unitCard) return;
+
+    const strikeBackBtn = unitCard.querySelector(".strike-back-btn");
+    if (strikeBackBtn) {
+      strikeBackBtn.classList.add("d-none");
+    }
+  }
+
+  /**
+   * Track a unit being charged for Strike Back purposes
+   * @param {string} chargedUnitId - Unit's selection ID that was charged
+   * @param {string} armyId - Army ID
+   */
+  function trackChargedUnit(chargedUnitId, armyId) {
+    const key = `charged_${armyId}_${chargedUnitId}`;
+    localStorage.setItem(key, Date.now().toString());
+
+    // Show strike back button on the charged unit
+    showStrikeBackButton(chargedUnitId);
+  }
+
+  /**
+   * Check if a unit was charged recently
+   * @param {string} unitId - Unit's selection ID
+   * @param {string} armyId - Army ID
+   * @returns {boolean} - Whether the unit was charged
+   */
+  function wasUnitCharged(unitId, armyId) {
+    const key = `charged_${armyId}_${unitId}`;
+    return localStorage.getItem(key) !== null;
+  }
+
+  /**
+   * Clear charged status for a unit
+   * @param {string} unitId - Unit's selection ID
+   * @param {string} armyId - Army ID
+   */
+  function clearChargedStatus(unitId, armyId) {
+    const key = `charged_${armyId}_${unitId}`;
+    localStorage.removeItem(key);
+  }
+
+  /**
+   * Clear all charged statuses
+   * @param {string} armyId - Army ID
+   */
+  function clearAllChargedStatuses(armyId) {
+    const keys = Object.keys(localStorage).filter((key) =>
+      key.startsWith(`charged_${armyId}_`)
+    );
+    keys.forEach((key) => localStorage.removeItem(key));
   }
 
   /**
@@ -1460,8 +2053,19 @@ document.addEventListener("DOMContentLoaded", async () => {
    * @param {Object} unit - The unit object
    */
   function addMoraleInfoToUnitCard(unitCard, unit) {
-    const modelCount = parseInt(unit.size) || 1;
+    let modelCount = parseInt(unit.size) || 1;
     const toughValue = getToughValue(unit);
+
+    // Check if this is a joined unit by looking for hero-hit-points-container
+    const isJoinedUnit =
+      unitCard.querySelector(".hero-hit-points-container") !== null;
+
+    // For joined units, add +1 to model count to account for the hero
+    if (isJoinedUnit) {
+      modelCount += 1;
+    }
+
+    // Calculate morale threshold based on model count or tough value
     const moraleThreshold =
       modelCount === 1 && toughValue > 0
         ? Math.floor(toughValue / 2)
@@ -1470,12 +2074,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const moraleInfo = document.createElement("div");
     moraleInfo.className = "alert alert-secondary mt-2 mb-0 py-2";
     moraleInfo.innerHTML = `
-    <small>
-      <i class="bi bi-info-circle-fill me-1"></i> 
-      <strong>Morale Test:</strong> Required if unit has ${moraleThreshold} or fewer 
-      ${modelCount === 1 && toughValue > 0 ? "HP" : "models"} remaining.
-    </small>
-  `;
+      <small>
+        <i class="bi bi-info-circle-fill me-1"></i> 
+        <strong>Morale Test:</strong> Required if unit has ${moraleThreshold} or fewer 
+        ${modelCount === 1 && toughValue > 0 ? "HP" : "models"} remaining.
+      </small>
+    `;
 
     unitCard.querySelector(".card-body").appendChild(moraleInfo);
   }
@@ -1488,6 +2092,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     const container = document.getElementById("share-link-container");
 
     if (!container) return;
+
+    // Add round counter
+    const roundCounter = document.createElement("div");
+    roundCounter.className = "alert alert-secondary mb-3";
+    roundCounter.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-clock"></i> Round: <span id="round-number">1</span></h5>
+      <button class="btn btn-sm btn-primary" id="next-round-btn">
+        <i class="bi bi-arrow-right-circle"></i> Next Round
+      </button>
+    </div>
+  `;
+    container.appendChild(roundCounter);
+
+    // Add event listener for next round button
+
+    const nextRoundBtn = document.getElementById("next-round-btn");
+    nextRoundBtn.addEventListener("click", function () {
+      // Increment round number
+      const roundNumber = document.getElementById("round-number");
+      const currentRound = parseInt(roundNumber.textContent);
+      roundNumber.textContent = currentRound + 1;
+
+      // Reset all activations
+      resetAllActivations(armyForgeId);
+
+      // Reset all fatigue statuses
+      resetAllFatigueStatuses(armyForgeId);
+
+      // Add spell tokens to all casters (using existing function)
+      addAllCasterTokens(armyForgeId);
+
+      // Show toast
+      showToast(
+        "New Round",
+        `Round ${
+          currentRound + 1
+        } has begun. All units are ready and fresh, and Casters have received new spell tokens.`,
+        "primary"
+      );
+    });
 
     // Create reset buttons container
     const resetButtonsContainer = document.createElement("div");
@@ -1511,6 +2156,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     resetButtonsContainer.appendChild(resetMoraleBtn);
 
+    // Create reset fatigue button
+    const resetFatigueBtn = document.createElement("button");
+    resetFatigueBtn.className = "btn btn-sm btn-info";
+    resetFatigueBtn.innerHTML = `<i class="bi bi-battery-full"></i> Reset Fatigue`;
+    resetFatigueBtn.addEventListener("click", function () {
+      resetAllFatigueStatuses(armyForgeId);
+    });
+    resetButtonsContainer.appendChild(resetFatigueBtn);
+
     // Create reset hit points button
     const resetHPBtn = document.createElement("button");
     resetHPBtn.className = "btn btn-sm btn-danger";
@@ -1522,7 +2176,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Create reset spell tokens button
     const resetTokensBtn = document.createElement("button");
-    resetTokensBtn.className = "btn btn-sm btn-info";
+    resetTokensBtn.className = "btn btn-sm btn-light";
     resetTokensBtn.innerHTML = "<i class='bi bi-stars'></i> Reset Spell Tokens";
     resetTokensBtn.addEventListener("click", function () {
       resetAllSpellTokens(armyForgeId, 0);
@@ -1632,11 +2286,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     toast.innerHTML = `
       <div class="d-flex flex-column">
-        <div class="toast-header bg-${type} text-bg-${type}">
+         <div class="toast-header bg-${type}-subtle text-${type}-emphasis">
           <strong class="me-auto">${title}</strong>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
-        <div class="toast-body">
+        <div class="toast-body bg-body text-body">
         ${htmlMessage}
         </div>
       </div>
@@ -1707,7 +2361,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     //Fuck with Alex
     if (armyForgeId === "Xo19MAwQPGbs") {
-      // Choose one or more of these
       addUnitFixingProgressBar(remoteData.units);
     }
   }
@@ -1996,26 +2649,104 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /**
-   * Display all units from the remote data
+   * Display all units from the remote data, properly handling combined units
    * @param {Object} remoteData - The army data from Army Forge
    */
   function displayAllUnits(remoteData) {
     // Clear existing unit display
-    // Loop through units and call displayUnitCard
     const unitsContainer = document.getElementById("units-container");
     const shareButton = document.getElementById("share-link-container");
     unitsContainer.innerHTML = "";
 
     shareButton.innerHTML = `<a class="btn btn-outline-primary w-100 mb-3" href="https://army-forge.onepagerules.com/share?id=${armyForgeId}" target="_blank"id="share-button" type="button"><i class="bi bi-box-arrow-up-right me-1 opacity-75" role="img" aria-label="external link icon"></i>Army Forge link</a>`;
-    const displayedUnitsIds = new Set();
 
+    // Track units by selectionId to handle combined units and joined heroes
+    const displayedUnitsIds = new Set();
+    const combinedUnits = new Map();
+    const joinedHeroes = new Map();
+
+    // First pass: Identify combined units and joined heroes
     for (const unit of remoteData.units) {
+      if (unit.combined && unit.joinToUnit) {
+        // This is a secondary unit in a combined pair
+        if (!combinedUnits.has(unit.joinToUnit)) {
+          combinedUnits.set(unit.joinToUnit, []);
+        }
+        combinedUnits.get(unit.joinToUnit).push(unit);
+      } else if (unit.joinToUnit) {
+        // This is a hero joined to a unit
+        if (!joinedHeroes.has(unit.joinToUnit)) {
+          joinedHeroes.set(unit.joinToUnit, []);
+        }
+        joinedHeroes.get(unit.joinToUnit).push(unit);
+      }
+    }
+
+    // Second pass: Create unit cards
+    for (const unit of remoteData.units) {
+      // Skip if already processed
       if (displayedUnitsIds.has(unit.selectionId)) {
         continue;
       }
-      displayedUnitsIds.add(unit.selectionId);
-      const unitCard = createUnitCard(unit, remoteData);
-      unitsContainer.appendChild(unitCard);
+
+      // Is this unit a hero joined to another unit?
+      let isJoinedHero = false;
+      for (const [hostId, heroes] of joinedHeroes.entries()) {
+        if (heroes.some((hero) => hero.selectionId === unit.selectionId)) {
+          isJoinedHero = true;
+          break;
+        }
+      }
+
+      // Skip heroes that join other units - they'll be shown in joined cards
+      if (isJoinedHero) {
+        displayedUnitsIds.add(unit.selectionId);
+        continue;
+      }
+
+      // Handle combined units
+      if (unit.combined && !unit.joinToUnit) {
+        const secondaryUnits = combinedUnits.get(unit.selectionId) || [];
+
+        // Mark all secondaries as displayed
+        secondaryUnits.forEach((secondary) => {
+          displayedUnitsIds.add(secondary.selectionId);
+        });
+
+        // Create merged unit
+        const mergedUnit = {
+          ...unit,
+          size: (parseInt(unit.size) * (secondaryUnits.length + 1)).toString(),
+          cost: unit.cost * (secondaryUnits.length + 1),
+          isCombinedUnit: true,
+          combinedCount: secondaryUnits.length + 1,
+          xp: unit.xp,
+        };
+
+        displayedUnitsIds.add(unit.selectionId);
+        const unitCard = createUnitCard(mergedUnit, remoteData);
+        unitsContainer.appendChild(unitCard);
+      }
+      // Handle units with joined heroes
+      else if (joinedHeroes.has(unit.selectionId)) {
+        const heroes = joinedHeroes.get(unit.selectionId);
+
+        // Mark this unit and all its heroes as displayed
+        displayedUnitsIds.add(unit.selectionId);
+        heroes.forEach((hero) => {
+          displayedUnitsIds.add(hero.selectionId);
+        });
+
+        // Create joined unit card
+        const joinedCard = createJoinedUnitCard(unit, heroes, remoteData);
+        unitsContainer.appendChild(joinedCard);
+      }
+      // Handle regular units
+      else {
+        displayedUnitsIds.add(unit.selectionId);
+        const unitCard = createUnitCard(unit, remoteData);
+        unitsContainer.appendChild(unitCard);
+      }
     }
   }
 
@@ -2281,7 +3012,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   /**
-   * Create a unit card for display
+   * Create a unit card for display, with proper handling of combined units
    * @param {Object} unit - The unit object
    * @param {Object} remoteData - The complete army data
    * @returns {HTMLElement} - The unit card element
@@ -2314,22 +3045,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       return el;
     };
 
-    // Calculate the actual unit count based on whether it's combined
-    const isCombined = unit.combined === true;
+    // Calculate the actual unit count based on combined status
+    const isCombined = unit.isCombinedUnit === true;
+    const combinedCount = unit.combinedCount || 1;
     const baseUnitCount = parseInt(unit.size) || 0;
-    const actualUnitCount = isCombined ? baseUnitCount * 2 : baseUnitCount;
+
+    // For a combined unit, the size is already multiplied in displayAllUnits
+    const actualUnitCount = baseUnitCount;
 
     // Calculate the total cost of the unit including all upgrades
     let totalCost = unit.cost;
-    unit.selectedUpgrades.forEach((upgrade) => {
-      if (upgrade.option && upgrade.option.costs) {
-        upgrade.option.costs.forEach((costItem) => {
-          if (costItem.unitId === unit.id) {
-            totalCost += costItem.cost;
-          }
-        });
-      }
-    });
+    if (unit.selectedUpgrades) {
+      unit.selectedUpgrades.forEach((upgrade) => {
+        if (upgrade.option && upgrade.option.costs) {
+          upgrade.option.costs.forEach((costItem) => {
+            if (costItem.unitId === unit.id) {
+              // For combined units, multiply the upgrade cost by the number of combined units
+              const multiplier = unit.isCombinedUnit ? unit.combinedCount : 1;
+              totalCost += costItem.cost * multiplier;
+            }
+          });
+        }
+      });
+    }
 
     // Get modified base sizes from upgrades
     let baseSizes = { ...unit.bases };
@@ -2461,7 +3199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (isCombined) {
       const unitCardCombined = createEl("div", {
         classes: ["mb-0", "text-warning"],
-        text: "Combined Unit (2× Basic Units)",
+        text: `Combined Unit (${combinedCount}× Basic Units)`,
       });
       unitCardBasics.appendChild(unitCardCombined);
     }
@@ -2656,6 +3394,549 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Add Spell Token UI for casters
     if (hasCasterRule(unit)) {
       addSpellTokenUI(unitCard, unit, armyForgeId);
+    }
+
+    return unitCol;
+  }
+
+  /**
+   * Create a unified card for a unit with joined heroes
+   * @param {Object} unit - The base unit object
+   * @param {Array} heroes - Array of hero objects joined to this unit
+   * @param {Object} remoteData - The complete army data
+   * @returns {HTMLElement} - The unified unit card element
+   */
+  function createJoinedUnitCard(unit, heroes, remoteData) {
+    // We'll focus on the first hero for simplicity
+    const hero = heroes[0];
+
+    // Define icons
+    const icons = {
+      quality: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path style="fill: #ad3e25" d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864z"/>
+        <path style="fill: #f9ddb7" d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1z"/>
+    </svg>`,
+      defense: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path style="fill: #005f83" d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
+    </svg>`,
+      tough: `<svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+        <path style="fill: #dc3545" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+    </svg>`,
+    };
+
+    // Helper for creating elements
+    const createEl = (
+      tag,
+      { classes = [], text = "", html = "", id = "" } = {}
+    ) => {
+      const el = document.createElement(tag);
+      if (classes.length) el.classList.add(...classes);
+      if (id) el.id = id;
+      if (text) el.textContent = text;
+      if (html) el.innerHTML = html;
+      return el;
+    };
+
+    // Calculate the total cost of the unit including all upgrades
+    let unitTotalCost = unit.cost;
+    if (unit.selectedUpgrades) {
+      unit.selectedUpgrades.forEach((upgrade) => {
+        if (upgrade.option && upgrade.option.costs) {
+          upgrade.option.costs.forEach((costItem) => {
+            if (costItem.unitId === unit.id) {
+              unitTotalCost += costItem.cost;
+            }
+          });
+        }
+      });
+    }
+
+    // Calculate the total cost of the hero including all upgrades
+    let heroTotalCost = hero.cost;
+    if (hero.selectedUpgrades) {
+      hero.selectedUpgrades.forEach((upgrade) => {
+        if (upgrade.option && upgrade.option.costs) {
+          upgrade.option.costs.forEach((costItem) => {
+            if (costItem.unitId === hero.id) {
+              heroTotalCost += costItem.cost;
+            }
+          });
+        }
+      });
+    }
+
+    // Calculate total stats
+    const totalModelCount = parseInt(unit.size) + 1; // Unit models + Hero
+    const totalCost = unitTotalCost + heroTotalCost;
+
+    // Create the outer column container
+    const unitCol = createEl("div", {
+      classes: ["col", "nav-scroll-top"],
+      id: "unit-" + unit.selectionId,
+    });
+
+    // Create card container
+    const unitCard = createEl("div", { classes: ["card", "h-100"] });
+    unitCol.appendChild(unitCard);
+
+    // Create card header
+    const unitCardHead = createEl("div", { classes: ["card-header"] });
+    unitCard.appendChild(unitCardHead);
+
+    // Create simplified header - just combined names and total count/points
+    const unitCardNameContainer = createEl("div", {
+      classes: [
+        "d-flex",
+        "align-items-center",
+        "mb-1",
+        "w-100",
+        "justify-content-between",
+      ],
+    });
+
+    // Combined unit name
+    const unitCardName = createEl("h4", {
+      classes: ["mb-0", "me-2"],
+      text: `${hero.customName || hero.name} & ${unit.customName || unit.name}`,
+    });
+
+    unitCardNameContainer.appendChild(unitCardName);
+    unitCardHead.appendChild(unitCardNameContainer);
+
+    // Add the model count and total points
+    const combinedInfo = createEl("p", {
+      classes: ["mb-0"],
+      text: `[${totalModelCount}] - ${totalCost}pts`,
+    });
+    unitCardHead.appendChild(combinedInfo);
+
+    // Create the card body
+    const unitCardBody = createEl("div", { classes: ["card-body"] });
+    unitCard.appendChild(unitCardBody);
+
+    // Joined unit reminder (improved wording)
+    const joinedUnitReminder = createEl("div", {
+      classes: ["alert", "alert-info", "py-2", "mb-3"],
+      html: `<i class="bi bi-info-circle"></i> <strong>Joined Unit:</strong> Hero uses unit's Defense (${unit.defense}+) until unit models are removed. Unit may use Hero's Quality (${hero.quality}+) for Morale tests.`,
+    });
+    unitCardBody.appendChild(joinedUnitReminder);
+
+    // ==== HERO SECTION ====
+    const heroSection = createEl("div", {
+      classes: ["mb-4", "border-bottom", "pb-3"],
+    });
+
+    // Hero header with name, type, and points (matching standard card layout)
+    const heroCardHeader = createEl("div", {
+      classes: [
+        "d-flex",
+        "justify-content-between",
+        "align-items-center",
+        "mb-3",
+      ],
+    });
+
+    // Hero basics
+    const heroBasics = createEl("div");
+
+    // Hero name with XP badge
+    const heroNameContainer = createEl("div", {
+      classes: ["d-flex", "align-items-center", "mb-1"],
+    });
+
+    const heroName = createEl("h5", {
+      classes: ["mb-0", "me-2"],
+      text: hero.customName || hero.name,
+    });
+    heroNameContainer.appendChild(heroName);
+
+    // Hero XP Badge next to name
+    const heroXPBadge = createEl("span", {
+      classes: ["xp-badge"],
+      html: `<i class="bi bi-star-fill"></i> ${hero.xp} XP`,
+    });
+    heroNameContainer.appendChild(heroXPBadge);
+
+    heroBasics.appendChild(heroNameContainer);
+
+    // Hero type and points
+    const heroTypePoints = createEl("p", {
+      classes: ["mb-0"],
+      text: `${hero.name} - ${heroTotalCost}pts`,
+    });
+    heroBasics.appendChild(heroTypePoints);
+
+    // Hero base sizes
+    const heroBaseSizes = createEl("p", {
+      classes: ["mb-0", "text-muted", "small"],
+      html: `<i class="bi bi-circle-fill"></i> ${hero.bases.round}mm | <i class="bi bi-square-fill"></i> ${hero.bases.square}mm`,
+    });
+    heroBasics.appendChild(heroBaseSizes);
+
+    // Add hero basics to header
+    heroCardHeader.appendChild(heroBasics);
+
+    // Hero stats (matching standard card layout)
+    const heroStatsContainer = createEl("div", { classes: ["stat-container"] });
+
+    // Quality stat
+    const heroQualityGroup = createEl("div", { classes: ["stat-group"] });
+    heroQualityGroup.appendChild(createEl("span", { html: icons.quality }));
+    heroQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Quality" })
+    );
+    heroQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-value-high"], text: hero.quality + "+" })
+    );
+    heroStatsContainer.appendChild(heroQualityGroup);
+
+    // Defense stat
+    const heroDefenseGroup = createEl("div", { classes: ["stat-group"] });
+    heroDefenseGroup.appendChild(createEl("span", { html: icons.defense }));
+    heroDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Defense" })
+    );
+    heroDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-value"], text: hero.defense + "+" })
+    );
+    heroStatsContainer.appendChild(heroDefenseGroup);
+
+    // Tough stat (if present)
+    const heroToughRule = hero.rules.find((rule) => rule.name === "Tough");
+    if (heroToughRule) {
+      const heroToughGroup = createEl("div", { classes: ["stat-group"] });
+      heroToughGroup.appendChild(createEl("span", { html: icons.tough }));
+      heroToughGroup.appendChild(
+        createEl("p", { classes: ["stat-label"], text: "Tough" })
+      );
+      heroToughGroup.appendChild(
+        createEl("p", { classes: ["stat-value"], text: heroToughRule.rating })
+      );
+      heroStatsContainer.appendChild(heroToughGroup);
+    }
+
+    // Add hero stats to header
+    heroCardHeader.appendChild(heroStatsContainer);
+    heroSection.appendChild(heroCardHeader);
+
+    // Hero special rules
+    const heroRulesContainer = createEl("div", { classes: ["mb-3"] });
+    const heroRulesList = createEl("div", {
+      classes: ["d-flex", "flex-wrap", "gap-1"],
+    });
+
+    // Add all hero rules
+    hero.rules.forEach((rule) => {
+      const ruleBadge = createEl("span", {
+        classes: ["badge", "bg-secondary", "allow-definitions"],
+        text: rule.name + (rule.rating ? `(${rule.rating})` : ""),
+      });
+      heroRulesList.appendChild(ruleBadge);
+    });
+
+    heroRulesContainer.appendChild(heroRulesList);
+    heroSection.appendChild(heroRulesContainer);
+
+    // Hero weapons
+    const heroWeaponsHeader = createEl("h4", { text: "Weapons" });
+    heroSection.appendChild(heroWeaponsHeader);
+
+    const heroWeapons = collectAndProcessWeapons(hero);
+    const heroWeaponsTable = createWeaponsTable(heroWeapons);
+    heroSection.appendChild(heroWeaponsTable);
+
+    // Hero upgrades (if any)
+    const heroUpgrades = hero.loadout.filter(
+      (upgrade) => upgrade.type === "ArmyBookItem"
+    );
+
+    if (heroUpgrades.length > 0) {
+      const upgradesHeader = createEl("h4", { text: "Upgrades" });
+      heroSection.appendChild(upgradesHeader);
+
+      const upgradesTable = createEl("table", {
+        classes: [
+          "table",
+          "table-sm",
+          "table-hover",
+          "table-striped",
+          "table-body",
+          "table-responsive",
+        ],
+      });
+
+      // Build the table header for upgrades
+      const upgradesThead = createEl("thead");
+      const upgradesHeaderRow = createEl("tr");
+      ["Upgrade", "Special"].forEach((text) => {
+        upgradesHeaderRow.appendChild(createEl("th", { text }));
+      });
+      upgradesThead.appendChild(upgradesHeaderRow);
+      upgradesTable.appendChild(upgradesThead);
+
+      // Build the table body for upgrades
+      const upgradesTbody = createEl("tbody", {
+        classes: ["table-group-divider"],
+      });
+
+      // Process upgrades for display, combining duplicates
+      const processedUpgrades = {};
+      heroUpgrades.forEach((upgrade) => {
+        const upgradeKey = upgrade.name;
+
+        if (!processedUpgrades[upgradeKey]) {
+          processedUpgrades[upgradeKey] = { ...upgrade };
+        } else {
+          // For duplicates, combine counts
+          processedUpgrades[upgradeKey].count =
+            (processedUpgrades[upgradeKey].count || 1) + (upgrade.count || 1);
+        }
+      });
+
+      Object.values(processedUpgrades).forEach((upgrade) => {
+        const row = createEl("tr");
+
+        // Upgrade name cell with count if needed
+        const upgradeName =
+          upgrade.count > 1
+            ? `${upgrade.count}× ${upgrade.name}`
+            : upgrade.name;
+        row.appendChild(createEl("td", { text: upgradeName }));
+
+        // Special cell: join upgrade content names (if any)
+        let specialText = "-";
+        if (Array.isArray(upgrade.content) && upgrade.content.length > 0) {
+          // Filter out weapons as they're shown in the weapons table
+          const specialRules = upgrade.content.filter(
+            (item) => item.type === "ArmyBookRule"
+          );
+          if (specialRules.length > 0) {
+            specialText = specialRules
+              .map(
+                (rule) => rule.name + (rule.rating ? `(${rule.rating})` : "")
+              )
+              .join(", ");
+          }
+        }
+
+        const upgradeSpecialCell = createEl("td", { text: specialText });
+        upgradeSpecialCell.classList.add("allow-definitions");
+        row.appendChild(upgradeSpecialCell);
+
+        upgradesTbody.appendChild(row);
+      });
+
+      upgradesTable.appendChild(upgradesTbody);
+      heroSection.appendChild(upgradesTable);
+    }
+
+    // Add hero section to card body
+    unitCardBody.appendChild(heroSection);
+
+    // ==== UNIT SECTION ====
+    const unitSection = createEl("div", { classes: ["mb-3"] });
+
+    // Unit header with name, type, and points (matching standard card layout)
+    const unitCardHeader = createEl("div", {
+      classes: [
+        "d-flex",
+        "justify-content-between",
+        "align-items-center",
+        "mb-3",
+      ],
+    });
+
+    // Unit basics
+    const unitBasics = createEl("div");
+
+    // Unit name with XP badge
+    const unitNameContainer = createEl("div", {
+      classes: ["d-flex", "align-items-center", "mb-1"],
+    });
+
+    const unitName = createEl("h5", {
+      classes: ["mb-0", "me-2"],
+      text: unit.customName || unit.name,
+    });
+    unitNameContainer.appendChild(unitName);
+
+    // Unit XP Badge next to name
+    const unitXPBadge = createEl("span", {
+      classes: ["xp-badge"],
+      html: `<i class="bi bi-star-fill"></i> ${unit.xp} XP`,
+    });
+    unitNameContainer.appendChild(unitXPBadge);
+
+    unitBasics.appendChild(unitNameContainer);
+
+    // Unit type and points
+    const unitTypePoints = createEl("p", {
+      classes: ["mb-0"],
+      text: `${unit.name} [${unit.size}] - ${unitTotalCost}pts`,
+    });
+    unitBasics.appendChild(unitTypePoints);
+
+    // Unit base sizes
+    const unitBaseSizes = createEl("p", {
+      classes: ["mb-0", "text-muted", "small"],
+      html: `<i class="bi bi-circle-fill"></i> ${unit.bases.round}mm | <i class="bi bi-square-fill"></i> ${unit.bases.square}mm`,
+    });
+    unitBasics.appendChild(unitBaseSizes);
+
+    // Add unit basics to header
+    unitCardHeader.appendChild(unitBasics);
+
+    // Unit stats (matching standard card layout)
+    const unitStatsContainer = createEl("div", { classes: ["stat-container"] });
+
+    // Quality stat
+    const unitQualityGroup = createEl("div", { classes: ["stat-group"] });
+    unitQualityGroup.appendChild(createEl("span", { html: icons.quality }));
+    unitQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Quality" })
+    );
+    unitQualityGroup.appendChild(
+      createEl("p", { classes: ["stat-value-high"], text: unit.quality + "+" })
+    );
+    unitStatsContainer.appendChild(unitQualityGroup);
+
+    // Defense stat
+    const unitDefenseGroup = createEl("div", { classes: ["stat-group"] });
+    unitDefenseGroup.appendChild(createEl("span", { html: icons.defense }));
+    unitDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-label"], text: "Defense" })
+    );
+    unitDefenseGroup.appendChild(
+      createEl("p", { classes: ["stat-value"], text: unit.defense + "+" })
+    );
+    unitStatsContainer.appendChild(unitDefenseGroup);
+
+    // Add unit stats to header
+    unitCardHeader.appendChild(unitStatsContainer);
+    unitSection.appendChild(unitCardHeader);
+
+    // Unit special rules
+    const unitRulesContainer = createEl("div", { classes: ["mb-3"] });
+    const unitRulesList = createEl("div", {
+      classes: ["d-flex", "flex-wrap", "gap-1"],
+    });
+
+    // Add all unit rules
+    unit.rules.forEach((rule) => {
+      const ruleBadge = createEl("span", {
+        classes: ["badge", "bg-secondary", "allow-definitions"],
+        text: rule.name + (rule.rating ? `(${rule.rating})` : ""),
+      });
+      unitRulesList.appendChild(ruleBadge);
+    });
+
+    unitRulesContainer.appendChild(unitRulesList);
+    unitSection.appendChild(unitRulesContainer);
+
+    // Unit weapons
+    const unitWeaponsHeader = createEl("h4", { text: "Weapons" });
+    unitSection.appendChild(unitWeaponsHeader);
+
+    const unitWeapons = collectAndProcessWeapons(unit);
+    const unitWeaponsTable = createWeaponsTable(unitWeapons);
+    unitSection.appendChild(unitWeaponsTable);
+
+    // Unit upgrades (if any)
+    const unitUpgrades = unit.loadout.filter(
+      (upgrade) => upgrade.type === "ArmyBookItem"
+    );
+
+    if (unitUpgrades.length > 0) {
+      const upgradesHeader = createEl("h4", { text: "Upgrades" });
+      unitSection.appendChild(upgradesHeader);
+
+      const upgradesTable = createEl("table", {
+        classes: [
+          "table",
+          "table-sm",
+          "table-hover",
+          "table-striped",
+          "table-body",
+          "table-responsive",
+        ],
+      });
+
+      // Build the table header for upgrades
+      const upgradesThead = createEl("thead");
+      const upgradesHeaderRow = createEl("tr");
+      ["Upgrade", "Special"].forEach((text) => {
+        upgradesHeaderRow.appendChild(createEl("th", { text }));
+      });
+      upgradesThead.appendChild(upgradesHeaderRow);
+      upgradesTable.appendChild(upgradesThead);
+
+      // Build the table body for upgrades
+      const upgradesTbody = createEl("tbody", {
+        classes: ["table-group-divider"],
+      });
+
+      // Process upgrades for display, combining duplicates
+      const processedUpgrades = {};
+      unitUpgrades.forEach((upgrade) => {
+        const upgradeKey = upgrade.name;
+
+        if (!processedUpgrades[upgradeKey]) {
+          processedUpgrades[upgradeKey] = { ...upgrade };
+        } else {
+          // For duplicates, combine counts
+          processedUpgrades[upgradeKey].count =
+            (processedUpgrades[upgradeKey].count || 1) + (upgrade.count || 1);
+        }
+      });
+
+      Object.values(processedUpgrades).forEach((upgrade) => {
+        const row = createEl("tr");
+
+        // Upgrade name cell with count if needed
+        const upgradeName =
+          upgrade.count > 1
+            ? `${upgrade.count}× ${upgrade.name}`
+            : upgrade.name;
+        row.appendChild(createEl("td", { text: upgradeName }));
+
+        // Special cell: join upgrade content names (if any)
+        let specialText = "-";
+        if (Array.isArray(upgrade.content) && upgrade.content.length > 0) {
+          // Filter out weapons as they're shown in the weapons table
+          const specialRules = upgrade.content.filter(
+            (item) => item.type === "ArmyBookRule"
+          );
+          if (specialRules.length > 0) {
+            specialText = specialRules
+              .map(
+                (rule) => rule.name + (rule.rating ? `(${rule.rating})` : "")
+              )
+              .join(", ");
+          }
+        }
+
+        const upgradeSpecialCell = createEl("td", { text: specialText });
+        upgradeSpecialCell.classList.add("allow-definitions");
+        row.appendChild(upgradeSpecialCell);
+
+        upgradesTbody.appendChild(row);
+      });
+
+      upgradesTable.appendChild(upgradesTbody);
+      unitSection.appendChild(upgradesTable);
+    }
+
+    // Add unit section to card body
+    unitCardBody.appendChild(unitSection);
+
+    // Add HP and Activation UI
+    addHitPointsUI(unitCard, unit, armyForgeId);
+    addHeroHitPointsUI(unitCard, hero, unit, armyForgeId);
+    addMoraleAndActionUI(unitCard, unit, armyForgeId);
+
+    // Add Spell Token UI for casters
+    if (hasCasterRule(hero)) {
+      addSpellTokenUI(unitCard, hero, armyForgeId);
     }
 
     return unitCol;
