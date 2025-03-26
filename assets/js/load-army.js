@@ -2070,13 +2070,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const roundCounter = document.createElement("div");
     roundCounter.className = "alert alert-secondary mb-3";
     roundCounter.innerHTML = `
-    <div class="d-flex justify-content-between align-items-center">
-      <h5 class="mb-0"><i class="bi bi-clock"></i> Round: <span id="round-number">1</span></h5>
-      <button class="btn btn-sm btn-primary" id="next-round-btn">
-        <i class="bi bi-arrow-right-circle"></i> Next Round
-      </button>
-    </div>
-  `;
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-clock"></i> Round: <span id="round-number">1</span></h5>
+        <button class="btn btn-sm btn-primary" id="next-round-btn">
+          <i class="bi bi-arrow-right-circle"></i> Next Round
+        </button>
+      </div>
+    `;
     container.appendChild(roundCounter);
 
     // Add event listener for next round button
@@ -2168,6 +2168,337 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add buttons container
     container.appendChild(resetButtonsContainer);
+  }
+
+  /**
+   * Add Command Points and Underdog Points UI
+   * @param {Object} remoteData - The army data from Army Forge
+   */
+  function addPointsTrackingUI(remoteData) {
+    // Calculate total points used in the current army
+    let totalPointsUsed = calculateArmyPoints(remoteData);
+
+    // Calculate Command Points (4 × points/1000, rounded down)
+    const maxCommandPoints = 4 * Math.floor(totalPointsUsed / 1000);
+
+    // Get the highest army value among all armies
+    calculateHighestArmyValue(totalPointsUsed).then((highestArmyData) => {
+      const highestArmyValue = highestArmyData.points;
+      const highestArmyName = highestArmyData.name;
+      const pointsDifference = Math.max(0, highestArmyValue - totalPointsUsed);
+      const maxUnderdogPoints = Math.floor(pointsDifference / 50);
+
+      // Create and add the UI elements
+      addPointsUI(
+        totalPointsUsed,
+        maxCommandPoints,
+        maxUnderdogPoints,
+        highestArmyValue,
+        highestArmyName,
+        pointsDifference
+      );
+    });
+
+    /**
+     * Calculate the total points used in an army
+     * @param {Object} army - The army data
+     * @returns {number} - Total points used
+     */
+    function calculateArmyPoints(army) {
+      let totalPoints = 0;
+
+      if (army.units) {
+        for (const unit of army.units) {
+          totalPoints += unit.cost;
+
+          // Add costs from upgrades
+          if (unit.selectedUpgrades) {
+            unit.selectedUpgrades.forEach((upgrade) => {
+              if (upgrade.option && upgrade.option.costs) {
+                upgrade.option.costs.forEach((cost) => {
+                  if (cost.unitId === unit.id) {
+                    // For combined units, multiply the upgrade cost by the number of combined units
+                    const multiplier = unit.isCombinedUnit
+                      ? unit.combinedCount
+                      : 1;
+                    totalPoints += cost.cost * multiplier;
+                  }
+                });
+              }
+            });
+          }
+        }
+      }
+
+      return totalPoints;
+    }
+
+    /**
+     * Calculate the highest army value among all armies
+     * @param {number} currentArmyPoints - Points for the current army
+     * @returns {Promise<Object>} - Object with the highest army points and name
+     */
+    async function calculateHighestArmyValue(currentArmyPoints) {
+      try {
+        // Fetch the campaign.json to get all army IDs
+        const campaignResponse = await fetch("assets/json/campaign.json");
+        const campaignData = await campaignResponse.json();
+
+        let highestValue = {
+          points: currentArmyPoints,
+          name: "This Army",
+        };
+
+        // Process each army in the campaign
+        const armyPromises = campaignData.armies.map(async (army) => {
+          // Skip the current army
+          if (army.armyForgeID === armyForgeId) {
+            return highestValue;
+          }
+
+          try {
+            // Fetch army data from the cached storage or API
+            const armyStorageKey = `armyData_${army.armyForgeID}`;
+            let armyData;
+
+            // Try to get from localStorage first
+            const cachedData = localStorage.getItem(armyStorageKey);
+            if (cachedData) {
+              const parsedCache = JSON.parse(cachedData);
+              armyData = parsedCache.data;
+            } else {
+              // If not in localStorage, fetch from API
+              const armyResponse = await fetch(
+                `https://army-forge.onepagerules.com/api/tts?id=${army.armyForgeID}`
+              );
+              armyData = await armyResponse.json();
+            }
+
+            // Calculate total points for this army
+            const armyPoints = calculateArmyPoints(armyData);
+
+            // Update highest value if needed
+            if (armyPoints > highestValue.points) {
+              highestValue = {
+                points: armyPoints,
+                name: army.armyName,
+              };
+            }
+
+            return highestValue;
+          } catch (error) {
+            console.error(`Error fetching army ${army.armyForgeID}:`, error);
+            return highestValue;
+          }
+        });
+
+        // Wait for all army calculations to complete
+        await Promise.all(armyPromises);
+
+        return highestValue;
+      } catch (error) {
+        console.error("Error calculating highest army value:", error);
+        return {
+          points: currentArmyPoints,
+          name: "This Army",
+        };
+      }
+    }
+
+    /**
+     * Add the points tracking UI to the page
+     * @param {number} totalPointsUsed - Total points used in current army
+     * @param {number} maxCommandPoints - Maximum Command Points
+     * @param {number} maxUnderdogPoints - Maximum Underdog Points
+     * @param {number} highestArmyValue - Highest army value
+     * @param {string} highestArmyName - Name of the highest value army
+     * @param {number} pointsDifference - Point difference from highest army
+     */
+    function addPointsUI(
+      totalPointsUsed,
+      maxCommandPoints,
+      maxUnderdogPoints,
+      highestArmyValue,
+      highestArmyName,
+      pointsDifference
+    ) {
+      // Get reference to the container where we'll add these UI elements
+      const container = document.getElementById("share-link-container");
+      if (!container) return;
+
+      // Create a card for points tracking
+      const pointsTrackingCard = document.createElement("div");
+      pointsTrackingCard.className = "card mb-3";
+
+      // Add points summary header
+      const pointsHeader = document.createElement("div");
+      pointsHeader.className =
+        "card-header d-flex justify-content-between align-items-center";
+      pointsHeader.innerHTML = `
+      <h5 class="mb-0">Army Points Summary</h5>
+      <span class="badge bg-primary fs-6">${totalPointsUsed} pts</span>
+    `;
+      pointsTrackingCard.appendChild(pointsHeader);
+
+      // Add Command Points and Underdog Points trackers
+      const pointsBody = document.createElement("div");
+      pointsBody.className = "card-body";
+
+      // Load stored points from localStorage or use max values as defaults
+      const storedCommandPoints =
+        localStorage.getItem(`command_points_${armyForgeId}`) !== null
+          ? parseInt(localStorage.getItem(`command_points_${armyForgeId}`))
+          : maxCommandPoints;
+      const storedUnderdogPoints =
+        localStorage.getItem(`underdog_points_${armyForgeId}`) !== null
+          ? parseInt(localStorage.getItem(`underdog_points_${armyForgeId}`))
+          : maxUnderdogPoints;
+
+      // Command Points tracker
+      const commandPointsTracker = createPointsTracker(
+        "Command Points",
+        storedCommandPoints,
+        maxCommandPoints,
+        "command_points"
+      );
+
+      // Underdog Points tracker
+      const underdogPointsTracker = createPointsTracker(
+        "Underdog Points",
+        storedUnderdogPoints,
+        maxUnderdogPoints,
+        "underdog_points"
+      );
+
+      pointsBody.appendChild(commandPointsTracker);
+      pointsBody.appendChild(underdogPointsTracker);
+
+      // Add additional info about highest army value and underdog calculation
+      if (maxUnderdogPoints > 0) {
+        const infoText = document.createElement("div");
+        infoText.className = "small text-muted mt-2";
+        infoText.innerHTML = `<i class="bi bi-info-circle"></i> Underdog points calculated based on ${pointsDifference} pt difference from the highest army (${highestArmyName}: ${highestArmyValue} pts).`;
+        pointsBody.appendChild(infoText);
+      }
+
+      pointsTrackingCard.appendChild(pointsBody);
+
+      // Add the card to the container
+      container.prepend(pointsTrackingCard);
+    }
+
+    /**
+     * Helper function to create points tracker UI with HP-bar style
+     * @param {string} label - The label for the points type
+     * @param {number} current - Current points value
+     * @param {number} max - Maximum points value
+     * @param {string} storageKey - Key prefix for localStorage
+     * @returns {HTMLElement} - The points tracker element
+     */
+    function createPointsTracker(label, current, max, storageKey) {
+      const container = document.createElement("div");
+      container.className = "mb-3";
+
+      const labelRow = document.createElement("div");
+      labelRow.className =
+        "d-flex justify-content-between align-items-center mb-2";
+      labelRow.innerHTML = `<label>${label}</label>`;
+
+      // Create HP-style display container
+      const hpContainer = document.createElement("div");
+      hpContainer.className =
+        "d-flex justify-content-between align-items-center";
+
+      // Decrease button
+      const decreaseBtn = document.createElement("button");
+      decreaseBtn.className = "btn btn-sm btn-danger me-2";
+      decreaseBtn.innerHTML = "<i class='bi bi-dash'></i>";
+      decreaseBtn.addEventListener("click", function () {
+        if (current > 0) {
+          current--;
+          savePoints();
+          updateDisplay();
+        }
+      });
+
+      // HP display
+      const hpDisplay = document.createElement("div");
+      hpDisplay.className = "d-flex flex-column align-items-center me-2";
+
+      const hpText = document.createElement("div");
+      hpText.className = "hp-text";
+      hpText.innerHTML = `<span class="hp-current">${current}</span>/<span class="hp-max">${max}</span>`;
+      hpDisplay.appendChild(hpText);
+
+      // Progress bar
+      const progressContainer = document.createElement("div");
+      progressContainer.className = "progress";
+      progressContainer.style.width = "60px";
+      progressContainer.style.height = "6px";
+
+      const progressBar = document.createElement("div");
+      progressBar.className = "progress-bar hp-progress-bar";
+      progressBar.id = `${storageKey}-bar`;
+      updateProgressBar();
+
+      progressContainer.appendChild(progressBar);
+      hpDisplay.appendChild(progressContainer);
+
+      // Increase button
+      const increaseBtn = document.createElement("button");
+      increaseBtn.className = "btn btn-sm btn-success";
+      increaseBtn.innerHTML = "<i class='bi bi-plus'></i>";
+      increaseBtn.addEventListener("click", function () {
+        if (current < max) {
+          current++;
+          savePoints();
+          updateDisplay();
+        }
+      });
+
+      // Add elements to container
+      hpContainer.appendChild(decreaseBtn);
+      hpContainer.appendChild(hpDisplay);
+      hpContainer.appendChild(increaseBtn);
+
+      container.appendChild(labelRow);
+      container.appendChild(hpContainer);
+
+      // Save points to localStorage
+      function savePoints() {
+        localStorage.setItem(`${storageKey}_${armyForgeId}`, current);
+      }
+
+      // Update progress bar based on current value
+      function updateProgressBar() {
+        progressBar.style.width = `${(current / Math.max(1, max)) * 100}%`;
+
+        // Update progress bar color based on percentage
+        progressBar.classList.remove("bg-danger", "bg-warning", "bg-success");
+        const percentage = (current / Math.max(1, max)) * 100;
+        if (percentage <= 25) {
+          progressBar.classList.add("bg-danger");
+        } else if (percentage <= 60) {
+          progressBar.classList.add("bg-warning");
+        } else {
+          progressBar.classList.add("bg-success");
+        }
+      }
+
+      // Update the entire display
+      function updateDisplay() {
+        hpText.innerHTML = `<span class="hp-current">${current}</span>/<span class="hp-max">${max}</span>`;
+        updateProgressBar();
+        decreaseBtn.disabled = current <= 0;
+        increaseBtn.disabled = current >= max;
+      }
+
+      // Initial update of button states
+      decreaseBtn.disabled = current <= 0;
+      increaseBtn.disabled = current >= max;
+
+      return container;
+    }
   }
 
   /**
@@ -2338,6 +2669,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     displayRules(remoteData.specialRules);
     addNavLinks(localData);
+
+    // Add points tracking UI
+    addPointsTrackingUI(remoteData);
 
     // Add reset buttons
     addResetButtons();
