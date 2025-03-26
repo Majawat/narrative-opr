@@ -2676,6 +2676,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Add reset buttons
     addResetButtons();
 
+    // Initialize selected stratagem display if available
+    initializeSelectedStratagem(armyForgeId);
+  }
+
+  /**
+   * Initialize the display of a previously selected stratagem
+   * @param {string} armyId - Army ID
+   */
+  function initializeSelectedStratagem(armyId) {
+    const storageKey = `stratagem_${armyId}`;
+    const savedStratagemId = localStorage.getItem(storageKey);
+
+    // If a stratagem is saved and the stratagems.js is loaded,
+    // it will handle displaying the stratagem
+    if (
+      savedStratagemId &&
+      typeof window.displayActiveStratagems === "function"
+    ) {
+      window.displayActiveStratagems(savedStratagemId);
+    }
+
     //Fuck with Alex
     if (armyForgeId === "Xo19MAwQPGbs") {
       addUnitFixingProgressBar(remoteData.units);
