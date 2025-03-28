@@ -196,7 +196,7 @@ function renderArmyHeader() {
                     <span class="badge bg-danger me-2">L: ${army.losses}</span>
                     <span class="badge bg-success me-2">Objectives: ${army.objectives}</span>
                 </div>
-                <div class="mt-3">
+                <div class="mt-3 army-summary p-3">
                     <p>${army.summary}</p>
                 </div>
                 <button class="btn btn-sm btn-outline-light mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#armyBio" aria-expanded="false" aria-controls="armyBio">
@@ -1711,7 +1711,7 @@ function createRulesList(unit) {
             ${allRules
               .map(
                 (rule) => `
-                <span class="badge bg-secondary">${
+                <span class="badge bg-secondary allow-definitions">${
                   rule.label || rule.name
                 }</span>
             `
@@ -1751,7 +1751,9 @@ function createWeaponsTable(unit) {
                         }</td>
                             <td>${weapon.range || "0"}"</td>
                             <td>A${weapon.attacks}</td>
-                            <td>${getWeaponSpecialRules(weapon)}</td>
+                            <td class="allow-definitions">${getWeaponSpecialRules(
+                              weapon
+                            )}</td>
                         </tr>
                     `
                       )

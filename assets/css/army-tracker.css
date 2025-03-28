@@ -24,6 +24,11 @@
   margin-top: 0.5rem;
 }
 
+.army-summary {
+  border-radius: 15px;
+  background-color: rgba(var(--bs-dark-rgb), 0.75);
+}
+
 /* Unit Stats Pills */
 .unit-stats {
   display: flex;
@@ -69,6 +74,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
+}
+
+.definition {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dashed;
 }
 
 /* Weapons Table */
