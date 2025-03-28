@@ -16,7 +16,8 @@ async function initPage() {
   const armyId = urlParams.get("id");
 
   if (!armyId) {
-    showError("No army ID specified");
+    // Show army selector instead of just an error
+    await showArmySelector();
     return;
   }
 
@@ -1626,9 +1627,13 @@ function createHealthTracker(unit) {
     return `
       <div class="single-model-health">
         <div class="d-flex align-items-center">
-          <button class="btn btn-sm ${isAlive ? "btn-success" : "btn-secondary"}" 
+          <button class="btn btn-sm ${
+            isAlive ? "btn-success" : "btn-secondary"
+          }" 
             data-action="set-alive" data-unit="${unitId}">Alive</button>
-          <button class="btn btn-sm ${!isAlive ? "btn-danger" : "btn-secondary"}" 
+          <button class="btn btn-sm ${
+            !isAlive ? "btn-danger" : "btn-secondary"
+          }" 
             data-action="set-dead" data-unit="${unitId}">Dead</button>
         </div>
       </div>
@@ -2885,6 +2890,85 @@ function processCombinedUnits() {
 
   // Update the army data with processed units
   armyData.processedUnits = processedUnits;
+}
+
+// Show army selector dropdown when no army ID is specified
+async function showArmySelector() {
+  try {
+    // Show loading spinner
+    document.getElementById("loading-spinner").classList.remove("d-none");
+
+    // Load campaign data to get the list of armies
+    const response = await fetch("assets/json/campaign.json");
+    if (!response.ok) throw new Error("Failed to load campaign data");
+
+    const campaignData = await response.json();
+    const armies = campaignData.armies;
+
+    // Hide loading spinner
+    document.getElementById("loading-spinner").classList.add("d-none");
+
+    // Get the container element
+    const mainContainer = document.querySelector("main");
+
+    // Create and add the army selector UI
+    const selectorContainer = document.createElement("div");
+    selectorContainer.className = "text-center py-5";
+    selectorContainer.innerHTML = `
+      <div class="alert alert-info mb-4">No army ID specified</div>
+      <h3 class="mb-4">Select an Army</h3>
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-body">
+              <p class="mb-3">Please select an army to view its tracker:</p>
+              <select id="army-selector" class="form-select mb-3">
+                <option value="">-- Select an Army --</option>
+                ${armies
+                  .map(
+                    (army) =>
+                      `<option value="${army.armyURL}">${army.armyName} (${army.player})</option>`
+                  )
+                  .join("")}
+              </select>
+              <button id="go-to-army-btn" class="btn btn-primary" disabled>Go to Army Tracker</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    mainContainer.appendChild(selectorContainer);
+
+    // Add event listener for the button
+    document
+      .getElementById("go-to-army-btn")
+      .addEventListener("click", function () {
+        const selectedArmy = document.getElementById("army-selector").value;
+        if (selectedArmy) {
+          window.location.href = `army-tracker.html?id=${selectedArmy}`;
+        } else {
+          showToast("Please select an army first", "warning");
+        }
+      });
+
+    // Also add event listener for the select element to enable button when army is selected
+    document
+      .getElementById("army-selector")
+      .addEventListener("change", function () {
+        const selectedArmy = this.value;
+        const goButton = document.getElementById("go-to-army-btn");
+        goButton.disabled = !selectedArmy;
+
+        if (selectedArmy) {
+          // Optional: Auto-redirect when an army is selected
+          // window.location.href = `army-tracker.html?id=${selectedArmy}`;
+        }
+      });
+  } catch (error) {
+    console.error("Error showing army selector:", error);
+    showError("Failed to load army list. Please try again.");
+  }
 }
 
 // Show error message
