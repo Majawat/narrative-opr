@@ -444,7 +444,7 @@ function renderDoctrineSelection() {
 }
 
 // Create a single doctrine card
-function createDoctrineCard(doctrine, isUniversal = false) {
+function createDoctrineCard(doctrine) {
   if (!doctrine) return "";
 
   return `
@@ -455,11 +455,6 @@ function createDoctrineCard(doctrine, isUniversal = false) {
           <div class="card-header bg-${doctrine.color}">
             <h5 class="card-title mb-0 text-white">
               <i class="bi ${doctrine.icon}"></i> ${doctrine.name}
-              ${
-                isUniversal
-                  ? '<span class="badge bg-light text-dark ms-2">Always Active</span>'
-                  : ""
-              }
             </h5>
           </div>
           <div class="card-body">
@@ -545,7 +540,7 @@ function renderSelectedDoctrines() {
 
   // Add universal doctrine
   if (universalDoctrine) {
-    html += createDoctrineCard(universalDoctrine, true);
+    html += createDoctrineCard(universalDoctrine);
   }
 
   // Add selected doctrine if any
