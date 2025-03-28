@@ -824,11 +824,6 @@ function addHealthTrackerListeners() {
             !isAlive ? "btn-danger" : "btn-secondary"
           }`;
         }
-
-        showToast(
-          `Unit marked as ${isAlive ? "alive" : "dead"}`,
-          isAlive ? "success" : "danger"
-        );
       });
     });
 
@@ -871,17 +866,38 @@ function addHealthTrackerListeners() {
 
         saveUnitHealth(unitId, healthData);
 
-        // Update UI - this is a simple refresh for now
-        renderUnitCards();
-
+        // Get new wounded count
         const newWoundedCount = healthData.wounds.filter(
           (wound) => wound
         ).length;
         const currentWounds = toughValue - newWoundedCount;
-        showToast(
-          `Unit now has ${currentWounds}/${toughValue} wounds`,
-          currentWounds === 0 ? "danger" : "info"
-        );
+        const healthPercentage = (currentWounds / toughValue) * 100;
+
+        // Update HP text
+        const hpCurrentElement = button
+          .closest(".multi-wound-model")
+          .querySelector(".hp-current");
+        if (hpCurrentElement) {
+          hpCurrentElement.textContent = currentWounds;
+        }
+
+        // Update progress bar
+        const progressBar = button
+          .closest(".multi-wound-model")
+          .querySelector(".progress-bar");
+        if (progressBar) {
+          progressBar.style.width = `${healthPercentage}%`;
+
+          // Update color based on health percentage
+          progressBar.classList.remove("bg-success", "bg-warning", "bg-danger");
+          if (healthPercentage > 66) {
+            progressBar.classList.add("bg-success");
+          } else if (healthPercentage > 33) {
+            progressBar.classList.add("bg-warning");
+          } else {
+            progressBar.classList.add("bg-danger");
+          }
+        }
       });
     });
 
@@ -924,55 +940,107 @@ function addHealthTrackerListeners() {
 
         saveUnitHealth(unitId, healthData);
 
-        // Update UI - refresh for now
-        renderUnitCards();
-
+        // Update UI
         const newAliveCount = healthData.models.filter((model) => model).length;
-        showToast(
-          `Unit now has ${newAliveCount}/${unitSize} models`,
-          newAliveCount === 0 ? "danger" : "info"
+
+        // Update counter
+        const counterSpan = document.querySelector(
+          `.models-counter[data-unit="${unitId}"] span, .multi-model-unit span.fw-bold`
         );
+        if (counterSpan) {
+          counterSpan.textContent = `${newAliveCount}/${unitSize}`;
+        }
+
+        // Update progress bar
+        const progressBar = document.querySelector(
+          `.multi-model-unit .progress-bar`
+        );
+        if (progressBar) {
+          progressBar.style.width = `${(newAliveCount / unitSize) * 100}%`;
+          progressBar.setAttribute("aria-valuenow", newAliveCount);
+        }
+
+        // Update model cards/buttons
+        updateModelCardStatuses(unitId, healthData.models);
       });
     });
 
-  // Individual model icons for multi-model units
-  document.querySelectorAll(".model-icon").forEach((icon) => {
-    icon.addEventListener("click", () => {
-      const unitId = icon.dataset.unit;
-      const modelIndex = parseInt(icon.dataset.model);
-      const unit = armyData.units.find((u) => u.selectionId === unitId);
-      if (!unit || isNaN(modelIndex)) return;
+  // Individual model toggle buttons
+  document
+    .querySelectorAll('[data-action="toggle-model"]')
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        const unitId = button.dataset.unit;
+        const modelIndex = parseInt(button.dataset.model);
+        const unit = armyData.units.find((u) => u.selectionId === unitId);
+        if (!unit || isNaN(modelIndex)) return;
 
-      const healthData = getUnitHealth(unitId);
+        const healthData = getUnitHealth(unitId);
 
-      if (!healthData.models) {
-        healthData.models = Array(unit.size).fill(true);
-      }
-
-      // Toggle model status
-      healthData.models[modelIndex] = !healthData.models[modelIndex];
-      saveUnitHealth(unitId, healthData);
-
-      // Update UI
-      icon.classList.toggle("model-alive");
-      icon.classList.toggle("model-dead");
-
-      // Update models counter
-      const aliveCount = healthData.models.filter((model) => model).length;
-      const container = icon.closest(".multi-model-unit");
-      if (container) {
-        const counterSpan = container.querySelector(".models-counter span");
-        if (counterSpan) {
-          counterSpan.textContent = `${aliveCount}/${unit.size}`;
+        if (!healthData.models) {
+          healthData.models = Array(unit.size).fill(true);
         }
 
-        const progressBar = container.querySelector(".progress-bar");
+        // Toggle model status
+        healthData.models[modelIndex] = !healthData.models[modelIndex];
+        saveUnitHealth(unitId, healthData);
+
+        // Update button appearance
+        const isAlive = healthData.models[modelIndex];
+        button.textContent = isAlive ? "Alive" : "Dead";
+        button.classList.remove("btn-success", "btn-danger");
+        button.classList.add(isAlive ? "btn-success" : "btn-danger");
+
+        // Update card appearance
+        const card = button.closest(".model-card");
+        if (card) {
+          card.classList.remove("model-alive-card", "model-dead-card");
+          card.classList.add(isAlive ? "model-alive-card" : "model-dead-card");
+        }
+
+        // Update counter and progress bar
+        const unitSize = unit.size || 1;
+        const aliveCount = healthData.models.filter((m) => m).length;
+
+        const counterSpan = document.querySelector(
+          `.models-counter[data-unit="${unitId}"] span, .multi-model-unit span.fw-bold`
+        );
+        if (counterSpan) {
+          counterSpan.textContent = `${aliveCount}/${unitSize}`;
+        }
+
+        const progressBar = document.querySelector(
+          `.multi-model-unit .progress-bar`
+        );
         if (progressBar) {
-          progressBar.style.width = `${(aliveCount / unit.size) * 100}%`;
+          progressBar.style.width = `${(aliveCount / unitSize) * 100}%`;
           progressBar.setAttribute("aria-valuenow", aliveCount);
         }
-      }
+      });
     });
+}
+
+// Helper function to update model card statuses
+function updateModelCardStatuses(unitId, modelStatuses) {
+  if (!modelStatuses) return;
+
+  modelStatuses.forEach((isAlive, index) => {
+    // Find the toggle button for this model
+    const button = document.querySelector(
+      `[data-action="toggle-model"][data-unit="${unitId}"][data-model="${index}"]`
+    );
+    if (button) {
+      button.textContent = isAlive ? "Alive" : "Dead";
+      button.classList.remove("btn-success", "btn-danger");
+      button.classList.add(isAlive ? "btn-success" : "btn-danger");
+
+      // Update card appearance
+      const card = button.closest(".model-card");
+      if (card) {
+        card.classList.remove("model-alive-card", "model-dead-card");
+        card.classList.add(isAlive ? "model-alive-card" : "model-dead-card");
+      }
+    }
   });
 }
 
@@ -1151,6 +1219,8 @@ function renderUnitCards() {
 
   // Add all event listeners
   addUnitCardEventListeners();
+  // Add model name editing listeners
+  addModelNameEditingListeners();
 }
 
 // Create a joined unit group
@@ -1557,19 +1627,16 @@ function createHealthTracker(unit) {
     // Single model with 1 wound
     const isAlive = healthData.alive !== false;
 
+    // Single model with 1 wound
     return `
-        <div class="single-model-health d-flex align-items-center gap-2">
-          <div class="btn-group" role="group">
-            <button class="btn btn-sm ${
-              isAlive ? "btn-success" : "btn-secondary"
-            }" 
-              data-action="set-alive" data-unit="${unitId}">Alive</button>
-            <button class="btn btn-sm ${
-              !isAlive ? "btn-danger" : "btn-secondary"
-            }" 
-              data-action="set-dead" data-unit="${unitId}">Dead</button>
-          </div>
+      <div class="single-model-health">
+        <div class="d-flex align-items-center">
+          <button class="btn btn-sm ${isAlive ? "btn-success" : "btn-secondary"}" 
+            data-action="set-alive" data-unit="${unitId}">Alive</button>
+          <button class="btn btn-sm ${!isAlive ? "btn-danger" : "btn-secondary"}" 
+            data-action="set-dead" data-unit="${unitId}">Dead</button>
         </div>
+      </div>
       `;
   } else if (unitSize === 1 && toughValue > 1) {
     // Single model with multiple wounds (Tough)
@@ -1577,23 +1644,39 @@ function createHealthTracker(unit) {
       ? toughValue - healthData.wounds.filter((w) => w).length
       : toughValue;
 
+    const healthPercentage = (currentWounds / toughValue) * 100;
+    const barColorClass =
+      healthPercentage > 66
+        ? "bg-success"
+        : healthPercentage > 33
+        ? "bg-warning"
+        : "bg-danger";
+
     return `
-        <div class="multi-wound-model">
-          <div class="d-flex align-items-center gap-3 mb-2">
-            <div class="wounds-counter d-flex align-items-center">
-              <button class="btn btn-sm btn-outline-danger" data-action="wound" data-unit="${unitId}">-</button>
-              <span class="mx-2 fw-bold">${currentWounds}/${toughValue}</span>
-              <button class="btn btn-sm btn-outline-success" data-action="heal" data-unit="${unitId}">+</button>
-            </div>
-            <div class="progress flex-grow-1" style="height: 20px;">
-              <div class="progress-bar bg-success" role="progressbar" 
-                style="width: ${(currentWounds / toughValue) * 100}%" 
-                aria-valuenow="${currentWounds}" aria-valuemin="0" aria-valuemax="${toughValue}">
+      <div class="multi-wound-model">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <div class="wounds-counter d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-danger" data-action="wound" data-unit="${unitId}">
+              <i class="bi bi-dash"></i>
+            </button>
+            <div class="d-flex flex-column align-items-center mx-2">
+              <div class="hp-text">
+                <span class="hp-current">${currentWounds}</span>/<span class="hp-max">${toughValue}</span>
+              </div>
+              <div class="progress" style="width: 60px; height: 6px;">
+                <div class="progress-bar ${barColorClass}" role="progressbar" 
+                  style="width: ${healthPercentage}%;" 
+                  aria-valuenow="${currentWounds}" aria-valuemin="0" aria-valuemax="${toughValue}">
+                </div>
               </div>
             </div>
+            <button class="btn btn-sm btn-outline-success" data-action="heal" data-unit="${unitId}">
+              <i class="bi bi-plus"></i>
+            </button>
           </div>
         </div>
-      `;
+      </div>
+    `;
   } else {
     // Multiple models
     const aliveModels = healthData.models
@@ -1601,46 +1684,50 @@ function createHealthTracker(unit) {
       : unitSize;
 
     return `
-        <div class="multi-model-unit">
-          <div class="d-flex align-items-center gap-3 mb-2">
-            <div class="models-counter d-flex align-items-center">
-              <button class="btn btn-sm btn-outline-danger" data-action="kill-model" data-unit="${unitId}">-</button>
-              <span class="mx-2 fw-bold">${aliveModels}/${unitSize}</span>
-              <button class="btn btn-sm btn-outline-success" data-action="revive-model" data-unit="${unitId}">+</button>
-            </div>
-            <div class="progress flex-grow-1" style="height: 20px;">
-              <div class="progress-bar bg-success" role="progressbar" 
-                style="width: ${(aliveModels / unitSize) * 100}%" 
-                aria-valuenow="${aliveModels}" aria-valuemin="0" aria-valuemax="${unitSize}">
-              </div>
+      <div class="multi-model-unit">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <div class="models-counter d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-danger" data-action="kill-model" data-unit="${unitId}">-</button>
+            <span class="mx-2 fw-bold">${aliveModels}/${unitSize}</span>
+            <button class="btn btn-sm btn-outline-success" data-action="revive-model" data-unit="${unitId}">+</button>
+          </div>
+          <div class="progress flex-grow-1" style="height: 20px;">
+            <div class="progress-bar bg-success" role="progressbar" 
+              style="width: ${(aliveModels / unitSize) * 100}%" 
+              aria-valuenow="${aliveModels}" aria-valuemin="0" aria-valuemax="${unitSize}">
             </div>
           </div>
-          
-          ${
-            unitSize <= 10
-              ? `
-          <div class="models-grid d-flex flex-wrap gap-2 mt-2">
-            ${Array(unitSize)
-              .fill()
-              .map((_, i) => {
-                const isAlive = healthData.models
-                  ? healthData.models[i] !== false
-                  : true;
-                return `
+        </div>
+        
+        <div class="models-grid d-flex flex-wrap gap-2 mt-2">
+          ${Array(unitSize)
+            .fill()
+            .map((_, i) => {
+              const isAlive = healthData.models
+                ? healthData.models[i] !== false
+                : true;
+              const modelNames = getModelNames(unitId);
+              const modelName = modelNames[i] || `Model ${i + 1}`;
+              return `
+                <div class="model-container">
+                  <div class="model-name-container mb-1">
+                    <span class="model-name" data-model="${i}" data-unit="${unitId}">${modelName}</span>
+                    <button class="btn btn-sm p-0 ms-1 btn-edit-name" data-model="${i}" data-unit="${unitId}">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                  </div>
                   <div class="model-icon ${
                     isAlive ? "model-alive" : "model-dead"
                   }" 
                     data-model="${i}" data-unit="${unitId}">
                     ${i + 1}
                   </div>
-                `;
-              })
-              .join("")}
-          </div>
-          `
-              : ""
-          }
+                </div>
+              `;
+            })
+            .join("")}
         </div>
+      </div>
       `;
   }
 }
@@ -1672,6 +1759,62 @@ function getUnitHealth(unitId) {
   return health;
 }
 // Helper functions
+
+// Add model name editing listeners
+function addModelNameEditingListeners() {
+  document.querySelectorAll(".btn-edit-name").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const modelIndex = parseInt(button.dataset.model);
+      const unitId = button.dataset.unit;
+      const nameElement = button.previousElementSibling; // Get the name span element
+      const currentName = nameElement.textContent;
+
+      // Create input field
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "form-control form-control-sm model-name-input";
+      input.value = currentName;
+
+      // Replace name with input
+      nameElement.innerHTML = "";
+      nameElement.appendChild(input);
+      input.focus();
+
+      // Handle saving
+      const saveModelNameChange = () => {
+        const newName = input.value.trim() || `Model ${modelIndex + 1}`;
+        nameElement.textContent = newName;
+        saveModelName(unitId, modelIndex, newName);
+      };
+
+      // Save on enter key
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          saveModelNameChange();
+        }
+      });
+
+      // Save on blur (clicking away)
+      input.addEventListener("blur", saveModelNameChange);
+    });
+  });
+}
+
+// Get custom model names for a unit
+function getModelNames(unitId) {
+  const key = `model-names-${armyData.id}-${unitId}`;
+  const savedNames = localStorage.getItem(key);
+  return savedNames ? JSON.parse(savedNames) : {};
+}
+
+// Save a custom model name
+function saveModelName(unitId, modelIndex, name) {
+  const key = `model-names-${armyData.id}-${unitId}`;
+  const names = getModelNames(unitId);
+  names[modelIndex] = name;
+  localStorage.setItem(key, JSON.stringify(names));
+}
 
 // Create rules list
 function createRulesList(unit) {
@@ -1848,59 +1991,113 @@ function createHealthTracker(unit) {
   // Determine total number of models and wounds
   const unitSize = unit.size || 1;
   const toughValue = getToughValue(unit);
+  const unitId = unit.selectionId;
+
+  // Get health from localStorage
+  const healthData = getUnitHealth(unitId);
 
   if (unitSize === 1 && toughValue <= 1) {
     // Single model with 1 wound
+    const isAlive = healthData.alive !== false;
+
     return `
-            <div class="single-model-health">
-                <button class="btn btn-sm btn-success toggle-health" data-unit="${unit.selectionId}">Alive</button>
-                <p class="text-muted mt-2">Click to toggle between alive and dead</p>
-            </div>
-        `;
+        <div class="single-model-health d-flex align-items-center gap-2">
+          <div class="btn-group" role="group">
+            <button class="btn btn-sm ${
+              isAlive ? "btn-success" : "btn-secondary"
+            }" 
+              data-action="set-alive" data-unit="${unitId}">Alive</button>
+            <button class="btn btn-sm ${
+              !isAlive ? "btn-danger" : "btn-secondary"
+            }" 
+              data-action="set-dead" data-unit="${unitId}">Dead</button>
+          </div>
+        </div>
+      `;
   } else if (unitSize === 1 && toughValue > 1) {
     // Single model with multiple wounds (Tough)
+    const currentWounds = healthData.wounds
+      ? toughValue - healthData.wounds.filter((w) => w).length
+      : toughValue;
+
     return `
-            <div class="multi-wound-model">
-                <h5>${unit.customName || unit.name}</h5>
-                <div class="health-tracker mb-3" data-unit="${
-                  unit.selectionId
-                }">
-                    ${Array(toughValue)
-                      .fill()
-                      .map(
-                        (_, i) => `
-                        <div class="health-point" data-hp="${i}" data-unit="${unit.selectionId}"></div>
-                    `
-                      )
-                      .join("")}
-                </div>
-                <p class="text-muted">Click to toggle wound status</p>
+      <div class="multi-wound-model">
+        <div class="d-flex align-items-center">
+          <button class="btn btn-sm btn-outline-danger" data-action="wound" data-unit="${unitId}">
+            <i class="bi bi-dash"></i>
+          </button>
+          <div class="d-flex flex-column align-items-center mx-2">
+            <div class="hp-text">
+              <span class="hp-current">${currentWounds}</span>/<span class="hp-max">${toughValue}</span>
             </div>
-        `;
+            <div class="progress" style="width: 60px; height: 6px;">
+              <div class="progress-bar hp-progress-bar bg-success" 
+                style="width: ${(currentWounds / toughValue) * 100}%;">
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-success" data-action="heal" data-unit="${unitId}">
+            <i class="bi bi-plus"></i>
+          </button>
+        </div>
+      </div>
+    `;
   } else {
     // Multiple models
+    const aliveModels = healthData.models
+      ? healthData.models.filter((m) => m).length
+      : unitSize;
+
     return `
-            <div class="multi-model-unit">
-                <div class="health-grid mb-3">
-                    ${Array(unitSize)
-                      .fill()
-                      .map(
-                        (_, i) => `
-                        <div class="model-health">
-                            <div class="model-name">Model ${i + 1}</div>
-                            <div class="health-toggle">
-                                <button class="btn btn-sm btn-success toggle-model-health" data-model="${i}" data-unit="${
-                          unit.selectionId
-                        }">Alive</button>
-                            </div>
-                        </div>
-                    `
-                      )
-                      .join("")}
-                </div>
-                <p class="text-muted">Click to toggle model status</p>
+      <div class="multi-model-unit">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="models-counter d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-danger" data-action="kill-model" data-unit="${unitId}">-</button>
+            <span class="mx-2 fw-bold">${aliveModels}/${unitSize}</span>
+            <button class="btn btn-sm btn-outline-success" data-action="revive-model" data-unit="${unitId}">+</button>
+          </div>
+          <div class="progress flex-grow-1" style="height: 20px;">
+            <div class="progress-bar bg-success" role="progressbar" 
+              style="width: ${(aliveModels / unitSize) * 100}%" 
+              aria-valuenow="${aliveModels}" aria-valuemin="0" aria-valuemax="${unitSize}">
             </div>
-        `;
+          </div>
+        </div>
+        
+        <div class="models-grid">
+          ${Array(unitSize)
+            .fill()
+            .map((_, i) => {
+              const isAlive = healthData.models
+                ? healthData.models[i] !== false
+                : true;
+              const modelNames = getModelNames(unitId);
+              const modelName = modelNames[i] || `Model ${i + 1}`;
+              return `
+                <div class="card model-card ${
+                  isAlive ? "model-alive-card" : "model-dead-card"
+                }">
+                  <div class="card-header d-flex justify-content-between align-items-center py-1 px-2">
+                    <span class="model-name" data-model="${i}" data-unit="${unitId}">${modelName}</span>
+                    <button class="btn btn-sm p-0 btn-edit-name" data-model="${i}" data-unit="${unitId}">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                  </div>
+                  <div class="card-body p-2 text-center">
+                    <button class="btn btn-sm ${
+                      isAlive ? "btn-success" : "btn-danger"
+                    } model-toggle-btn" 
+                      data-model="${i}" data-unit="${unitId}" data-action="toggle-model">
+                      ${isAlive ? "Alive" : "Dead"}
+                    </button>
+                  </div>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      </div>
+      `;
   }
 }
 
@@ -2108,36 +2305,10 @@ function saveUnitStatus(unitId, status) {
   localStorage.setItem(key, JSON.stringify(status));
 }
 
-// Save a unit's health
-function saveUnitHealth(unitId) {
-  const card = document.getElementById(`unit-${unitId}`);
-  if (!card) return;
-
-  const health = {};
-
-  // Check for single model with toggle button
-  const toggleHealth = card.querySelector(".toggle-health");
-  if (toggleHealth) {
-    health.alive = toggleHealth.classList.contains("btn-success");
-  }
-  // Check for multi-wound model
-  else {
-    const healthPoints = card.querySelectorAll(".health-point");
-    health.wounds = Array.from(healthPoints).map((point) =>
-      point.classList.contains("wounded")
-    );
-  }
-
-  // Check for multiple models
-  const modelButtons = card.querySelectorAll(".toggle-model-health");
-  if (modelButtons.length > 0) {
-    health.models = Array.from(modelButtons).map((button) =>
-      button.classList.contains("btn-success")
-    );
-  }
-
+// Save a unit's health data
+function saveUnitHealth(unitId, healthData) {
   const key = `unit-health-${armyData.id}-${unitId}`;
-  localStorage.setItem(key, JSON.stringify(health));
+  localStorage.setItem(key, JSON.stringify(healthData));
 }
 
 // Save spell tokens for a unit
