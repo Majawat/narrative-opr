@@ -2696,11 +2696,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     ) {
       window.displayActiveStratagems(savedStratagemId);
     }
-
-    //Fuck with Alex
-    if (armyForgeId === "Xo19MAwQPGbs") {
-      addUnitFixingProgressBar(remoteData.units);
-    }
+  }
+  //Fuck with Alex
+  if (armyForgeId === "Xo19MAwQPGbs") {
+    addUnitFixingProgressBar(remoteData.units);
   }
 
   // Add this to the load-army.js file for the Roughnecks
