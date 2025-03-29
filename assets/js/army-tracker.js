@@ -340,25 +340,45 @@ function calculatePoints() {
 
 // Calculate total points used by the army
 function calculateArmyPoints() {
-  if (!armyData || !armyData.units) return 0;
+  if (!armyData) return 0;
 
   let totalPoints = 0;
 
-  // Get all units that aren't joined to another unit
-  const rootUnits = armyData.units.filter((unit) => !unit.joinToUnit);
-
-  rootUnits.forEach((unit) => {
-    // Add the unit's cost
-    totalPoints += calculateUnitPoints(unit);
-
-    // Add costs for any joined units
-    const joinedUnits = armyData.units.filter(
-      (u) => u.joinToUnit === unit.selectionId
+  // If we have processed units, use those
+  if (armyData.processedUnits) {
+    // Get all units that aren't joined to another unit
+    const rootUnits = armyData.processedUnits.filter(
+      (unit) => !unit.joinToUnit
     );
-    joinedUnits.forEach((joinedUnit) => {
-      totalPoints += calculateUnitPoints(joinedUnit);
+
+    rootUnits.forEach((unit) => {
+      // Add the unit's cost
+      totalPoints += calculateUnitPoints(unit);
+
+      // Add costs for any joined units
+      const joinedUnits = armyData.processedUnits.filter(
+        (u) => u.joinToUnit === unit.selectionId
+      );
+      joinedUnits.forEach((joinedUnit) => {
+        totalPoints += calculateUnitPoints(joinedUnit);
+      });
     });
-  });
+  } else {
+    // Use the original units if processedUnits doesn't exist
+    // This is your original implementation
+    const rootUnits = armyData.units.filter((unit) => !unit.joinToUnit);
+
+    rootUnits.forEach((unit) => {
+      totalPoints += calculateUnitPoints(unit);
+
+      const joinedUnits = armyData.units.filter(
+        (u) => u.joinToUnit === unit.selectionId
+      );
+      joinedUnits.forEach((joinedUnit) => {
+        totalPoints += calculateUnitPoints(joinedUnit);
+      });
+    });
+  }
 
   return totalPoints;
 }
@@ -485,17 +505,8 @@ function toggleDoctrine(doctrineId) {
   // Universal doctrine is always selected and can't be toggled
   if (doctrineId === "universal") return;
 
-  // Get all non-universal doctrines currently selected
-  const nonUniversalDoctrines = selectedDoctrines.filter(
-    (id) => id !== "universal"
-  );
-
-  // Remove any currently selected non-universal doctrines
-  if (nonUniversalDoctrines.length > 0) {
-    nonUniversalDoctrines.forEach((id) => {
-      selectedDoctrines = selectedDoctrines.filter((docId) => docId !== id);
-    });
-  }
+  // Always start with universal doctrine
+  selectedDoctrines = ["universal"];
 
   // Add the new doctrine if one was selected
   if (doctrineId) {
@@ -505,17 +516,19 @@ function toggleDoctrine(doctrineId) {
   // Save selected doctrines to local storage
   saveDoctrines();
 
-  // Re-render the doctrine cards
+  // Re-render the selected doctrines
   renderSelectedDoctrines();
 
   // Show toast notification
   if (doctrineId) {
-    showToast(
-      `Doctrine selected: ${
-        doctrinesData.doctrines.find((d) => d.id === doctrineId).name
-      }`,
-      "success"
+    const selectedDoctrine = doctrinesData.doctrines.find(
+      (d) => d.id === doctrineId
     );
+    if (selectedDoctrine) {
+      showToast(`Doctrine selected: ${selectedDoctrine.name}`, "success");
+    } else {
+      showToast(`Doctrine selected`, "success");
+    }
   }
 }
 
@@ -551,49 +564,6 @@ function renderSelectedDoctrines() {
 
   // Update the container
   container.innerHTML = html;
-}
-
-// Toggle a doctrine selection
-function toggleDoctrine(doctrineId) {
-  // Universal doctrine is always selected and can't be toggled
-  if (doctrineId === "universal") return;
-
-  // Get all non-universal doctrines currently selected
-  const nonUniversalDoctrines = selectedDoctrines.filter(
-    (id) => id !== "universal"
-  );
-
-  // Remove any currently selected non-universal doctrines
-  if (nonUniversalDoctrines.length > 0) {
-    selectedDoctrines = selectedDoctrines.filter(
-      (docId) => docId !== "universal"
-    );
-    // We don't need to manipulate DOM elements here - we'll rerender everything
-  }
-
-  // Start with just the universal doctrine
-  selectedDoctrines = ["universal"];
-
-  // Add the new doctrine if one was selected
-  if (doctrineId) {
-    selectedDoctrines.push(doctrineId);
-  }
-
-  // Save selected doctrines to local storage
-  saveDoctrines();
-
-  // Re-render the selected doctrines
-  renderSelectedDoctrines();
-
-  // Show toast notification
-  if (doctrineId) {
-    const selectedDoctrine = doctrinesData.doctrines.find(
-      (d) => d.id === doctrineId
-    );
-    if (selectedDoctrine) {
-      showToast(`Doctrine selected: ${selectedDoctrine.name}`, "success");
-    }
-  }
 }
 
 // Save selected doctrines to local storage
@@ -804,7 +774,7 @@ function addHealthTrackerListeners() {
         healthData.alive = isAlive;
         saveUnitHealth(unitId, healthData);
 
-        // Update UI
+        // Update UI: Toggle buttons
         const aliveButton = document.querySelector(
           `[data-action="set-alive"][data-unit="${unitId}"]`
         );
@@ -818,6 +788,18 @@ function addHealthTrackerListeners() {
           }`;
           deadButton.className = `btn btn-sm ${
             !isAlive ? "btn-danger" : "btn-secondary"
+          }`;
+        }
+
+        // Update UI: Progress bar
+        const progressBar = document.querySelector(
+          `.single-model-health .progress-bar[aria-valuenow]`
+        );
+        if (progressBar) {
+          progressBar.style.width = isAlive ? "100%" : "0%";
+          progressBar.setAttribute("aria-valuenow", isAlive ? "1" : "0");
+          progressBar.className = `progress-bar ${
+            isAlive ? "bg-success" : "bg-danger"
           }`;
         }
       });
@@ -883,6 +865,7 @@ function addHealthTrackerListeners() {
           .querySelector(".progress-bar");
         if (progressBar) {
           progressBar.style.width = `${healthPercentage}%`;
+          progressBar.setAttribute("aria-valuenow", currentWounds);
 
           // Update color based on health percentage
           progressBar.classList.remove("bg-success", "bg-warning", "bg-danger");
@@ -1357,7 +1340,19 @@ function createUnitCard(unit, isJoined = false) {
           <span class="badge bg-primary me-1">${unitPoints} pts</span>
           ${isJoined ? '<span class="badge bg-warning me-1">Joined</span>' : ""}
           ${
-            isCombined ? '<span class="badge bg-info me-1">Combined</span>' : ""
+            isCombined
+              ? `
+            <div class="mt-1 small text-muted">
+              Combined unit (${unit.combinedUnits || 0} units)
+              ${
+                unit.originalUnits
+                  ? `<span class="ms-2">Original units: ${unit.originalUnits
+                      .map((u) => u.customName || u.name)
+                      .join(", ")}</span>`
+                  : ""
+              }
+            </div>`
+              : ""
           }
         </div>
       </div>
@@ -1619,38 +1614,59 @@ function createHealthTracker(unit) {
   // Get health from localStorage
   const healthData = getUnitHealth(unitId);
 
+  // Common function to determine health percentage and color class
+  const getHealthStatus = (current, max) => {
+    const healthPercentage = (current / max) * 100;
+    let colorClass = "bg-success";
+
+    if (healthPercentage <= 33) {
+      colorClass = "bg-danger";
+    } else if (healthPercentage <= 66) {
+      colorClass = "bg-warning";
+    }
+
+    return { percentage: healthPercentage, colorClass };
+  };
+
   if (unitSize === 1 && toughValue <= 1) {
     // Single model with 1 wound
     const isAlive = healthData.alive !== false;
+    const { percentage, colorClass } = getHealthStatus(isAlive ? 1 : 0, 1);
 
-    // Single model with 1 wound
     return `
       <div class="single-model-health">
-        <div class="d-flex align-items-center">
-          <button class="btn btn-sm ${
-            isAlive ? "btn-success" : "btn-secondary"
-          }" 
-            data-action="set-alive" data-unit="${unitId}">Alive</button>
-          <button class="btn btn-sm ${
-            !isAlive ? "btn-danger" : "btn-secondary"
-          }" 
-            data-action="set-dead" data-unit="${unitId}">Dead</button>
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <div class="btn-group" role="group">
+            <button class="btn btn-sm ${
+              isAlive ? "btn-success" : "btn-secondary"
+            }" 
+              data-action="set-alive" data-unit="${unitId}">Alive</button>
+            <button class="btn btn-sm ${
+              !isAlive ? "btn-danger" : "btn-secondary"
+            }" 
+              data-action="set-dead" data-unit="${unitId}">Dead</button>
+          </div>
+          <div class="progress flex-grow-1" style="height: 20px;">
+            <div class="progress-bar ${colorClass}" role="progressbar" 
+              style="width: ${percentage}%" 
+              aria-valuenow="${
+                isAlive ? 1 : 0
+              }" aria-valuemin="0" aria-valuemax="1">
+            </div>
+          </div>
         </div>
       </div>
-      `;
+    `;
   } else if (unitSize === 1 && toughValue > 1) {
     // Single model with multiple wounds (Tough)
     const currentWounds = healthData.wounds
       ? toughValue - healthData.wounds.filter((w) => w).length
       : toughValue;
 
-    const healthPercentage = (currentWounds / toughValue) * 100;
-    const barColorClass =
-      healthPercentage > 66
-        ? "bg-success"
-        : healthPercentage > 33
-        ? "bg-warning"
-        : "bg-danger";
+    const { percentage, colorClass } = getHealthStatus(
+      currentWounds,
+      toughValue
+    );
 
     return `
       <div class="multi-wound-model">
@@ -1663,16 +1679,16 @@ function createHealthTracker(unit) {
               <div class="hp-text">
                 <span class="hp-current">${currentWounds}</span>/<span class="hp-max">${toughValue}</span>
               </div>
-              <div class="progress" style="width: 60px; height: 6px;">
-                <div class="progress-bar ${barColorClass}" role="progressbar" 
-                  style="width: ${healthPercentage}%;" 
-                  aria-valuenow="${currentWounds}" aria-valuemin="0" aria-valuemax="${toughValue}">
-                </div>
-              </div>
             </div>
             <button class="btn btn-sm btn-outline-success" data-action="heal" data-unit="${unitId}">
               <i class="bi bi-plus"></i>
             </button>
+          </div>
+          <div class="progress flex-grow-1" style="height: 20px;">
+            <div class="progress-bar ${colorClass}" role="progressbar" 
+              style="width: ${percentage}%" 
+              aria-valuenow="${currentWounds}" aria-valuemin="0" aria-valuemax="${toughValue}">
+            </div>
           </div>
         </div>
       </div>
@@ -1683,6 +1699,8 @@ function createHealthTracker(unit) {
       ? healthData.models.filter((m) => m).length
       : unitSize;
 
+    const { percentage, colorClass } = getHealthStatus(aliveModels, unitSize);
+
     return `
       <div class="multi-model-unit">
         <div class="d-flex align-items-center gap-3 mb-2">
@@ -1692,14 +1710,14 @@ function createHealthTracker(unit) {
             <button class="btn btn-sm btn-outline-success" data-action="revive-model" data-unit="${unitId}">+</button>
           </div>
           <div class="progress flex-grow-1" style="height: 20px;">
-            <div class="progress-bar bg-success" role="progressbar" 
-              style="width: ${(aliveModels / unitSize) * 100}%" 
+            <div class="progress-bar ${colorClass}" role="progressbar" 
+              style="width: ${percentage}%" 
               aria-valuenow="${aliveModels}" aria-valuemin="0" aria-valuemax="${unitSize}">
             </div>
           </div>
         </div>
         
-        <div class="models-grid d-flex flex-wrap gap-2 mt-2">
+        <div class="models-grid">
           ${Array(unitSize)
             .fill()
             .map((_, i) => {
@@ -1709,18 +1727,22 @@ function createHealthTracker(unit) {
               const modelNames = getModelNames(unitId);
               const modelName = modelNames[i] || `Model ${i + 1}`;
               return `
-                <div class="model-container">
-                  <div class="model-name-container mb-1">
+                <div class="card model-card ${
+                  isAlive ? "model-alive-card" : "model-dead-card"
+                }">
+                  <div class="card-header d-flex justify-content-between align-items-center py-1 px-2">
                     <span class="model-name" data-model="${i}" data-unit="${unitId}">${modelName}</span>
-                    <button class="btn btn-sm p-0 ms-1 btn-edit-name" data-model="${i}" data-unit="${unitId}">
+                    <button class="btn btn-sm p-0 btn-edit-name" data-model="${i}" data-unit="${unitId}">
                       <i class="bi bi-pencil-fill"></i>
                     </button>
                   </div>
-                  <div class="model-icon ${
-                    isAlive ? "model-alive" : "model-dead"
-                  }" 
-                    data-model="${i}" data-unit="${unitId}">
-                    ${i + 1}
+                  <div class="card-body p-2 text-center">
+                    <button class="btn btn-sm ${
+                      isAlive ? "btn-success" : "btn-danger"
+                    } model-toggle-btn" 
+                      data-model="${i}" data-unit="${unitId}" data-action="toggle-model">
+                      ${isAlive ? "Alive" : "Dead"}
+                    </button>
                   </div>
                 </div>
               `;
@@ -1728,7 +1750,7 @@ function createHealthTracker(unit) {
             .join("")}
         </div>
       </div>
-      `;
+    `;
   }
 }
 
@@ -1739,7 +1761,9 @@ function getUnitHealth(unitId) {
 
   if (!health) {
     // Initialize default health based on unit type
-    const unit = armyData.units.find((u) => u.selectionId === unitId);
+    const unit = armyData.processedUnits
+      ? armyData.processedUnits.find((u) => u.selectionId === unitId)
+      : armyData.units.find((u) => u.selectionId === unitId);
     if (!unit) return {};
 
     const unitSize = unit.size || 1;
@@ -1758,6 +1782,7 @@ function getUnitHealth(unitId) {
 
   return health;
 }
+
 // Helper functions
 
 // Add model name editing listeners
@@ -2345,6 +2370,12 @@ function takeMoraleTest(unitId) {
   const unitStatus = getUnitStatus(unitId);
   const resultDiv = document.querySelector(`.morale-result-${unitId}`);
 
+  // Check if results div exists
+  if (!resultDiv) {
+    console.error(`Could not find morale result div for unit ${unitId}`);
+    return;
+  }
+
   // If the unit is already Shaken, it automatically fails morale tests
   if (unitStatus.shaken) {
     resultDiv.innerHTML =
@@ -2364,30 +2395,8 @@ function takeMoraleTest(unitId) {
   } else {
     resultDiv.innerHTML = `<div class="alert alert-danger">Failed! Rolled a ${roll} (needed ${quality}+)</div>`;
 
-    // Check if unit is below half strength
-    const card = document.getElementById(`unit-${unitId}`);
-    let isHalfStrength = false;
-
-    // For a multi-wound model
-    const healthPoints = card.querySelectorAll(".health-point");
-    if (healthPoints.length > 0) {
-      const woundedPoints = Array.from(healthPoints).filter((point) =>
-        point.classList.contains("wounded")
-      );
-      isHalfStrength =
-        woundedPoints.length >= Math.ceil(healthPoints.length / 2);
-    }
-    // For multi-model unit
-    else {
-      const modelButtons = card.querySelectorAll(".toggle-model-health");
-      if (modelButtons.length > 0) {
-        const deadModels = Array.from(modelButtons).filter(
-          (button) => !button.classList.contains("btn-success")
-        );
-        isHalfStrength =
-          deadModels.length >= Math.ceil(modelButtons.length / 2);
-      }
-    }
+    // Use the isUnitBelowHalfStrength function for consistency
+    const isHalfStrength = isUnitBelowHalfStrength(unitId);
 
     if (isHalfStrength) {
       resultDiv.innerHTML +=
@@ -2584,7 +2593,6 @@ function saveAllStates() {
 }
 
 // Load saved state from localStorage
-// Load saved state from localStorage
 function loadSavedState() {
   const armyId = armyData?.id;
   if (!armyId) return;
@@ -2599,19 +2607,23 @@ function loadSavedState() {
   const savedCP = localStorage.getItem(`${armyId}-command-points`);
   if (savedCP) {
     availableCommandPoints = parseInt(savedCP);
-    document.getElementById("cp-counter").textContent = availableCommandPoints;
+    const cpCounter = document.getElementById("cp-counter");
+    if (cpCounter) {
+      cpCounter.textContent = availableCommandPoints;
+    }
   }
 
   const savedUP = localStorage.getItem(`${armyId}-underdog-points`);
   if (savedUP) {
     availableUnderdogPoints = parseInt(savedUP);
-    document.getElementById("up-counter").textContent = availableUnderdogPoints;
+    const upCounter = document.getElementById("up-counter");
+    if (upCounter) {
+      upCounter.textContent = availableUnderdogPoints;
+    }
   }
 
   // Load selected doctrines
   loadDoctrines();
-
-  // Load unit health status - handled by getUnitHealth function
 
   // Load unit statuses
   armyData.units.forEach((unit) => {
@@ -2805,18 +2817,24 @@ function processCombinedUnits() {
 
   const processedUnits = [];
   const combinedGroups = {};
+  const processedIds = new Set(); // Keep track of which units have been processed
 
   // First pass: identify combined units and create groups
   armyData.units.forEach((unit) => {
-    if (unit.combined) {
+    // Skip if already processed
+    if (processedIds.has(unit.selectionId)) return;
+
+    if (unit.combined || unit.combinedWith) {
       const combinedId = unit.combinedWith || unit.selectionId;
       if (!combinedGroups[combinedId]) {
         combinedGroups[combinedId] = [];
       }
       combinedGroups[combinedId].push(unit);
-    } else if (!unit.combinedWith) {
+      processedIds.add(unit.selectionId);
+    } else {
       // Not part of a combined unit
       processedUnits.push(unit);
+      processedIds.add(unit.selectionId);
     }
   });
 
@@ -2828,10 +2846,22 @@ function processCombinedUnits() {
     const baseUnit = group[0];
     const mergedUnit = { ...baseUnit };
 
+    // Mark as combined and copy the original selection ID for reference
+    mergedUnit.combined = true;
+    mergedUnit.originalSelectionId = baseUnit.selectionId;
+
     // Initialize arrays for weapons, rules, etc.
     mergedUnit.weapons = baseUnit.weapons ? [...baseUnit.weapons] : [];
     mergedUnit.rules = baseUnit.rules ? [...baseUnit.rules] : [];
     mergedUnit.loadout = baseUnit.loadout ? [...baseUnit.loadout] : [];
+
+    // Track original units for reference
+    mergedUnit.originalUnits = group.map((u) => ({
+      id: u.id,
+      selectionId: u.selectionId,
+      name: u.name,
+      customName: u.customName,
+    }));
 
     // Merge in data from other units in the group
     for (let i = 1; i < group.length; i++) {
@@ -2863,7 +2893,7 @@ function processCombinedUnits() {
       if (unit.rules) {
         unit.rules.forEach((rule) => {
           const existingRule = mergedUnit.rules.find(
-            (r) => r.name === rule.name
+            (r) => r.name === rule.name && r.rating === rule.rating
           );
           if (!existingRule) {
             mergedUnit.rules.push({ ...rule });
@@ -2878,11 +2908,20 @@ function processCombinedUnits() {
 
       // Add points
       mergedUnit.cost = (mergedUnit.cost || 0) + (unit.cost || 0);
+
+      // Merge XP
+      mergedUnit.xp = Math.max(mergedUnit.xp || 0, unit.xp || 0);
     }
 
-    // Add combined marker
+    // Add combined marker for UI
     mergedUnit.isCombinedUnit = true;
     mergedUnit.combinedUnits = group.length;
+
+    // Create a descriptive custom name if not already present
+    if (!mergedUnit.customName) {
+      const unitNames = group.map((u) => u.customName || u.name);
+      mergedUnit.customName = `Combined: ${unitNames.join(" + ")}`;
+    }
 
     // Add to processed units
     processedUnits.push(mergedUnit);
@@ -2890,6 +2929,8 @@ function processCombinedUnits() {
 
   // Update the army data with processed units
   armyData.processedUnits = processedUnits;
+
+  console.log("Processed units:", processedUnits);
 }
 
 // Show army selector dropdown when no army ID is specified
