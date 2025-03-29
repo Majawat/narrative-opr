@@ -2152,10 +2152,10 @@ function getBaseSize(unit) {
   if (!unit.bases) return "None";
 
   const bases = [];
-  if (unit.bases.round) bases.push(`Round ${unit.bases.round}mm`);
-  if (unit.bases.square) bases.push(`Square ${unit.bases.square}mm`);
+  if (unit.bases.round) bases.push(`<i class="bi bi-circle-fill"></i> ${unit.bases.round}mm`);
+  if (unit.bases.square) bases.push(`<i class="bi bi-square-fill"></i> ${unit.bases.square}mm`);
 
-  return bases.length > 0 ? bases.join(" or ") : "None";
+  return bases.length > 0 ? bases.join(" | ") : "None";
 }
 
 // Get morale threshold
