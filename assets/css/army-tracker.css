@@ -378,6 +378,10 @@
     cursor: pointer;
   }
 
+  .joined-units-container {
+    gap: 0.5rem;
+  }
+
   .unit-stats {
     margin-top: 0.5rem;
     flex-wrap: wrap;
@@ -403,4 +407,30 @@
   .models-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
+}
+
+/* Parent Card Styles */
+.parent-unit-card {
+  border: 2px solid var(--bs-primary);
+  background-color: rgba(var(--bs-dark-rgb), 0.05);
+}
+
+
+.joined-units-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.leader-unit-card {
+  border-left: 4px solid var(--bs-success);
+}
+
+.joined-unit-card {
+  border-left: 4px solid var(--bs-warning);
+}
+
+.combined-unit-card {
+  border-left: 4px solid var(--bs-info);
 }

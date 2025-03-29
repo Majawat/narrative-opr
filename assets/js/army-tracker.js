@@ -1209,37 +1209,140 @@ function createJoinedUnitGroup(rootUnit, joinedUnits, container) {
   groupContainer.className = "joined-unit-group mb-4";
   groupContainer.id = `unit-group-${rootUnit.selectionId}`;
 
-  // Create the main unit card with all its info
-  const mainCard = createUnitCard(rootUnit);
-  mainCard.classList.add("main-unit-card");
-  groupContainer.appendChild(mainCard);
+  // Calculate combined stats for the parent card
+  let totalPoints = calculateUnitPoints(rootUnit);
+  let totalModels = rootUnit.size || 1;
+  let minQuality = rootUnit.quality;
+  let totalXP = rootUnit.xp || 0;
 
-  // Create a joined units container
-  const joinedContainer = document.createElement("div");
-  joinedContainer.className = "joined-units ms-4 mt-2";
-
-  // Add joined units info
-  const joinedInfo = document.createElement("div");
-  joinedInfo.className = "joined-info alert alert-warning py-2";
-  joinedInfo.innerHTML = `
-      <small>
-        <i class="bi bi-info-circle-fill me-2"></i>
-        Joined units use the base unit's Defense (${rootUnit.defense}+), 
-        but the whole unit uses the Heroes' Quality (${Math.min(
-          ...joinedUnits.map((u) => u.quality)
-        )}+) 
-        for Morale tests.
-      </small>
-    `;
-  joinedContainer.appendChild(joinedInfo);
-
-  // Add each joined unit
-  joinedUnits.forEach((joinedUnit) => {
-    const joinedCard = createUnitCard(joinedUnit, true);
-    joinedContainer.appendChild(joinedCard);
+  // Process joined units stats
+  joinedUnits.forEach((unit) => {
+    totalPoints += calculateUnitPoints(unit);
+    totalModels += unit.size || 1;
+    minQuality = Math.min(minQuality, unit.quality);
+    totalXP = Math.max(totalXP, unit.xp || 0);
   });
 
-  groupContainer.appendChild(joinedContainer);
+  // Create parent card
+  const parentCard = document.createElement("div");
+  parentCard.className = "card unit-card parent-unit-card mb-3";
+  parentCard.id = `unit-parent-${rootUnit.selectionId}`;
+
+  // Parent card header - proper title combining the leader and squad
+  const headerText = `${rootUnit.customName || rootUnit.name} & ${
+    joinedUnits[0].customName || joinedUnits[0].name
+  }`;
+  const parentHeader = document.createElement("div");
+  parentHeader.className =
+    "card-header d-flex justify-content-between align-items-center bg-dark text-white";
+  parentHeader.innerHTML = `
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <h4 class="mb-0">${headerText}</h4>
+      </div>
+      <div class="unit-meta">
+        <span class="badge bg-secondary me-1">XP: ${totalXP}</span>
+        <span class="badge bg-primary me-1">${totalPoints} pts</span>
+        <span class="badge bg-info me-1">${totalModels} models</span>
+      </div>
+    </div>
+  `;
+  parentCard.appendChild(parentHeader);
+
+  // Parent card body
+  const parentBody = document.createElement("div");
+  parentBody.className = "card-body";
+
+  // Joined unit rules explanation
+  const joinedInfo = document.createElement("div");
+  joinedInfo.className = "joined-info alert alert-warning py-2 mb-3";
+  joinedInfo.innerHTML = `
+    <small>
+      <i class="bi bi-info-circle-fill me-2"></i>
+      Joined units use the base unit's Defense (${rootUnit.defense}+), 
+      but the whole unit uses the Heroes' Quality (${minQuality}+) 
+      for Morale tests.
+    </small>
+  `;
+  parentBody.appendChild(joinedInfo);
+
+  // Add unit cards container
+  const unitsContainer = document.createElement("div");
+  unitsContainer.className = "joined-units-container";
+
+  // Create the hero/leader card - BUT DO NOT INCLUDE STATUS SECTION
+  const leaderCard = createUnitCard(rootUnit, true); // Pass true to indicate it's joined
+  leaderCard.classList.add("leader-unit-card");
+  unitsContainer.appendChild(leaderCard);
+
+  // Process joined units - check if they should be combined first
+  const joinedCard = createUnitCard(joinedUnits[0], true); // Pass true to indicate it's joined
+  joinedCard.classList.add("joined-unit-card");
+  unitsContainer.appendChild(joinedCard);
+
+  parentBody.appendChild(unitsContainer);
+
+  // Add status section for the entire joined unit - THIS IS THE ONLY PLACE STATUS SHOULD BE
+  const statusSection = document.createElement("div");
+  statusSection.className = "section joined-unit-status mb-3";
+  statusSection.innerHTML = `
+    <h5 class="section-title">Unit Status</h5>
+    <div class="status-toggles mb-2 d-flex flex-wrap gap-2">
+      <button class="btn btn-sm btn-outline-warning status-toggle" 
+        data-status="shaken" data-unit="${rootUnit.selectionId}">Shaken</button>
+      <button class="btn btn-sm btn-outline-secondary status-toggle" 
+        data-status="fatigued" data-unit="${rootUnit.selectionId}">Fatigued</button>
+      <button class="btn btn-sm btn-outline-danger status-toggle" 
+        data-status="routed" data-unit="${rootUnit.selectionId}">Routed</button>
+    </div>
+    
+    <div class="unit-activation mb-3">
+      <h6>Activation</h6>
+      <div class="activation-buttons d-flex flex-wrap gap-2 mb-2">
+        <button class="btn btn-sm btn-outline-secondary activation-button" 
+          data-action="hold" data-unit="${rootUnit.selectionId}">Hold</button>
+        <button class="btn btn-sm btn-outline-success activation-button" 
+          data-action="advance" data-unit="${rootUnit.selectionId}">Advance</button>
+        <button class="btn btn-sm btn-outline-primary activation-button" 
+          data-action="rush" data-unit="${rootUnit.selectionId}">Rush</button>
+        <button class="btn btn-sm btn-outline-danger activation-button" 
+          data-action="charge" data-unit="${rootUnit.selectionId}">Charge</button>
+      </div>
+    </div>
+    
+    <div class="unit-melee mb-3">
+      <h6>Melee</h6>
+      <div class="melee-buttons d-flex flex-wrap gap-2 mb-2">
+        <button class="btn btn-sm btn-outline-warning melee-button" 
+          data-action="in-melee" data-unit="${rootUnit.selectionId}">In Melee</button>
+        <button class="btn btn-sm btn-outline-info melee-button" 
+          data-action="strike-back" data-unit="${rootUnit.selectionId}">Strike Back</button>
+        
+        <button class="btn btn-sm btn-outline-success melee-button" 
+          data-action="won-melee" data-unit="${rootUnit.selectionId}">Won Melee</button>
+        <button class="btn btn-sm btn-outline-danger melee-button" 
+          data-action="lost-melee" data-unit="${rootUnit.selectionId}">Lost Melee</button>
+      </div>
+    </div>
+    
+    <div class="unit-morale">
+      <h6>Morale Test (Quality ${minQuality}+)</h6>
+      <div class="morale-buttons d-flex flex-wrap gap-2 mb-2">
+        <button class="btn btn-sm btn-outline-warning morale-button" 
+          data-action="morale-test" data-unit="${rootUnit.selectionId}">Take Morale Test</button>
+        <button class="btn btn-sm btn-outline-success morale-result-button" 
+          data-action="morale-passed" data-unit="${rootUnit.selectionId}" style="display: none;">Passed</button>
+        <button class="btn btn-sm btn-outline-danger morale-result-button" 
+          data-action="morale-failed" data-unit="${rootUnit.selectionId}" style="display: none;">Failed</button>
+      </div>
+    </div>
+  `;
+
+  parentBody.appendChild(statusSection);
+  parentCard.appendChild(parentBody);
+
+  // Add the parent card to the container
+  groupContainer.appendChild(parentCard);
   container.appendChild(groupContainer);
 }
 
@@ -1289,7 +1392,7 @@ function createUnitCard(unit, isJoined = false) {
   const unitPoints = calculateUnitPoints(unit);
 
   // Determine if this is a combined unit
-  const isCombined = unit.combined;
+  const isCombined = unit.combined || unit.isCombinedUnit;
 
   // Get unit status
   const unitStatus = getUnitStatus(unit.selectionId);
@@ -1314,7 +1417,8 @@ function createUnitCard(unit, isJoined = false) {
     "card-header d-flex justify-content-between align-items-center";
 
   const customName = unit.customName || unit.name;
-  header.innerHTML = `
+
+  let headerContent = `
       <div>
         <div class="d-flex align-items-center gap-2">
           <h4 class="mb-0">${customName}</h4>
@@ -1336,24 +1440,37 @@ function createUnitCard(unit, isJoined = false) {
         </div>
         <div class="unit-meta">
           <span class="badge bg-secondary me-1">XP: ${unit.xp}</span>
-          <span class="badge bg-info me-1">${unit.name}</span>
+  `;
+
+  // Add unit type badge only if it differs from customName
+  if (unit.name !== customName) {
+    headerContent += `<span class="badge bg-info me-1">${unit.name}</span>`;
+  }
+
+  headerContent += `
           <span class="badge bg-primary me-1">${unitPoints} pts</span>
           ${isJoined ? '<span class="badge bg-warning me-1">Joined</span>' : ""}
-          ${
-            isCombined
-              ? `
+  `;
+
+  // Add combined unit info
+  if (isCombined) {
+    headerContent += `
             <div class="mt-1 small text-muted">
-              Combined unit (${unit.combinedUnits || 0} units)
+              Combined unit (${
+                unit.originalUnits?.length || unit.combinedUnits || 0
+              } units)
               ${
                 unit.originalUnits
-                  ? `<span class="ms-2">Original units: ${unit.originalUnits
+                  ? `<span class="ms-2">Combined from: ${unit.originalUnits
                       .map((u) => u.customName || u.name)
                       .join(", ")}</span>`
                   : ""
               }
-            </div>`
-              : ""
-          }
+            </div>
+    `;
+  }
+
+  headerContent += `
         </div>
       </div>
       <div class="unit-stats hstack gap-2">
@@ -1380,12 +1497,14 @@ function createUnitCard(unit, isJoined = false) {
       </div>
     `;
 
-  // Create card body with no tabs
+  header.innerHTML = headerContent;
+
+  // Create card body
   const body = document.createElement("div");
   body.className = "card-body";
 
-  // Create the body content without tabs
-  body.innerHTML = `
+  // Create the body content - WITHOUT status section for joined units
+  let bodyContent = `
       <div class="row mb-3">
         <div class="col-md-6">
           <div class="unit-size">
@@ -1423,7 +1542,11 @@ function createUnitCard(unit, isJoined = false) {
         <h5 class="section-title">Health</h5>
         ${createHealthTracker(unit)}
       </div>
-      
+  `;
+
+  // Only add status section for non-joined units
+  if (!isJoined) {
+    bodyContent += `
       <!-- Status Section -->
       <div class="section mb-3">
         <h5 class="section-title">Status</h5>
@@ -1451,26 +1574,26 @@ function createUnitCard(unit, isJoined = false) {
               unitStatus.action === "hold" ? "btn-secondary" : ""
             }" 
               data-action="hold" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>Hold</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>Hold</button>
             <button class="btn btn-sm btn-outline-success activation-button ${
               unitStatus.action === "advance" ? "btn-success" : ""
             }" 
               data-action="advance" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>Advance</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>Advance</button>
             <button class="btn btn-sm btn-outline-primary activation-button ${
               unitStatus.action === "rush" ? "btn-primary" : ""
             }" 
               data-action="rush" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>Rush</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>Rush</button>
             <button class="btn btn-sm btn-outline-danger activation-button ${
               unitStatus.action === "charge" ? "btn-danger" : ""
             }" 
               data-action="charge" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>Charge</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>Charge</button>
           </div>
         </div>
         
@@ -1481,23 +1604,23 @@ function createUnitCard(unit, isJoined = false) {
               unitStatus.inMelee ? "btn-warning" : ""
             }" 
               data-action="in-melee" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>In Melee</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>In Melee</button>
             <button class="btn btn-sm btn-outline-info melee-button ${
               unitStatus.hasStruckBack ? "btn-info" : ""
             }" 
               data-action="strike-back" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>Strike Back</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>Strike Back</button>
             
             <button class="btn btn-sm btn-outline-success melee-button" 
               data-action="won-melee" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>Won Melee</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>Won Melee</button>
             <button class="btn btn-sm btn-outline-danger melee-button" 
               data-action="lost-melee" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>Lost Melee</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>Lost Melee</button>
           </div>
         </div>
         
@@ -1506,8 +1629,8 @@ function createUnitCard(unit, isJoined = false) {
           <div class="morale-buttons d-flex flex-wrap gap-2 mb-2">
             <button class="btn btn-sm btn-outline-warning morale-button" 
               data-action="morale-test" data-unit="${unit.selectionId}" ${
-    unitStatus.shaken ? "disabled" : ""
-  }>Take Morale Test</button>
+      unitStatus.shaken ? "disabled" : ""
+    }>Take Morale Test</button>
             <button class="btn btn-sm btn-outline-success morale-result-button" 
               data-action="morale-passed" data-unit="${
                 unit.selectionId
@@ -1519,42 +1642,42 @@ function createUnitCard(unit, isJoined = false) {
           </div>
         </div>
       </div>
-      
-      ${
-        hasCaster(unit)
-          ? `
-          <!-- Spells Section -->
-          <div class="section mb-3">
-            <h5 class="section-title">Spells (Caster ${getCasterLevel(
-              unit
-            )})</h5>
-            <div class="spell-tokens mb-3">
-              <div class="spell-token-container d-flex gap-2 mb-2" data-max="${getCasterLevel(
-                unit
-              )}" data-unit="${unit.selectionId}">
-                ${Array(getCasterLevel(unit))
-                  .fill()
-                  .map(
-                    (_, i) => `
-                    <div class="spell-token ${
-                      getSpellTokenStatus(unit.selectionId, i) ? "spent" : ""
-                    }" 
-                      data-token="${i}" data-unit="${unit.selectionId}"></div>
-                  `
-                  )
-                  .join("")}
-              </div>
-              <button class="btn btn-sm btn-outline-primary" data-action="reset-tokens" data-unit="${
-                unit.selectionId
-              }">
-                Reset Tokens
-              </button>
-            </div>
-          </div>
-          `
-          : ""
-      }
     `;
+  }
+
+  // Add spells section if unit is a caster
+  if (hasCaster(unit)) {
+    bodyContent += `
+      <!-- Spells Section -->
+      <div class="section mb-3">
+        <h5 class="section-title">Spells (Caster ${getCasterLevel(unit)})</h5>
+        <div class="spell-tokens mb-3">
+          <div class="spell-token-container d-flex gap-2 mb-2" data-max="${getCasterLevel(
+            unit
+          )}" data-unit="${unit.selectionId}">
+            ${Array(getCasterLevel(unit))
+              .fill()
+              .map(
+                (_, i) => `
+                <div class="spell-token ${
+                  getSpellTokenStatus(unit.selectionId, i) ? "spent" : ""
+                }" 
+                  data-token="${i}" data-unit="${unit.selectionId}"></div>
+              `
+              )
+              .join("")}
+          </div>
+          <button class="btn btn-sm btn-outline-primary" data-action="reset-tokens" data-unit="${
+            unit.selectionId
+          }">
+            Reset Tokens
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  body.innerHTML = bodyContent;
 
   // Assemble the card
   card.appendChild(header);
@@ -1629,12 +1752,23 @@ function createHealthTracker(unit) {
   };
 
   if (unitSize === 1 && toughValue <= 1) {
-    // Single model with 1 wound
+    // Single model with 1 wound - show with card visualization instead of just buttons
     const isAlive = healthData.alive !== false;
     const { percentage, colorClass } = getHealthStatus(isAlive ? 1 : 0, 1);
 
     return `
       <div class="single-model-health">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="wounds-counter d-flex align-items-center">
+            <span class="me-2 fw-bold">Health:</span>
+            <div class="hp-text">
+              <span class="hp-current">${
+                isAlive ? "1" : "0"
+              }</span>/<span class="hp-max">1</span>
+            </div>
+          </div>
+        </div>
+        
         <div class="d-flex align-items-center gap-3 mb-2">
           <div class="btn-group" role="group">
             <button class="btn btn-sm ${
@@ -1655,6 +1789,25 @@ function createHealthTracker(unit) {
             </div>
           </div>
         </div>
+        
+        <div class="models-grid">
+          <div class="card model-card ${
+            isAlive ? "model-alive-card" : "model-dead-card"
+          }">
+            <div class="card-header d-flex justify-content-between align-items-center py-1 px-2">
+              <span class="model-name">${unit.customName || unit.name}</span>
+            </div>
+            <div class="card-body p-2 text-center">
+              <div class="model-icon ${isAlive ? "model-alive" : "model-dead"}">
+                ${
+                  isAlive
+                    ? '<i class="bi bi-person-fill"></i>'
+                    : '<i class="bi bi-person-x-fill"></i>'
+                }
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   } else if (unitSize === 1 && toughValue > 1) {
@@ -1670,7 +1823,7 @@ function createHealthTracker(unit) {
 
     return `
       <div class="multi-wound-model">
-        <div class="d-flex align-items-center gap-3 mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
           <div class="wounds-counter d-flex align-items-center">
             <button class="btn btn-sm btn-outline-danger" data-action="wound" data-unit="${unitId}">
               <i class="bi bi-dash"></i>
@@ -1684,10 +1837,35 @@ function createHealthTracker(unit) {
               <i class="bi bi-plus"></i>
             </button>
           </div>
-          <div class="progress flex-grow-1" style="height: 20px;">
-            <div class="progress-bar ${colorClass}" role="progressbar" 
-              style="width: ${percentage}%" 
-              aria-valuenow="${currentWounds}" aria-valuemin="0" aria-valuemax="${toughValue}">
+        </div>
+        
+        <div class="progress mb-2" style="height: 20px;">
+          <div class="progress-bar ${colorClass}" role="progressbar" 
+            style="width: ${percentage}%" 
+            aria-valuenow="${currentWounds}" aria-valuemin="0" aria-valuemax="${toughValue}">
+          </div>
+        </div>
+        
+        <div class="models-grid">
+          <div class="card model-card ${
+            currentWounds > 0 ? "model-alive-card" : "model-dead-card"
+          }">
+            <div class="card-header d-flex justify-content-between align-items-center py-1 px-2">
+              <span class="model-name">${unit.customName || unit.name}</span>
+            </div>
+            <div class="card-body p-2 text-center">
+              <div class="model-icon ${
+                currentWounds > 0 ? "model-alive" : "model-dead"
+              }">
+                ${
+                  currentWounds > 0
+                    ? '<i class="bi bi-person-fill"></i>'
+                    : '<i class="bi bi-person-x-fill"></i>'
+                }
+              </div>
+              <div class="mt-1 small">
+                ${currentWounds}/${toughValue} wounds
+              </div>
             </div>
           </div>
         </div>
@@ -2024,10 +2202,13 @@ function createHealthTracker(unit) {
   if (unitSize === 1 && toughValue <= 1) {
     // Single model with 1 wound
     const isAlive = healthData.alive !== false;
+    const percentage = isAlive ? 100 : 0;
+    const colorClass = isAlive ? "bg-success" : "bg-danger";
 
     return `
-        <div class="single-model-health d-flex align-items-center gap-2">
-          <div class="btn-group" role="group">
+      <div class="single-model-health">
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <div class="models-counter d-flex align-items-center">
             <button class="btn btn-sm ${
               isAlive ? "btn-success" : "btn-secondary"
             }" 
@@ -2037,33 +2218,85 @@ function createHealthTracker(unit) {
             }" 
               data-action="set-dead" data-unit="${unitId}">Dead</button>
           </div>
+          <div class="progress flex-grow-1" style="height: 20px;">
+            <div class="progress-bar ${colorClass}" role="progressbar" 
+              style="width: ${percentage}%" 
+              aria-valuenow="${
+                isAlive ? 1 : 0
+              }" aria-valuemin="0" aria-valuemax="1">
+            </div>
+          </div>
         </div>
-      `;
+        
+        <div class="models-grid">
+          <div class="card model-card ${
+            isAlive ? "model-alive-card" : "model-dead-card"
+          }">
+            <div class="card-header d-flex justify-content-between align-items-center py-1 px-2">
+              <span class="model-name">${unit.customName || unit.name}</span>
+            </div>
+            <div class="card-body p-2 text-center">
+              <button class="btn btn-sm ${
+                isAlive ? "btn-success" : "btn-danger"
+              } model-toggle-btn"
+                data-unit="${unitId}" data-action="${
+      isAlive ? "set-dead" : "set-alive"
+    }">
+                ${isAlive ? "Alive" : "Dead"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   } else if (unitSize === 1 && toughValue > 1) {
     // Single model with multiple wounds (Tough)
     const currentWounds = healthData.wounds
       ? toughValue - healthData.wounds.filter((w) => w).length
       : toughValue;
 
+    // Calculate health percentage and color
+    const percentage = (currentWounds / toughValue) * 100;
+    let colorClass = "bg-success";
+    if (percentage <= 33) {
+      colorClass = "bg-danger";
+    } else if (percentage <= 66) {
+      colorClass = "bg-warning";
+    }
+
     return `
       <div class="multi-wound-model">
-        <div class="d-flex align-items-center">
-          <button class="btn btn-sm btn-outline-danger" data-action="wound" data-unit="${unitId}">
-            <i class="bi bi-dash"></i>
-          </button>
-          <div class="d-flex flex-column align-items-center mx-2">
-            <div class="hp-text">
-              <span class="hp-current">${currentWounds}</span>/<span class="hp-max">${toughValue}</span>
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <div class="wounds-counter d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-danger" data-action="wound" data-unit="${unitId}">
+              <i class="bi bi-dash"></i>
+            </button>
+            <span class="mx-2 fw-bold">${currentWounds}/${toughValue}</span>
+            <button class="btn btn-sm btn-outline-success" data-action="heal" data-unit="${unitId}">
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+          <div class="progress flex-grow-1" style="height: 20px;">
+            <div class="progress-bar ${colorClass}" role="progressbar" 
+              style="width: ${percentage}%" 
+              aria-valuenow="${currentWounds}" aria-valuemin="0" aria-valuemax="${toughValue}">
             </div>
-            <div class="progress" style="width: 60px; height: 6px;">
-              <div class="progress-bar hp-progress-bar bg-success" 
-                style="width: ${(currentWounds / toughValue) * 100}%;">
+          </div>
+        </div>
+        
+        <div class="models-grid">
+          <div class="card model-card ${
+            currentWounds > 0 ? "model-alive-card" : "model-dead-card"
+          }">
+            <div class="card-header d-flex justify-content-between align-items-center py-1 px-2">
+              <span class="model-name">${unit.customName || unit.name}</span>
+            </div>
+            <div class="card-body p-2 text-center">
+              <div class="mt-1 small fw-bold">
+                ${currentWounds}/${toughValue} wounds
               </div>
             </div>
           </div>
-          <button class="btn btn-sm btn-outline-success" data-action="heal" data-unit="${unitId}">
-            <i class="bi bi-plus"></i>
-          </button>
         </div>
       </div>
     `;
@@ -2073,17 +2306,26 @@ function createHealthTracker(unit) {
       ? healthData.models.filter((m) => m).length
       : unitSize;
 
+    // Calculate health percentage and color
+    const percentage = (aliveModels / unitSize) * 100;
+    let colorClass = "bg-success";
+    if (percentage <= 33) {
+      colorClass = "bg-danger";
+    } else if (percentage <= 66) {
+      colorClass = "bg-warning";
+    }
+
     return `
       <div class="multi-model-unit">
-        <div class="d-flex align-items-center gap-3 mb-3">
+        <div class="d-flex align-items-center gap-3 mb-2">
           <div class="models-counter d-flex align-items-center">
             <button class="btn btn-sm btn-outline-danger" data-action="kill-model" data-unit="${unitId}">-</button>
             <span class="mx-2 fw-bold">${aliveModels}/${unitSize}</span>
             <button class="btn btn-sm btn-outline-success" data-action="revive-model" data-unit="${unitId}">+</button>
           </div>
           <div class="progress flex-grow-1" style="height: 20px;">
-            <div class="progress-bar bg-success" role="progressbar" 
-              style="width: ${(aliveModels / unitSize) * 100}%" 
+            <div class="progress-bar ${colorClass}" role="progressbar" 
+              style="width: ${percentage}%" 
               aria-valuenow="${aliveModels}" aria-valuemin="0" aria-valuemax="${unitSize}">
             </div>
           </div>
@@ -2122,7 +2364,7 @@ function createHealthTracker(unit) {
             .join("")}
         </div>
       </div>
-      `;
+    `;
   }
 }
 
@@ -2152,8 +2394,10 @@ function getBaseSize(unit) {
   if (!unit.bases) return "None";
 
   const bases = [];
-  if (unit.bases.round) bases.push(`<i class="bi bi-circle-fill"></i> ${unit.bases.round}mm`);
-  if (unit.bases.square) bases.push(`<i class="bi bi-square-fill"></i> ${unit.bases.square}mm`);
+  if (unit.bases.round)
+    bases.push(`<i class="bi bi-circle-fill"></i> ${unit.bases.round}mm`);
+  if (unit.bases.square)
+    bases.push(`<i class="bi bi-square-fill"></i> ${unit.bases.square}mm`);
 
   return bases.length > 0 ? bases.join(" | ") : "None";
 }
@@ -2824,6 +3068,7 @@ function processCombinedUnits() {
     // Skip if already processed
     if (processedIds.has(unit.selectionId)) return;
 
+    // If unit is already marked as combined or is joined to another unit that's combined
     if (unit.combined || unit.combinedWith) {
       const combinedId = unit.combinedWith || unit.selectionId;
       if (!combinedGroups[combinedId]) {
@@ -2831,10 +3076,32 @@ function processCombinedUnits() {
       }
       combinedGroups[combinedId].push(unit);
       processedIds.add(unit.selectionId);
-    } else {
-      // Not part of a combined unit
+    }
+    // Check if this unit should be combined with other identical units
+    else if (unit.joinToUnit) {
+      // This is not a combined unit but might be part of a joined group
       processedUnits.push(unit);
       processedIds.add(unit.selectionId);
+    }
+    // Check for units with the same customName that should be combined
+    else {
+      const sameNameUnits = armyData.units.filter(
+        (u) =>
+          !processedIds.has(u.selectionId) &&
+          u.customName === unit.customName &&
+          u.id === unit.id
+      );
+
+      if (sameNameUnits.length > 1) {
+        // We found multiple units with the same name - create a combined group
+        const combinedId = unit.selectionId; // Use first unit's ID as the group ID
+        combinedGroups[combinedId] = sameNameUnits;
+        sameNameUnits.forEach((u) => processedIds.add(u.selectionId));
+      } else {
+        // Not part of a combined unit
+        processedUnits.push(unit);
+        processedIds.add(unit.selectionId);
+      }
     }
   });
 
@@ -2851,9 +3118,18 @@ function processCombinedUnits() {
     mergedUnit.originalSelectionId = baseUnit.selectionId;
 
     // Initialize arrays for weapons, rules, etc.
-    mergedUnit.weapons = baseUnit.weapons ? [...baseUnit.weapons] : [];
+    mergedUnit.weapons = baseUnit.weapons
+      ? baseUnit.weapons.map((w) => ({ ...w, count: w.count || 1 }))
+      : [];
     mergedUnit.rules = baseUnit.rules ? [...baseUnit.rules] : [];
-    mergedUnit.loadout = baseUnit.loadout ? [...baseUnit.loadout] : [];
+    mergedUnit.loadout = baseUnit.loadout
+      ? baseUnit.loadout.map((item) => ({ ...item, count: item.count || 1 }))
+      : [];
+
+    // Reset for proper calculation
+    mergedUnit.size = baseUnit.size || 1;
+    mergedUnit.cost = baseUnit.cost || 0;
+    mergedUnit.xp = baseUnit.xp || 0;
 
     // Track original units for reference
     mergedUnit.originalUnits = group.map((u) => ({
@@ -2861,6 +3137,9 @@ function processCombinedUnits() {
       selectionId: u.selectionId,
       name: u.name,
       customName: u.customName,
+      xp: u.xp || 0,
+      cost: u.cost || 0,
+      size: u.size || 1,
     }));
 
     // Merge in data from other units in the group
@@ -2868,60 +3147,57 @@ function processCombinedUnits() {
       const unit = group[i];
 
       // Add size
-      mergedUnit.size = (mergedUnit.size || 1) + (unit.size || 1);
+      mergedUnit.size += unit.size || 1;
 
-      // Add weapons
+      // Add weapons - combine counts for identical weapons
       if (unit.weapons) {
         unit.weapons.forEach((weapon) => {
+          const weaponCount = weapon.count || 1;
           const existingWeapon = mergedUnit.weapons.find(
             (w) =>
               w.name === weapon.name &&
               w.range === weapon.range &&
-              w.attacks === weapon.attacks
+              w.attacks === weapon.attacks &&
+              JSON.stringify(w.specialRules || []) ===
+                JSON.stringify(weapon.specialRules || [])
           );
 
           if (existingWeapon) {
-            existingWeapon.count =
-              (existingWeapon.count || 1) + (weapon.count || 1);
+            existingWeapon.count += weaponCount;
           } else {
-            mergedUnit.weapons.push({ ...weapon });
+            mergedUnit.weapons.push({ ...weapon, count: weaponCount });
           }
         });
       }
 
-      // Add rules (avoiding duplicates)
-      if (unit.rules) {
-        unit.rules.forEach((rule) => {
-          const existingRule = mergedUnit.rules.find(
-            (r) => r.name === rule.name && r.rating === rule.rating
-          );
-          if (!existingRule) {
-            mergedUnit.rules.push({ ...rule });
-          }
-        });
-      }
-
-      // Add loadout items
+      // Add loadout items - combine counts for identical items
       if (unit.loadout) {
-        mergedUnit.loadout = [...mergedUnit.loadout, ...unit.loadout];
+        unit.loadout.forEach((loadoutItem) => {
+          const itemCount = loadoutItem.count || 1;
+          const existingItem = mergedUnit.loadout.find(
+            (item) =>
+              item.name === loadoutItem.name &&
+              JSON.stringify(item.specialRules || []) ===
+                JSON.stringify(loadoutItem.specialRules || [])
+          );
+
+          if (existingItem) {
+            existingItem.count += itemCount;
+          } else {
+            mergedUnit.loadout.push({ ...loadoutItem, count: itemCount });
+          }
+        });
       }
 
       // Add points
-      mergedUnit.cost = (mergedUnit.cost || 0) + (unit.cost || 0);
+      mergedUnit.cost += unit.cost || 0;
 
-      // Merge XP
-      mergedUnit.xp = Math.max(mergedUnit.xp || 0, unit.xp || 0);
+      // Take the highest XP value
+      mergedUnit.xp = Math.max(mergedUnit.xp, unit.xp || 0);
     }
 
-    // Add combined marker for UI
-    mergedUnit.isCombinedUnit = true;
+    // Add combined unit metadata
     mergedUnit.combinedUnits = group.length;
-
-    // Create a descriptive custom name if not already present
-    if (!mergedUnit.customName) {
-      const unitNames = group.map((u) => u.customName || u.name);
-      mergedUnit.customName = `Combined: ${unitNames.join(" + ")}`;
-    }
 
     // Add to processed units
     processedUnits.push(mergedUnit);
